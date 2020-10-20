@@ -1,5 +1,6 @@
 /* вырисовка вектора */
-function vectorDraw_init(vd_forSVG, vd_svgs) {
+function vectorDraw_init(vd_SelectorsForSVG, vd_svgs) {
+    const vd_forSVG = document.querySelectorAll(vd_SelectorsForSVG);
     vd_forSVG.forEach((space, i) => {
         $(space).html(vd_svgs[i]);
     });
