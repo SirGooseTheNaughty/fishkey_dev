@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Документ без названия</title>
+</head>
+	<meta charset="utf-8">
+	<title>Документ без названия</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="tilda_proj.css" type="text/css"/>
+
+    <style>
+        /* ОТНОСИТСЯ К ПАРАЛЛАКСУ */
+        .parallax {
+            position: relative;
+            top: 0;
+            left: 0;
+            transition: 0.4s ease-out;
+        }
+        /* ---------------------- */
+    </style>
+
+<body>
+	</div>
+	<div class='container'>
+		<div class='tilda_img_wrapper'>
+			<img src="images/ice_opera.png" alt="">
+		</div>
+	</div>
+	<div class='container'>
+		<div class='tilda_img_wrapper'>
+			<img src="images/chorus.jpg" alt="">
+		</div>
+	</div>
+
+	<script>
+        /* ----- ПОЯВЛЕНИЕ ФОТО ИЗ УГЛА ----- */
+		const cornerPhotos = $('.tilda_img_wrapper img');    // imgfield="tn_img_1599909480763"
+			$(cornerPhotos).wrap('<div class="photoWrapper"></div>');
+		const cornerPhotoWrappers = $('.photoWrapper');
+
+		$(cornerPhotos).css("opacity", "0");
+
+		setTimeout(function() {
+			for(let i=0; i<cornerPhotoWrappers.length; i++) {
+				$(cornerPhotoWrappers[i]).attr('trueWidth', $(cornerPhotoWrappers[i]).css('width'));
+				$(cornerPhotoWrappers[i]).attr('trueHeight', $(cornerPhotoWrappers[i]).css('height'));
+				$(cornerPhotoWrappers[i]).css({'width': '0', 'height': '0', 'overflow': 'hidden', 'transition': '0.4s ease-in'});
+				$(cornerPhotoWrappers[i]).children().css({
+					"opacity": "1", 
+					'width': $(cornerPhotoWrappers[i]).attr('trueWidth'), 
+					'height': $(cornerPhotoWrappers[i]).attr('trueHeight')
+				});
+				$(window)[0].addEventListener('scroll', showOnScroll);
+			}
+		}, 1000);
+
+		function showOnScroll() {
+			const wt = $(window).scrollTop(),
+				wh = $(window).height();
+			let et = $(cornerPhotoWrappers[0]).offset().top;
+
+			for(let i=0; i<cornerPhotoWrappers.length; i++) {
+				et = $(cornerPhotoWrappers[0]).offset().top;
+				if(wt+wh/2 > et) {
+					$(cornerPhotoWrappers[i]).css({
+						'width': $(cornerPhotoWrappers[i]).attr('trueWidth'), 
+						'height': $(cornerPhotoWrappers[i]).attr('trueHeight')
+					});
+				} else {
+					$(cornerPhotoWrappers[i]).css({'width': '0', 'height': '0'});
+				}
+			}
+		}
+		/* ---------------------------------- */
+    </script>
+</body>
+</html>

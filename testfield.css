@@ -1,0 +1,93 @@
+@charset "utf-8";
+/* CSS Document */
+
+.gridContainer {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+}
+.container {
+    width: 100vw;
+    height: 100vh;
+    margin: 50px auto;
+}
+.some_tilda_bullshit {
+    width: 400px;
+    height: 400px;
+    background-color: yellow;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+}
+
+.button_bg {
+    width: 300px;
+    height: 140px;
+    border-radius: 10px;
+}
+/* ОТНОСИТСЯ К ФОНУ КНОПКИ */
+.notActive {
+    background: linear-gradient(to right, red 50%, blue 50%);
+}
+.active {
+    background: linear-gradient(to right, blue 50%, red 50%);
+}
+.button_style {
+    transition: 0.25s ease;
+    background-size: 200% 100%;
+    background-position: left bottom;
+}
+/* ----------------------- */
+
+/* ----- ЗАМЕНА КУРСОРА ----- */
+@media screen and (min-width: 980px) {
+    * {
+        cursor: none !important;
+    }
+    .cursor {
+        position: fixed;
+        top: 0;
+        left: -100px;
+        overflow: visible;
+        z-index: 10000000000;
+        pointer-events: none;
+    }
+    .cursor:after,
+    .cursor:before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s ease;
+    }
+    .cursor::after {
+        content: '';
+        width: 15px;
+        height: 15px;
+        background: #e0644c;
+        border: 1px solid #ecede8;
+        border-radius: 50%;
+    }
+    .cursor::before {
+        content: '';
+        opacity: 0;
+        width: 50px;
+        height: 50px;
+        background: #78accd;
+        border: 1px solid #ecede8;
+        border-radius: 50%;
+        background-size: 100%;
+        background-position: 50%;
+        background-repeat: no-repeat;
+        background-image: url('https://revistaelduende.com/wp-content/themes/elduende/img/ojos.gif');
+        background-blend-mode: screen;
+    }
+    .cursor.hover:after {
+        opacity: 0;
+    }
+    .cursor.hover:before {
+        opacity: 1;
+    }
+}
+/* -------------------------- */

@@ -1,0 +1,89 @@
+
+<style>
+	.fullPageBlock {
+		position: fixed;
+		width: 80vw;
+		height: 100vh;
+		top: 100vh;
+		left: 0;
+		margin: 0 auto;
+		z-index: 1;
+		transition: 0.4 ease-in-out;
+	}
+	.shownNextFullPageBlock {
+		animation: nextFP 0.4s linear;
+		z-index: 200;
+		animation-fill-mode: forwards;
+	}
+	@keyframes nextFP {
+		0% {
+			width: 50vw;
+			top: 100vh;
+		}
+		100% {
+			width: 100vw;
+			top: 0;
+		}
+	}
+	.shownPrevFullPageBlock {
+		animation: PrevFP 0.4s linear;
+		z-index: 200;
+		animation-fill-mode: forwards;
+	}
+	@keyframes PrevFP {
+		0% {
+			position: relative;
+			width: 50vw;
+			top: -100vh;
+		}
+		100% {
+			position: relative;
+			width: 100vw;
+			top: 0;
+		}
+	}
+	
+</style>
+<script>
+	document.addEventListener('wheel', pageChange);
+
+	function pageChange(event) {
+		console.log(event);
+		let delta = event.deltaY;
+		if (delta >= 0) {
+			nextPage(1);
+		} else {
+			nextPage(-1);
+		}
+	}
+
+	let activePage = 0;
+	const pages = $('#rec232182146, #rec232182383, #rec232182463');
+	$(pages).wrapAll(`<div style="width: 100vw; height: 100vh; display: grid; place-items: center"></div>`)
+	for(let i=0; i<pages.length; i++) {
+		$(pages[i]).addClass('fullPageBlock');
+		$(pages[i]).children().children().css('height', '100vh');
+	}
+	$(pages[0]).addClass('shownNextFullPageBlock');
+
+	function nextPage(direction) {
+		const nexPage = activePage+direction;
+		if(nexPage < pages.length && nexPage >= 0) {
+			switch (direction) {
+				case 1:
+					$(pages[nexPage]).addClass('shownNextFullPageBlock');
+					$(pages[activePage]).removeClass('shownNextFullPageBlock');
+					$(pages[activePage]).removeClass('shownPrevFullPageBlock');
+					activePage = activePage + direction;
+					break;
+				case -1:
+					$(pages[nexPage]).addClass('shownPrevFullPageBlock');
+					$(pages[activePage]).removeClass('shownNextFullPageBlock');
+					$(pages[activePage]).removeClass('shownPrevFullPageBlock');
+					activePage = activePage + direction;
+					break;
+			}
+			
+		}
+	}
+</script>

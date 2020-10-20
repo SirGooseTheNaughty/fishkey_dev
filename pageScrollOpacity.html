@@ -1,0 +1,70 @@
+<style>
+	.fullPageBlock {
+		position: fixed;
+		width: 100vw;
+		height: 100vh;
+		top: 0;
+		left: 0;
+		z-index: 1;
+		transition: 0.4s ease;
+	}
+    .hidden {
+        opacity: 0;
+        z-index: 1;
+    }
+    .shown {
+        opacity: 1;
+        z-index: 100;
+    }
+</style>
+<script>
+    //const pages = document.querySelectorAll('#rec232182146, #rec232182383, #rec232182463');
+    const pageLinks = ['#rec232750187', '#rec235268649', '#rec235275153', '#rec235277041', '#rec235280781', '#rec235295634'];
+    const pages = document.querySelectorAll(pageLinks);
+    
+    const pagesBGColor = $(pages[0]).children('div').children('div').css('background-color');
+    document.documentElement.style.backgroundColor = pagesBGColor;
+    const pagesBgImg = $(pages[0]).children('div').children('div').children('div').css('background-image');
+    document.documentElement.style.backgroundImage = pagesBgImg;
+
+	let activePage = 0;
+    pages.forEach((page,i) => {
+        page.classList.add('fullPageBlock', 'hidden');
+		$(page).children().children().css('height', '100vh');
+    })
+    pages[0].classList.remove('hidden');
+    pages[0].classList.add('shown');
+
+	document.addEventListener('wheel', pageChange);
+
+	function pageChange(event) {
+		let delta = event.deltaY;
+		if (delta >= 0) {
+			switchPage(1);
+		} else {
+			switchPage(-1);
+		}
+	}
+
+	function switchPage(direction) {
+		const nextPage = activePage+direction;
+		if(nextPage < pages.length && nextPage >= 0) {
+            pages[nextPage].classList.remove('hidden');
+            pages[nextPage].classList.add('shown');
+            pages[activePage].classList.remove('shown');
+            pages[activePage].classList.add('hidden');
+            activePage = activePage + direction;
+		}
+    }
+    
+    $('a').on('click', (e) => {
+        if ($(e.target).attr('href').substring(0,4) == '#rec') {
+            const pageIndex = +pageLinks.indexOf($(e.target).attr('href'));
+            pages[activePage].classList.remove('shown');
+            pages[activePage].classList.add('hidden');
+            pages[pageIndex].classList.add('shown');
+            pages[pageIndex].classList.remove('hidden');
+            activePage = pageIndex;
+        }
+    })
+</script>

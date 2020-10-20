@@ -1,0 +1,78 @@
+<style>
+    /* ----- ЗАМЕНА КУРСОРА ----- */
+    @media screen and (min-width: 980px) {
+        * {
+            cursor: none !important;
+        }
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: -100px;
+            overflow: visible;
+            z-index: 10000000000;
+            pointer-events: none;
+        }
+        .cursor:after,
+        .cursor:before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+        .cursor::after {
+            content: '';
+            width: 15px;
+            height: 15px;
+            background: #e0644c;
+            border: 1px solid #ecede8;
+            border-radius: 50%;
+        }
+        .cursor::before {
+            content: '';
+            opacity: 0;
+            width: 50px;
+            height: 50px;
+            background: #78accd;
+            border: 1px solid #ecede8;
+            border-radius: 50%;
+            background-size: 100%;
+            background-position: 50%;
+            background-repeat: no-repeat;
+            background-image: url('https://revistaelduende.com/wp-content/themes/elduende/img/ojos.gif');
+            background-blend-mode: screen;
+        }
+        .cursor.hover:after {
+            opacity: 0;
+        }
+        .cursor.hover:before {
+            opacity: 1;
+        }
+    }
+    /* -------------------------- */
+</style>
+
+<script>
+    /* ----- ЗАМЕНА КУРСОРА ----- */
+    const cc_minWidth = 1200;   // минимальная ширина экрана
+
+    if ($(window).width() > cc_minWidth) {
+        cursorChange_init();
+    };
+    function cursorChange_init() {
+        $("body").prepend('<div class="cursor"></div>');
+        $(document).mousemove(function (e) {
+            $('.cursor').css({
+                "left": e.pageX,
+                "top": e.pageY - $(window).scrollTop()
+            });
+        });
+
+        $(".parallax").mouseenter(function () {
+            $('.cursor').addClass('hover');
+        }).mouseleave(function () {
+            $('.cursor').removeClass('hover');
+        });
+    }
+    /* -------------------------- */
+</script>

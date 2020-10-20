@@ -1,0 +1,95 @@
+<!-- Зафиксированное меню -->
+<style>
+	#rec227415106  {
+		position: fixed;
+        width: 40%;
+        height: 100vh;
+		z-index: 999;
+		top: 0;
+		left: 0;
+	}
+</style>
+
+<script>
+    const fixedMenuBlockLinks = [],
+        fixedMenuBlocks = document.querySelectorAll(fixedMenuBlockLinks),
+        fixedMenu = document.querySelector('');
+
+    let notActive = {"color":"#4F4F4F", "font-weight": "normal"};
+    $($(".tn-atom")[11]).css("opacity","0");
+    $($(".tn-atom")[12]).css("opacity","0");
+    window.onscroll = function() {
+      if(window.pageYOffset < ($("#rec227543481").offset().top - 100)) {
+          notActive["color"] = "#4F4F4F";
+          document.getElementsByTagName('body')[0].style.backgroundColor = '#F0F0F0';
+          /* Пункты меню */
+          $($(".tn-atom")[0]).css({"color": "#C27D92", "font-weight": "bold"});
+          $($(".tn-atom")[1]).css(notActive);
+          $($(".tn-atom")[2]).css(notActive);
+          $($(".tn-atom")[3]).css(notActive);
+          $($(".tn-atom")[4]).css(notActive);
+          $($(".tn-atom")[5]).css(notActive);
+          /* подпись */
+          $($(".tn-atom")[8]).css("color","#4F4F4F");
+          $($(".tn-atom")[8]).text('Для тех, кто хочет запечатлеть самые лучшие и красивые моменты');
+          /* кнопка и стрелка */
+          $($(".tn-atom")[9]).css("color","#C27D92");
+          $($(".tn-atom")[10]).css("color","#C27D92");
+          /* свадеюный и продакшн */
+          $($(".tn-atom")[6]).css("opacity","1");
+          $($(".tn-atom")[7]).css("opacity","1");
+          /* фото */
+          $($(".tn-atom")[11]).css("opacity","0");
+          /* видео */
+          $($(".tn-atom")[12]).css("opacity","0");
+        }
+      else if(window.pageYOffset < ($("#rec227543785").offset().top - 100)) {
+          notActive["color"] = "#F2F2F2";
+          document.getElementsByTagName('body')[0].style.backgroundColor = '#934855';
+          /* Пункты меню */
+          $($(".tn-atom")[0]).css(notActive);
+          $($(".tn-atom")[1]).css({"color": "#F1DDDB", "font-weight": "bold"});
+          $($(".tn-atom")[2]).css(notActive);
+          $($(".tn-atom")[3]).css(notActive);
+          $($(".tn-atom")[4]).css(notActive);
+          $($(".tn-atom")[5]).css(notActive);
+          /* подпись */
+          $($(".tn-atom")[8]).css("color","#F2F2F2");
+          $($(".tn-atom")[8]).text('Следующая подпись');
+          /* кнопка и стрелка */
+          $($(".tn-atom")[9]).css("color","#F1DDDB");
+          $($(".tn-atom")[10]).css("color","#F1DDDB");
+          /* свадеюный и продакшн */
+          $($(".tn-atom")[6]).css("opacity","0");
+          $($(".tn-atom")[7]).css("opacity","0");
+          /* фото */
+          $($(".tn-atom")[11]).css("opacity","1");
+          /* видео */
+          $($(".tn-atom")[12]).css("opacity","0");
+        }
+      else {
+          notActive["color"] = "#E0E0E0";
+          document.getElementsByTagName('body')[0].style.backgroundColor = '#32292E';
+          /* Пункты меню */
+          $($(".tn-atom")[0]).css(notActive);
+          $($(".tn-atom")[1]).css(notActive);
+          $($(".tn-atom")[2]).css({"color": "#B97B86", "font-weight": "bold"});
+          $($(".tn-atom")[3]).css(notActive);
+          $($(".tn-atom")[4]).css(notActive);
+          $($(".tn-atom")[5]).css(notActive);
+          /* подпись */
+          $($(".tn-atom")[8]).css("color","#E0E0E0");
+          $($(".tn-atom")[8]).text('Новая подпись');
+          /* кнопка и стрелка */
+          $($(".tn-atom")[9]).css("color","#E0E0E0");
+          $($(".tn-atom")[10]).css("color","#E0E0E0");
+          /* свадеюный и продакшн */
+          $($(".tn-atom")[6]).css("opacity","0");
+          $($(".tn-atom")[7]).css("opacity","0");
+          /* фото */
+          $($(".tn-atom")[11]).css("opacity","0");
+          /* видео */
+          $($(".tn-atom")[12]).css("opacity","1");
+        }
+    }
+</script>

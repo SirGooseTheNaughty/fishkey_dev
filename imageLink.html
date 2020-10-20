@@ -1,0 +1,39 @@
+<script>
+    const imgLink_imames = document.querySelectorAll('.tn-elem__2380621521602424508085, .tn-elem__2380621521602425368859'),
+        links = [
+            'https://dyotanya.com/linktarget1',
+            'https://dyotanya.com/linktarget2'
+        ],
+        imgLink_minWidth = 1200;
+
+    if ($(window).width() > imgLink_minWidth) {
+        imgLink_imames.forEach((image, i) => {
+            image.setAttribute('data-imgLink', links[i]);
+            image.style.cursor = 'pointer';
+        });
+
+        $(imgLink_imames).on('click', function() {
+            const link = this.getAttribute('data-imgLink');
+            $(this).clone().insertBefore(this);
+            const clone = $(this).prev();
+            $(clone).css({
+                position: 'fixed',
+                'z-index': '999999'
+            });
+            setTimeout(() => {
+                $(clone).css({
+                    transition: '1s ease',
+                    top: '0',
+                    left: '0',
+                    width: '100vw'
+                });
+                setTimeout(() => {
+                    document.location.href = link;
+                    setTimeout(() => {
+                        $(clone).remove();
+                    }, 300);
+                }, 1000);
+            }, 100);
+        });
+    }
+</script>

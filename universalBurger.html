@@ -1,0 +1,183 @@
+<script>
+    const burgerBlock = document.querySelector('#rec234988686'),                    // блок с меню
+        burgerToggler = document.querySelector('#rec234988778'),                    // блок с кнопками бургера
+        burgerOpen = document.querySelector('[data-elem-id="1601550106518"]'),      // кнопка открытия бургера
+        burgerClose = document.querySelector('[data-elem-id="1601550106543"]'),     // кнопка закрытия бургера
+        burgerTransTime = 1,                                                        // время разворота фона
+        burgerElemsTransTime = 0.5,                                                 // время появления меню
+        startPos = [                                                                // положение свернутого меню
+            'center',                                                               // top / center / bottom
+            'center'                                                                  // left / center / right
+        ],
+        burgerShape = 'circle',
+        shownStyle = {},
+        hiddenStyle = {
+            'width': '0',
+            'height': '0'
+        },
+        burgerLinks = burgerBlock.querySelectorAll('a');
+    $(burgerBlock).wrap('<div class="burgerWrapper"></div>');
+    const burgerWrapper = document.querySelector('.burgerWrapper');
+    
+    function burgerInit() {
+        const burgerBGColor = $(burgerBlock).children('div').children('div').css('background-color');
+        $(burgerBlock).children('div').children('div').css('background-color', 'none');
+        burgerBlock.classList.add('burgerBlock', 'hidden');
+        burgerToggler.classList.add('burgerToggler');
+        burgerOpen.classList.add('shown', 'burgerButton');
+        burgerClose.classList.add('hidden', 'burgerButton');
+        const ww = document.documentElement.clientWidth,
+            wh = document.documentElement.clientHeight;
+
+        switch (burgerShape) {
+            case 'rect': 
+                shownStyle.width = '100vw';
+                shownStyle.height = '100vh';
+                if (startPos[0] == 'center') {
+                    hiddenStyle.top = '50%';
+                    shownStyle.top = '0';
+                } else if (startPos[0] == 'bottom') {
+                    hiddenStyle.top = '100%';
+                    shownStyle.top = '0';
+                } else {
+                    hiddenStyle[startPos[0]] = '0';
+                }
+                if (startPos[1] == 'center') {
+                    hiddenStyle.left = '50%';
+                    shownStyle.left = '0';
+                } else {
+                    hiddenStyle[startPos[1]] = '0';
+                }
+                break;
+            case 'square': 
+                shownStyle.width = '100vw';
+                shownStyle.height = ww;
+                if (startPos[0] == 'center') {
+                    hiddenStyle.top = '50%';
+                    shownStyle.top = (wh - ww)/2 + 'px';
+                } else if (startPos[0] == 'bottom') {
+                    hiddenStyle.top = '100%';
+                    shownStyle.top = (wh - ww) + 'px';
+                } else {
+                    hiddenStyle[startPos[0]] = '0';
+                }
+                if (startPos[1] == 'center') {
+                    hiddenStyle.left = '50%';
+                    shownStyle.left = '0';
+                } else {
+                    hiddenStyle[startPos[1]] = '0';
+                }
+                break;
+            case 'circle': 
+                $(burgerWrapper).css('border-radius', '50%');
+                let diameter = 1.15*ww;
+                if ((startPos[0] == 'center') && (startPos[1] == 'center')) {
+                    diameter = 1.15*ww;
+                } else {
+                    diameter = 2.3*ww;
+                }
+                if (startPos[0] == 'center') {
+                    hiddenStyle.top = '50%';
+                    shownStyle.top = -(diameter - wh)/2 + 'px';
+                } else if (startPos[0] == 'bottom') {
+                    hiddenStyle.top = '100%';
+                    shownStyle.top = -(diameter/2 - wh) + 'px';
+                } else if (startPos[0] == 'top') {
+                    hiddenStyle.top = '0';
+                    shownStyle.top = -diameter/2 + 'px';
+                }
+                if (startPos[1] == 'center') {
+                    hiddenStyle.left = '50%';
+                    shownStyle.left = -(diameter - ww)/2 + 'px';
+                } else if (startPos[1] == 'right') {
+                    hiddenStyle.right = '0';
+                    shownStyle.right = -diameter/2 + 'px';
+                } else if (startPos[1] == 'left') {
+                    hiddenStyle.left = '0';
+                    shownStyle.left = -diameter/2 + 'px';
+                }
+                shownStyle.width = diameter;
+                shownStyle.height = diameter;
+                break;
+        };
+        
+        $(burgerWrapper).css({
+            'background-color': burgerBGColor,
+            'width': '0',
+            'height': '0',
+            'transition': `${burgerTransTime}s ease`,
+            'z-index': '9998'
+        });
+    };
+
+    burgerInit();
+    
+    $(burgerWrapper).css(hiddenStyle);
+
+    $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
+
+    function toggleBurger(e) {
+        burgerOpen.classList.toggle('shown');
+        burgerOpen.classList.toggle('hidden');
+        burgerClose.classList.toggle('hidden');
+        burgerClose.classList.toggle('shown');
+        if (burgerBlock.classList.contains('hidden')) {
+            document.documentElement.style.overflowY = 'hidden';
+            $(burgerWrapper).css(shownStyle);
+            setTimeout(() => {
+                burgerBlock.classList.remove('hidden');
+                burgerBlock.classList.add('shown');
+            }, 1000*burgerTransTime);
+        } else {
+            burgerBlock.classList.add('hidden');
+            burgerBlock.classList.remove('shown');
+            setTimeout(() => {
+                document.documentElement.style.overflowY = 'auto';
+                $(burgerWrapper).css(hiddenStyle);
+            }, 1000*burgerElemsTransTime);
+            
+        }
+    }
+
+    burgerOpen.addEventListener('click', toggleBurger);
+    burgerClose.addEventListener('click', toggleBurger);
+    burgerLinks.forEach(burgerLink => burgerLink.addEventListener('click', toggleBurger));
+
+</script>
+
+
+<style>
+    .burgerWrapper {
+        position: fixed;
+        overflow: hidden;
+        top: 0;
+        right: 0;
+    }
+    .burgerToggler,
+    .burgerBlock {
+        position: fixed;
+        width: 100vw;
+        top: 0;
+        left: 0;
+    }
+    .burgerToggler {
+        z-index: 99999 !important;
+    }
+    .burgerBlock {
+        height: 100vh;
+    }
+    .burgerBlock > div > div{
+        height: 100vh;
+    }
+    .burgerButton {
+        cursor: pointer;
+    }
+    .hidden {
+        opacity: 0;
+        z-index: 0 !important;
+    }
+    .shown {
+        opacity: 1;
+        z-index: 9999 !important;
+    }
+</style>

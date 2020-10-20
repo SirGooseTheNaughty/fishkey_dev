@@ -1,0 +1,88 @@
+<script>
+    const txtAppConts = document.querySelectorAll('.tn-elem__2367832281470209944682, .tn-elem__2380396391470209944682, .tn-elem__2380397011470209944682'),   // появляющийся текст
+        txtApp_TimeOffset = 1000,           // задержка анимации
+        txtApp_MinWidth = 1200,             // минимальная ширина экрана для анимации
+        txtApp_AnimSpeed = 400,             // скорость появления слов (в миллимекундах)
+        txtApp_WordSpeed = 80,              // задержка между словами (в миллимекундах)
+        txtApp_divider = 'word',            // 'symbol' для появления по символу, 'word' по слову, 'phrase' по предложению (через точку), 'line' по строке (через ;;)
+        txtAppWordConts = {};
+
+    if ($(window).width() > txtApp_MinWidth) {
+        txtAppConts.forEach(txtAppInit);
+        setTimeout(txtAppear, txtApp_TimeOffset, 0);        // появление текста № 0 по задержке
+        window.addEventListener('scroll', txtApp_scroll);   // если есть тексты, появляющиеся по скроллу (если нет - лучше удалить или закомментировать)
+    }
+    
+    /* Если нет текстов, появляющихся по скроллу, этот сегмент можно удалить */
+    function txtApp_scroll() {
+        /* Использовать для появления текста по скроллу до блока (дублировать для нового текста) */
+        if($(window).scrollTop() > $('#rec238039639').offset().top - 300) { // #rec - id блока с появлением, вместо 300 - отступ в px
+            txtAppear(1);                                                   // номер появляющегося текста начиная с нуля
+        }
+        /* ------------------------------------------------------------------------------------- */
+        if($(window).scrollTop() > $('#rec238039701').offset().top - 300) {
+            txtAppear(2);
+        }
+    }
+    /* --------------------------------------------------------------------- */
+
+    function txtAppInit(txtAppCont, contNum) {
+        txtAppCont = txtAppCont.firstElementChild;
+        const txtApp = txtAppCont.textContent;
+        let txtAppWords = [];
+        if (txtApp_divider == 'word') {
+            txtAppWords = txtApp.split(' ');
+            txtAppCont.innerHTML = '';
+            txtAppWords.forEach((word, i) => {
+                txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+            });
+        } else if (txtApp_divider == 'phrase') {
+            txtAppWords = txtApp.split('. ');
+            txtAppCont.innerHTML = '';
+            txtAppWords.forEach((word, i) => {
+                if (i == txtAppWords.length - 1) {
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: 1rem'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                } else {
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'><span class='txtAppWordCont${contNum}'>${word}.</span></p>`;
+                }
+            });
+        } else if (txtApp_divider == 'line') {
+            txtAppWords = txtApp.split(';;');
+            txtAppCont.innerHTML = '';
+            txtAppWords.forEach((word, i) => {
+                txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+            });
+        } else {
+            txtAppWords = txtApp.split('');
+            txtAppCont.innerHTML = '';
+            txtAppWords.forEach((word, i) => {
+                if (word == ' ') {
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: 1rem'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                } else {
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block;'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                }
+            });
+        }
+
+        txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}`);
+
+        txtAppCont.style.paddingBottom = '0.15em';
+        $(txtAppWordConts[contNum]).css({
+            position: 'relative',
+            top: '1.5em',
+        }); 
+    };
+    function txtAppear(contNum) {
+        let i = 0;
+        const txtApp_interval = setInterval(() => {
+            if (!txtAppWordConts[contNum][i]) {
+                clearInterval(txtApp_interval);
+            }
+            else {
+                txtAppWordConts[contNum][i].style.transition = `${txtApp_AnimSpeed/1000}s ease`;
+                txtAppWordConts[contNum][i].style.top = '0';
+            }
+            i++;
+        }, txtApp_WordSpeed);
+    };
+</script>

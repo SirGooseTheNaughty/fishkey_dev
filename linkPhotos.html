@@ -1,0 +1,77 @@
+<script>
+    const LP__links = document.querySelectorAll('[field="tn_text_1601629312299"], [field="tn_text_1601629335350"], [field="tn_text_1601629345994"]'),
+        LP__photos = document.querySelectorAll('[data-elem-id="1601629376674"], [data-elem-id="1601629440924"], [data-elem-id="1601629451776"]');
+
+    LP__links.forEach((link, i) => {
+        $(link).attr('assocWith', i);
+        link.parentElement.style.zIndex = 5;
+        link.parentElement.style.cursor = 'pointer';
+        link.style.height = window.getComputedStyle(link).width;
+        link.style.borderRadius = '50%';
+    });
+    LP__photos.forEach((photo, i) => {
+        $(photo).attr('assocWith', i);
+        $(photo).css({
+            'position': 'absolute',
+            'z-index': '1',
+            'opacity': '0',
+            'transition': 'opacity 0.25s ease, top 0.25s linear, left 0.25s linear'
+        });
+    });
+
+    const LP__linkCenters = {},
+        LP__photoCenterPositions = {};
+    function LP__getLinksCenters() {
+        LP__links.forEach((LP__link, i) => {
+            const LP__linkRect = LP__link.getBoundingClientRect();
+            LP__linkCenters[i] = {
+                x: LP__linkRect.x + LP__linkRect.width/2,
+                y: LP__linkRect.y + LP__linkRect.height/2
+            };
+        });
+    };
+    function LP__getPhotoPosition(LP__photo, LP__desiredCenter) {
+        LP__photoCenterPosition = {
+            x: LP__desiredCenter.x - LP__photo.children[0].children[0].width/2,
+            y: LP__desiredCenter.y - LP__photo.children[0].children[0].height/2
+        };
+        return LP__photoCenterPosition;
+    };
+    function LP__centerImage(LP__photo, i) {
+        LP__photoCenterPosition = LP__getPhotoPosition(LP__photo, LP__linkCenters[i])
+        LP__photo.style.top = LP__photoCenterPosition.y + 'px';
+        LP__photo.style.left = LP__photoCenterPosition.x + 'px';
+    }
+    function LP__moveImage(LP__photo, LP_mouseCoordinates) {
+        LP__photoCenterPosition = LP__getPhotoPosition(LP__photo, LP_mouseCoordinates)
+        LP__photo.style.top = LP__photoCenterPosition.y + 'px';
+        LP__photo.style.left = LP__photoCenterPosition.x + 'px';
+    }
+
+    setTimeout(() => {
+        LP__getLinksCenters();
+        LP__photos.forEach(LP__centerImage);
+    }, 3000);
+    
+    let activeLink = 0;
+
+    $(LP__links).on('mouseenter', function () {
+            activeLink = $(this).attr('assocWith');
+            LP__photos[activeLink].style.opacity = 1;
+            document.addEventListener('mousemove', LP__mousemove);
+        })
+        .on('mouseleave', function () {
+            document.removeEventListener('mousemove', LP__mousemove);
+            LP__photos[activeLink].style.opacity = 0;
+            LP__centerImage(LP__photos[activeLink], activeLink);
+        });
+
+    function LP__mousemove(e) {
+        const LP_mouseCoordinates = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        LP__moveImage(LP__photos[activeLink], LP_mouseCoordinates);
+    }
+
+</script>

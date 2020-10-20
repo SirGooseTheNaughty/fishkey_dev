@@ -1,0 +1,23 @@
+<script>
+    const tw_TextElem = document.querySelector('[field="tn_text_1470210011265"]'),
+        tw_totalSpeed = 4000,
+        tw_TimeOffset = 2000,
+        tw_MinWidth = 1200,    // минимальная ширина экрана для анимации
+        tw_Text = tw_TextElem.innerText.split("");
+
+    function tw_write() {
+        const speed = tw_totalSpeed / tw_Text.length;
+        const tw_interval = setInterval(function() {
+            if(!tw_Text[0]){
+                    return clearInterval(tw_interval);
+            };
+            tw_TextElem.innerHTML += tw_Text.shift();
+        }, speed);
+        return false;
+    };
+    
+    if ($(window).width() > tw_MinWidth) {
+        tw_TextElem.innerText = '';
+        setTimeout(tw_write, tw_TimeOffset);
+    }
+</script>

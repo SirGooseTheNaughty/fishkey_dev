@@ -1,0 +1,49 @@
+<script>
+    // ------------- PARALLAX ------------- //
+    //const parallaxTargets = $('.some_tilda_bullshit'),	        // если все картинки на одном блоке, то '#rec1234 img'
+    const parallaxTargets = document.querySelectorAll('[], []'),    // ИЛИ конкретные элементы
+        parallaxMinScreenWidth = 1200;                              // минимальная шириа экрана (в пикселях) для анимации
+
+    let parallaxTarget,
+        parallaxRect = {},
+        parallaxRectCenter = {x: 0, y: 0};
+
+    function listener(e) {
+        const coordinatesDiff = {
+            x: (e.clientX - parallaxRectCenter.x)/4,
+            y: (e.clientY - parallaxRectCenter.y)/4
+        };
+        $(parallaxTarget).css('top', `${coordinatesDiff.y}px`);
+        $(parallaxTarget).css('left', `${coordinatesDiff.x}px`);
+    }
+
+    function parallaxInit() {
+        $(parallaxTargets).addClass('parallax');
+        $(parallaxTargets).css({
+            position: 'relative',
+            top: '0',
+            left: '0',
+            transition: '0.4s ease-out'
+        });
+        $(parallaxTargets).on('mouseenter', function () {
+            parallaxTarget = this;
+                parallaxRect = parallaxTarget.getBoundingClientRect();
+                parallaxRectCenter = {
+                    x: parallaxRect.x + parallaxRect.width/2,
+                    y: parallaxRect.y + parallaxRect.height/2
+                };
+                $(this).attr('parallax', true);
+                document.addEventListener('mousemove', listener);
+            })
+            .on('mouseleave', function () {
+                document.removeEventListener('mousemove', listener);
+                $(this).attr('parallax', false);
+                $(this).css({'top': '0px', 'left': '0px'});
+            });
+    }
+
+    if (document.documentElement.clientWidth > parallaxMinScreenWidth) {
+        parallaxInit();
+    }
+    // ------------------------------------- //
+</script>

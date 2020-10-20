@@ -1,0 +1,73 @@
+<script>
+    const mt_numPoints = 50,
+        mt_overallOpacity = 0.2,
+        mt_cursorStyle = {
+            r: '20',
+            fill: 'none',
+            stroke: 'black',
+            'stroke-width': '1',
+            style: 'opacity: 1'
+        },
+        mt_trailStyle = {
+            r: '10',
+            fill: 'red',
+            stroke: 'none',
+            'stroke-width': '0'
+        };
+
+    $('body').prepend(`<svg id="mouseTail" xmlns="http://www.w3.org/2000/svg" width="100vw" height="100vh" viewBox="0 0 100% 100%" style="position: fixed; top: 0; left: 0; z-index: 99999"></svg>`);
+
+    const svgns = "http://www.w3.org/2000/svg",
+        svg = document.querySelector("#mouseTail");
+
+    let newCircle = {};
+    
+    for(let i = mt_numPoints; i > 0; i--) {
+        newCircle = document.createElementNS(svgns, "circle");
+        newCircle.style.opacity = mt_overallOpacity*(i/mt_numPoints)/Math.sqrt(mt_numPoints);
+        svg.appendChild(newCircle);
+    };
+    svg.style.pointerEvents = 'none';
+    const mt_circles = document.querySelectorAll('#mouseTail circle');
+    $(mt_circles).attr(mt_trailStyle);
+    $(mt_circles[0]).attr(mt_cursorStyle);
+
+    let mouseX = 0,
+        mouseY= 0;
+    const trailCoords = {
+        x: [],
+        y: []
+    };
+    for (let i = 0; i < 100; i++) {
+        trailCoords.x[i] = 0;
+        trailCoords.y[i] = 0;
+    }
+    let mt_refreshInt = '',
+        isRefreshing = false;
+
+    function trailCoordsRefresh() {
+        trailCoords.x.unshift(mouseX);
+        trailCoords.y.unshift(mouseY);
+        trailCoords.x.pop();
+        trailCoords.y.pop();
+
+        mt_circles.forEach((circle, i) => {
+            circle.setAttribute("transform", `matrix(1, 0, 0, 1, ${trailCoords.x[i]}, ${trailCoords.y[i]})`);
+        });
+
+        if ((mt_circles[0].getAttribute("transform") === mt_circles[98].getAttribute("transform"))) {
+            clearInterval(mt_refreshInt);
+            isRefreshing = false;
+        }
+    };
+
+    document.addEventListener('mousemove', function(event) {
+        mouseX = event.pageX;
+        mouseY = event.pageY;
+        if (!isRefreshing) {
+            mt_refreshInt = setInterval(trailCoordsRefresh, 1);
+            isRefreshing = true;
+        }
+    });
+
+</script>

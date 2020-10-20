@@ -1,0 +1,24 @@
+<style>
+    .bg-noise {
+        background-repeat: repeat !important;
+        pointer-events: none;
+        width: 100vw !important;
+        height: 100vh !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+</style>
+    
+<script>
+    const bgNoiseBlock = document.querySelector('#rec239137295'),   // id блока с шумящим элементом
+        bgNoise_opacity = 5;                                        // непрозрачность шума (от 0 до 100)
+    let bdNoise_grain = '';                                         // размер шума (можно оставить пустым)
+        
+    const bgNoiser = bgNoiseBlock.querySelector('[data-elem-type="shape"]').querySelector('.tn-atom');
+    bdNoise_grain = (bdNoise_grain) ? bdNoise_grain + 'px' : 'auto';
+    bgNoiser.classList.add('bg-noise');
+    bgNoiser.style.opacity = bgNoise_opacity/100;
+    bgNoiser.style.backgroundSize = `${bdNoise_grain}`;
+    bgNoiseBlock.style.height = '0';
+</script>

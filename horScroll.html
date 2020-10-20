@@ -1,0 +1,54 @@
+<script>
+    /* ----- ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ----- */
+    const horScrollBlocks = $('#rec233906475, #rec233906523, #rec233906536'),   // сюда id блоков
+        horScrollMinWidth = 980,                                                // сюда минимальную ширину экрана, для которой будет анимация
+        
+        horScrollwh = $(window).height(),
+        horScrollww = $(window).width(),
+        horScrollBlocksNum = +horScrollBlocks.length,
+        horScrollTotalHeight = +(horScrollBlocksNum-1)*horScrollww+horScrollwh,
+        horScrollBlockTop = $($(horScrollBlocks)[0]).offset().top;
+
+    if ($(window).width() > horScrollMinWidth) {
+        $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
+        const horScrollContainer = $('.horScrollContainer');  
+        $(horScrollContainer).wrap('<div class="horScrollStaticContainer"></div>');
+        $('.horScrollStaticContainer').css({'position': 'relative', 'overflow': 'hidden', 'height': `${horScrollTotalHeight}px`});
+        $(horScrollContainer).css({'position': 'relative', 'top': '0', 'left': '0'});
+        for(let i=0; i<horScrollBlocks.length; i++) {
+            $(horScrollBlocks[i]).css({
+                'position': 'absolute',
+                'width': '100vw',
+                'height': '100vh',
+                'top': '0',
+                'left': i*horScrollww+'px'
+            });
+        }
+
+        window.addEventListener('scroll', horizontalScroll);
+
+        function horizontalScroll() {
+            const wt = $(window).scrollTop(),
+                horScrollStop = (horScrollBlocksNum-1)*horScrollww;
+            let horScrollShift = +wt - horScrollBlockTop;
+            if (wt < horScrollBlockTop) {
+                $(horScrollContainer).css({
+                    'position': 'absolute',
+                    'top': `0px`
+                });
+            } else if (horScrollShift < horScrollStop) {
+                $(horScrollContainer).css({
+                    'position': 'fixed',
+                    'top': `0px`,
+                    'left': `${-horScrollShift}px`
+                });
+            } else {
+                $(horScrollContainer).css({
+                    'position': 'absolute',
+                    'top': `${horScrollStop}px`
+                });
+            }
+        }
+    }
+    /* --------------------------------- */
+</script>

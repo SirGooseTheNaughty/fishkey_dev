@@ -1,0 +1,64 @@
+<style>
+    .draw-svg {
+        animation: draw 1s linear forwards;
+    }
+    @keyframes draw {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+</style>
+
+<script>
+    const vd_forSVG = document.querySelectorAll('[data-elem-id="1602680224542"], [data-elem-id="1602764093911"]'),
+        vd_svgs = [
+            `<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M99.5 50C99.5 77.3381 77.3381 99.5 50 99.5C22.6619 99.5 0.5 77.3381 0.5 50C0.5 22.6619 22.6619 0.5 50 0.5C77.3381 0.5 99.5 22.6619 99.5 50Z" stroke="black"/>
+            </svg>`,
+            `<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M99.5 50C99.5 77.3381 77.3381 99.5 50 99.5C22.6619 99.5 0.5 77.3381 0.5 50C0.5 22.6619 22.6619 0.5 50 0.5C77.3381 0.5 99.5 22.6619 99.5 50Z" stroke="black"/>
+            </svg>`
+        ];
+
+    function vectorDraw_init(vd_forSVG, vd_svgs) {
+        vd_forSVG.forEach((space, i) => {
+            $(space).html(vd_svgs[i]);
+        })
+        const logoLengths = [], logoPaths = [], desiredWidths = [], coeffs = [];
+        vd_forSVG.forEach((space, i) => {
+            logoPaths[i] = space.querySelector('path');
+            logoLengths[i] = logoPaths[i].getTotalLength();
+            desiredWidths[i] = +space.getAttribute('data-field-width-value');
+            coeffs[i] = desiredWidths[i]/(+space.querySelector('svg').getAttribute('width'));
+            $(logoPaths[i]).css({
+                'stroke-dasharray': logoLengths[i],
+                'stroke-dashoffset': logoLengths[i]
+            });
+            $(space).css({
+                height: desiredWidths[i] + 'px',
+                display: 'grid',
+                'place-items': 'center'
+            });
+            space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
+        });
+        return logoPaths;
+    };
+
+    /* только начал писать
+    function vectorDraw() {
+        const logoPath = logoPaths[i];
+        const vectorDrawInterval = setInterval((logoPath) => {
+            logoPath.style.dashOffset += 1;
+        }, 20);
+    }
+    */
+
+    function vectorDraw(vector) {
+        logoPaths[vector].classList.add('draw-svg');
+    }
+
+    const logoPaths = vectorDraw_init(vd_forSVG, vd_svgs);
+    /* для запуска анимации используется
+    vectorDraw
+    */
+</script>

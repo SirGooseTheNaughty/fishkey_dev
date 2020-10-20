@@ -1,0 +1,12 @@
+<script>
+    document.addEventListener('scroll', function() {
+        const activationBlocks = document.querySelectorAll('#rec238226040, #rec239494258'),     // блоки, при скролле до которых происходит анимация
+            activatingFunction = vectorDraw;                                                    // анимация
+
+        activationBlocks.forEach((block, i) => {
+            if ($(window).scrollTop() > $(block).offset().top) {
+                activatingFunction(i);
+            }
+        })
+    });
+</script>

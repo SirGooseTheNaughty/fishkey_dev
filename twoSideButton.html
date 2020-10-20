@@ -1,0 +1,55 @@
+<script>
+    // --------- ПРОСТОЙ ВЖУХ --------- //
+    const targetTwoSideButtonsPar = document.querySelectorAll('[data-elem-id="1599820096839"]'),  // кнопки
+        twoSideButtonStyle = {
+            firstColor: 'red',			    // код первого цвета
+            secondColor: 'blue',		    // код второго цвета
+            whereTo: 'left',                // направление смещения: right / left / top / bottom
+            firstTextColor: 'blue',
+            secondTextColor: 'red',
+        },
+        twoSideButtonBackgroundMinWidth = 1200;    // минимальная ширина экрана для анимации
+
+    if ($(window).width() > twoSideButtonBackgroundMinWidth) {
+        const targetTwoSideButtons= [];
+        targetTwoSideButtonsPar.forEach((button, i) => {
+            targetTwoSideButtons[i] = button.firstElementChild;
+        });
+        twoSideButtonStyle.backgroundSize = (twoSideButtonStyle.whereTo == 'left' || twoSideButtonStyle.whereTo == 'right') ? '200% 100%' : '100% 200%';
+        if (twoSideButtonStyle.whereTo == 'left') {
+            twoSideButtonStyle.firstPosition = 'left bottom';
+            twoSideButtonStyle.secondPosition = 'right bottom';
+        } else if (twoSideButtonStyle.whereTo == 'right') {
+            twoSideButtonStyle.firstPosition = 'right bottom';
+            twoSideButtonStyle.secondPosition = 'left bottom';
+        } else if (twoSideButtonStyle.whereTo == 'top') {
+            twoSideButtonStyle.firstPosition = 'left top';
+            twoSideButtonStyle.secondPosition = 'left bottom';
+        } else if (twoSideButtonStyle.whereTo == 'bottom') {
+            twoSideButtonStyle.firstPosition = 'left bottom';
+            twoSideButtonStyle.secondPosition = 'left top';
+        }  
+        twoSideButtonStyle.whereTo = 'to ' + twoSideButtonStyle.whereTo;
+
+        $(targetTwoSideButtons).css({
+            'background': `linear-gradient(${twoSideButtonStyle.whereTo}, ${twoSideButtonStyle.secondColor} 50%, ${twoSideButtonStyle.firstColor} 50%)`,
+            'background-position': twoSideButtonStyle.firstPosition,
+            'background-size': twoSideButtonStyle.backgroundSize,
+            'transition': '0.25s ease',
+            'color': twoSideButtonStyle.firstTextColor
+        });
+        $(targetTwoSideButtons).hover(function() {
+            $(this).css({
+                "background-position": twoSideButtonStyle.secondPosition,
+                'color': twoSideButtonStyle.secondTextColor
+            });
+        },
+        function() {
+            $(this).css({
+                "background-position": twoSideButtonStyle.firstPosition,
+                'color': twoSideButtonStyle.firstTextColor
+            });
+        });
+    }
+    // -------------------------------- //
+</script>

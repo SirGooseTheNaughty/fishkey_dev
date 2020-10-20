@@ -1,0 +1,181 @@
+<script>
+    // const target = $('#rec232583355'),
+    //   textPars = $('[field="tn_text_1470233923389"], [field="tn_text_1600876597885"], [field="tn_text_1600876615747"], [field="tn_text_1600877321083"]'),
+    //   forSVG = $('[data-elem-id="1600944304946"], [data-elem-id="1601044813489"], [data-elem-id="1601044832471"], [data-elem-id="1601044845272"]');
+    const target = $('#rec233261577'),
+      textPars = $('[field="tn_text_1601049181250"], [field="tn_text_1601054681926"], [field="tn_text_1601054785209"], [field="tn_text_1601054910336"]'),
+      forSVG = $('[data-elem-id="1601055062429"], [data-elem-id="1601055077646"], [data-elem-id="1601055101041"], [data-elem-id="1601055110598"]');
+
+    for(let i=0; i<forSVG.length; i++) {
+      $($(forSVG)[i]).html(
+        `<svg class="mySVG" width="305" height="223" viewBox="0 0 305 223" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path class="myVect" 
+          d="M153 38C165 50 190 76 188 95 186 113 175 124 153 124M153 38C140 50 115 76 117 95 118 113 130 124 153 124M152 
+          222C152 222 245 167 273 144 301 122 326 68 273 21 214-32 153 37 153 38M153 222C153 222 61 167 32 144 4 122-21 
+          68 32 21 91-32 152 37 152 38" stroke="#2E609A"/>
+        </svg>`
+      );
+    }
+    const vectSVGs = document.querySelectorAll('.mySVG'); 
+    let angle = 0;
+    vectSVGs.forEach((mySVG) => {
+      mySVG.style.transform = `rotate(${angle}deg)`;
+      angle += 90;
+    })
+    const vectPaths = document.querySelectorAll('.myVect');
+    const vectLength = vectPaths[0].getTotalLength();
+    vectPaths.forEach(vectPath => {
+      $(vectPath).css('stroke-dasharray', vectLength);
+		  $(vectPath).css('stroke-dashoffset', vectLength);
+    })
+
+    $(target).wrap(`<div class='space'></div>`);
+    const space = $('.space');
+
+    $(target).css({
+      'position': 'absolute',
+      'width': '100%',
+      'height': '100vh',
+      'top': '0',
+      'left': '0'
+    });
+    const changeOffset = 400;
+    const spaceHeight = +$(target).height() + textPars.length*changeOffset,
+      textHeight = $(textPars[0]).css('height'),
+      lineHeight = $(textPars[0]).css('line-height');
+    $(space).css({
+      'position': 'relative',
+      'width': '100%',
+      'height': spaceHeight+'px',
+      'background-color': $(target).css('background-color')
+    });
+    const spaceTop = $(space).offset().top;
+    const spaceBottom = spaceTop + $(space).height();
+    for(let i=0; i<textPars.length; i++) {
+      $(textPars[i]).css({
+        'position': 'relative',
+        'top': '50%',
+        'opacity': '0',
+        'transform': 'scale(1, 0)',
+        'transition': '0.5s linear'
+      });
+    }
+    $(textPars[0]).css({'top': '0', 'opacity': '1', 'transform': 'scale(1, 1)'});
+    let prevScreen = 0;
+    let direction = 'down';
+
+    window.onscroll = function() {
+      const wt = $(window).scrollTop();
+      if (wt > spaceTop) {
+        $(target).css({
+          'position': 'fixed',
+          'top': '0'
+        });
+        document.addEventListener('wheel', autoScroll);
+        if (wt < spaceTop + changeOffset) {
+          changeText(0);
+          vectDraw(0);
+		      $(vectPaths[1]).css('stroke-dashoffset', vectLength);
+        } else if (wt < spaceTop + 2*changeOffset) {
+          changeText(1);
+          vectDraw(1);
+		      $(vectPaths[0]).css('stroke-dashoffset', '650');
+		      $(vectPaths[2]).css('stroke-dashoffset', vectLength);
+        } else if (wt < spaceTop + 3*changeOffset) {
+          changeText(2);
+          vectDraw(2);
+		      $(vectPaths[1]).css('stroke-dashoffset', '650');
+		      $(vectPaths[3]).css('stroke-dashoffset', vectLength);
+        } else if (wt <  spaceTop + 4*changeOffset) {
+          changeText(3);
+          vectDraw(3);
+		      $(vectPaths[2]).css('stroke-dashoffset', '650');
+        } else {
+          $(target).css({'position': 'absolute', 'top': textPars.length*changeOffset + 'px'});
+          document.removeEventListener('wheel', autoScroll);
+        }
+      } else {
+        $(target).css({'position': 'absolute','top': '0'});
+		    $(vectPaths[0]).css('stroke-dashoffset', vectLength);
+        document.removeEventListener('wheel', autoScroll);
+      }
+    }
+
+    function changeText(activeScreen) {
+      const shown = {'opacity': '1', 'top': '0', 'transform': 'scale(1, 1)'},
+        hideUp = {'opacity': '0', 'top': '-50%', 'transform': 'scale(1, 0)'},
+        hideDown = {'opacity': '0', 'top': '50%', 'transform': 'scale(1, 0)'};
+
+      if (activeScreen - prevScreen != 0) {
+        if(direction == 'down') {
+          $(textPars[prevScreen]).css(hideUp);
+        } else {
+          $(textPars[prevScreen]).css(hideDown);
+        }
+        $(textPars[activeScreen]).css(shown);
+        prevScreen = activeScreen;
+      }
+    }
+
+    function vectDraw(activeScreen) {
+      const wt = $(window).scrollTop();
+      const progress = (vectLength - 650)*(wt - spaceTop - activeScreen*changeOffset)/changeOffset;
+      const newOffset = vectLength - progress;
+		  $(vectPaths[activeScreen]).css('stroke-dashoffset', newOffset);
+    }
+
+    document.addEventListener('wheel', getDirection);
+
+    function getDirection(event) {
+			if (event.deltaY >= 0) {
+				direction = 'down';
+			} else {
+				direction = 'up';
+			}
+    }
+    
+    function autoScroll() {
+      $('html, body').stop();
+      let dn = 0;
+      if(direction == 'down') {
+        dn = spaceTop + (prevScreen + 1)*changeOffset;
+      } else {
+        dn = spaceTop + (prevScreen)*(changeOffset - 1);
+      }
+      $('html, body').animate({scrollTop: dn}, 500);
+    }
+
+
+
+  
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const forLogo = $('[data-elem-id="1601050118754"]');
+    $(forLogo).html(
+      `<svg width="445" height="445" viewBox="0 0 445 445" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path id="logoPath" d="M343 20C328 7 313 1 299 0 285-1 272 3 261 8 249 14 240 21 233 27 230 30 227 32 225 34 224 35 224 36 223 36 223 37 223 37 223 37 223 37 222 37 222 36 222 36 221 35 220 34 218 32 216 30 212 27 206 21 196 14 185 8 174 3 160-1 146 0 132 1 117 7 102 20 83 37 74 55 71 71 55 74 37 83 20 102 7 117 1 132 0 146 -1 160 3 174 8 185 14 196 21 206 27 212 30 216 32 218 34 220 35 221 36 222 36 222 37 222 37 223 37 223 37 223 37 223 36 223 36 224 35 224 34 225 32 227 30 230 27 233 21 240 14 249 8 261 3 272-1 285 0 299 1 313 7 328 20 343 37 362 55 371 72 374 74 390 84 408 102 424 117 438 132 443 146 444 160 445 174 441 185 436 196 431 206 423 212 418 216 415 218 412 220 410 221 409 222 408 222 408 222 408 223 407 223 407 223 407 223 408 223 408 224 408 224 409 225 410 227 412 230 415 233 418 240 423 249 431 261 436 272 441 285 445 299 444 313 443 328 438 343 424 362 408 371 390 374 374 390 371 408 362 424 343 438 328 443 313 444 299 445 285 441 272 436 261 431 249 423 240 418 233 415 230 412 227 410 225 409 224 408 224 408 223 408 223 407 223 407 223 407 223 408 222 408 222 408 222 409 221 410 220 412 218 415 216 418 212 423 206 431 196 436 185 441 174 445 160 444 146 443 132 438 117 424 102 408 84 391 74 374 72 372 55 362 37 343 20ZM73 374C76 390 85 407 103 424 117 437 132 442 146 443 160 444 173 440 184 435 196 430 205 423 212 417 215 414 218 411 219 409 220 409 221 408 222 407 222 407 222 407 222 407 222 407 222 407 222 406 216 400 207 391 199 381 191 371 185 359 186 349 187 340 191 333 197 328 203 323 212 320 223 320 234 320 242 323 248 328 254 333 258 340 259 349 260 359 254 371 246 381 239 391 230 401 223 407 224 407 224 407 224 407 224 408 225 409 226 410 228 411 230 414 234 417 240 423 250 430 261 435 272 440 285 444 299 443 313 442 328 437 343 424 361 407 370 390 373 374 366 375 359 375 353 374 331 371 311 358 300 343 289 329 269 299 253 272 244 259 237 247 231 238 229 233 226 229 225 227 224 226 223 225 223 224L223 224 223 224 223 224 222 224C222 224 221 224 221 224 221 225 220 226 220 227 218 229 216 233 213 238 207 247 200 259 192 272 175 299 155 329 144 343 133 358 114 371 92 374 85 375 79 375 73 374ZM219 226C219 226 219 226 219 226 217 229 215 233 212 237 207 246 199 259 191 272 174 299 155 329 143 343 132 357 113 370 91 373 85 374 79 374 73 373 71 366 71 359 72 353 75 331 89 312 103 301 117 290 147 270 174 254 187 245 199 238 208 232 213 229 217 227 219 226 219 226 219 226 219 226ZM220 224C220 224 219 224 219 225 216 226 212 229 208 231 199 237 186 244 173 253 146 269 116 289 102 300 88 311 75 331 71 353 70 359 70 366 71 373 55 370 38 361 21 343 8 328 2 313 1 299 0 285 4 272 9 261 15 250 22 240 27 234 30 230 33 228 35 226 36 225 37 224 37 224 37 224 38 224 38 223 38 223 38 223 38 223 44 230 53 239 63 246 73 254 85 260 95 259 104 258 111 255 117 249 122 242 124 234 124 223H123C123 234 121 242 116 248 111 254 104 257 95 258 85 259 74 253 64 246 54 238 45 229 38 223 45 216 54 207 64 200 74 192 85 187 95 188 104 189 111 192 116 198 121 203 123 212 123 223H124C124 212 122 203 117 197 111 191 104 188 95 187 85 186 73 192 63 199 53 207 44 216 38 222 38 222 37 222 37 222 36 221 36 220 35 219 33 218 30 215 27 212 22 205 15 196 9 184 4 173 0 160 1 146 2 132 8 117 21 103 37 84 55 75 71 72 70 79 71 85 71 92 75 114 88 133 102 144 116 155 146 175 173 192 186 200 199 207 208 213 212 216 216 218 219 220 219 220 219 220 219 220 220 221 220 222 221 222L221 223 221 223C220 223 220 224 220 224ZM222 223L222 223 222 222 222 222C222 222 222 222 222 222 222 222 222 222 222 222L222 222 222 222 223 222 223 222 223 222 223 222C223 222 223 222 223 222L223 222 223 222 223 222 223 222C223 222 223 222 223 222 223 222 223 222 223 222L223 222 223 222 223 222 222 222 222 222 222 222C222 222 222 222 222 222L222 222C222 222 222 222 222 221 221 221 221 221 221 221 221 221 221 222 221 222L222 222 222 223 222 223ZM220 219C221 220 221 220 222 221L223 221 223 221 223 221C223 220 224 220 224 220L225 219C226 216 229 213 231 208 237 199 244 187 253 173 269 147 289 116 300 102 312 88 331 75 353 71 359 70 366 70 373 71 370 55 361 37 343 21 328 8 313 2 299 1 285 0 272 4 261 9 250 15 240 22 234 27 230 30 228 33 226 35 225 36 224 36 224 37 224 37 224 38 223 38 230 44 239 53 246 63 254 73 260 85 259 95 258 104 254 111 248 117 242 122 234 124 223 124 212 124 203 122 197 117 191 111 187 104 186 95 185 85 191 73 199 63 207 53 216 44 222 38 222 38 222 38 222 38 222 38 222 37 222 37 221 37 220 36 219 35 218 33 215 30 212 27 205 22 196 15 184 9 173 4 160 0 146 1 132 2 117 8 103 21 84 37 75 55 73 71 79 70 85 71 91 71 114 75 133 88 144 102 155 116 175 147 192 173 200 187 207 199 213 208 216 213 218 216 220 219 220 219 220 219 220 219ZM72 72C71 79 72 85 72 91 75 113 89 132 103 143 117 155 147 174 174 191 187 199 199 207 208 212 212 214 215 216 218 218 216 215 214 212 212 209 207 199 199 187 191 174 174 147 155 117 143 103 132 89 113 75 91 72 85 72 79 71 72 72ZM224 222C224 222 225 221 225 220 225 220 226 220 226 220 229 218 233 216 237 213 246 207 259 200 272 192 299 175 329 155 343 144 358 133 371 114 374 91 375 85 375 79 374 73 390 75 407 84 424 103 437 117 442 132 443 146 444 160 440 173 435 184 430 196 423 205 417 212 414 215 411 218 410 219 409 220 408 221 407 222 407 222 407 222 407 222 401 216 391 207 381 199 371 192 359 186 349 187 340 188 333 191 328 197 323 203 320 212 320 223H321C321 212 324 203 329 198 333 192 341 189 349 188 359 187 370 192 381 200 391 207 400 216 406 223 400 229 391 238 381 246 370 253 359 259 349 258 341 257 333 254 329 248 324 242 321 234 321 223H320C320 234 323 242 328 249 333 255 340 258 349 259 359 260 371 254 381 246 391 239 400 230 406 223 406 223 407 223 407 223 407 223 407 223 407 223 407 224 407 224 407 224 408 224 409 225 409 226 411 228 414 230 417 234 423 240 430 250 435 261 440 272 444 285 443 299 442 313 437 328 424 343 407 361 390 370 374 373 375 366 375 359 374 353 371 331 358 312 343 300 329 289 299 269 272 253 259 244 246 237 237 231 233 229 229 226 226 225 225 224 224 223 224 223L224 223 224 222ZM373 91C374 85 374 79 373 73 366 71 359 71 353 72 331 75 312 89 301 103 290 117 270 147 254 174 245 187 238 199 232 209 230 213 228 216 226 219 229 217 232 215 237 212 246 207 258 199 272 191 298 174 329 155 343 143 357 132 370 113 373 91ZM373 353C374 359 374 366 373 373 366 374 359 374 353 373 331 370 312 357 301 343 290 329 270 299 254 272 245 259 238 246 232 237 229 233 227 229 226 226 225 226 225 225 225 225 225 225 226 225 226 226 229 227 232 229 237 232 246 238 258 245 272 254 298 270 329 290 343 301 357 312 370 331 373 353ZM222 38H222L222 38C222 38 222 38 222 38ZM200 64C207 54 217 45 223 38 229 45 238 54 245 64 253 74 259 85 258 95 257 104 254 111 248 116 242 121 234 123 223 123 212 123 203 121 198 116 192 111 188 104 187 95 187 85 192 74 200 64ZM222 407H222L222 407C222 407 222 407 222 407ZM200 381C207 391 217 400 223 406 229 400 238 391 245 381 253 370 259 359 258 349 257 341 254 333 248 329 242 324 234 321 223 321 212 321 203 324 198 329 192 333 188 341 187 349 187 359 192 370 200 381ZM407 223V223L407 223C407 223 407 223 407 223L407 223ZM38 223V223L38 223C38 223 38 223 38 223Z" 
+        stroke="#EFEFE9"/>
+      </svg>`
+    );
+    const logoPath = document.querySelector('#logoPath'); 
+    const logoLength = logoPath.getTotalLength();
+    $(logoPath).css('stroke-dasharray', logoLength);
+    $(logoPath).css('stroke-dashoffset', logoLength);
+    setTimeout(() => {
+      logoPath.classList.add('logoPathAnim');
+    }, 1000);
+  })
+
+</script>
+
+<style>
+  .logoPathAnim {
+    animation: dash 4s linear forwards;
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 5000;
+    }
+  }
+</style>

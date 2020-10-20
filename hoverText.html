@@ -1,0 +1,41 @@
+<script>
+    const hoverTextObjects = document.querySelectorAll('[imgfield="tn_img_1602064595928"], [imgfield="tn_img_1602064646231"], [imgfield="tn_img_1602064648183"]'),
+        hoverTextCursor = document.querySelector('[data-elem-id="1602066288503"]'),
+        hoverTexts = [
+            'Енто Егор',
+            'Дас ист Игорь',
+            'Це мы милуемся!'
+        ];
+
+    hoverTextObjects.forEach((obj, i) => {
+        obj.setAttribute('data-text', hoverTexts[i]);
+        obj.classList.add('textHover');
+    });
+
+    $(hoverTextCursor).css({
+        transform: 'translate(-50%, -50%)',
+        opacity: '0',
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        'z-index': '9999',
+        'pointer-events': 'none'
+    });
+
+    $(document).mousemove(function (e) {
+        $(hoverTextCursor).css({
+            "left": e.pageX,
+            "top": e.pageY - $(window).scrollTop()
+        });
+    });
+
+    $(".textHover").mouseenter(function(event) {
+            hoverTextCursor.firstElementChild.innerText = event.target.getAttribute('data-text');
+            hoverTextCursor.style.opacity = '1';
+            document.documentElement.style.cursor= 'none';
+        })
+        .mouseleave(function(event) {
+            hoverTextCursor.style.opacity = '0';
+            document.documentElement.style.cursor= 'auto';
+        });
+</script>
