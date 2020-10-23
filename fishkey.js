@@ -112,7 +112,7 @@ function fullPageHorScroll_init(parameters) {
         //horScrollMenuHeight = (horScrollMenu != undefined) ? $(horScrollMenu).height() : 0,
         horScrollBlockShifts = {};
     
-    if (parameters.menu) {
+    if (parameters.menu != '') {
         const horScrollMenu = document.querySelector(parameters.menu),
             horScrollMenuHeight = $(horScrollMenu).height();
     }
@@ -131,7 +131,7 @@ function fullPageHorScroll_init(parameters) {
             block.style.left = `${i*horScroll_blockWidth}px`;
             horScrollBlockShifts['#'+block.getAttribute('id')] = `${i*horScroll_blockWidth}`;
         });
-        if (parameters.menu) {
+        if (parameters.menu != '') {
             $(horScrollMenu).css({'position': 'fixed', 'width': '100%', 'z-index': '999'});
         }
         $(horScrollContainer).css({'position': 'fixed', 'top': horScrollMenuHeight, 'left': '0'});
