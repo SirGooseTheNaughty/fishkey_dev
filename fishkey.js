@@ -115,6 +115,8 @@ function fullPageHorScroll_init(parameters) {
     if (parameters.menu != '') {
         const horScrollMenu = document.querySelector(parameters.menu),
             horScrollMenuHeight = $(horScrollMenu).height();
+    } else {
+        const horScrollMenuHeight = 0;
     }
 
     if ($(window).width() > horScroll_minWidth) {
