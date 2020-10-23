@@ -96,3 +96,57 @@ function bgNoise_init(parameters) {
     bgNoiser.style.backgroundSize = `${parameters.grain}`;
     bgNoiseBlock.style.height = '0';
 }
+
+/* горизонтальный скролл всей страницы */
+function fullPageHorScroll_init(parameters) {
+    const horScrollBlocks = document.querySelectorAll(parameters.blocks),
+        horScrollMenu = document.querySelector(parameters.menu);
+
+    const horScrollwh = $(window).height(),
+        horScrollww = $(window).width(),
+        horScrollTotalHeight = +(horScrollBlocks.length-1)*horScrollww + horScrollwh,
+        horScrollMenuHeight = $(horScrollMenu).height(),
+        horScrollBlocksShifts = {};
+    let horScrollContainer = {};
+        
+    if ($(window).width() > parameters.minWidth) {
+        $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
+        horScrollContainer = document.querySelector('.horScrollContainer');
+        horScrollBlocks.forEach((e, i) => {
+            horScrollBlocksShifts[e.attributes.id.nodeValue] = i*horScrollww;
+        });
+        $(horScrollMenu).css({'position': 'fixed', 'width': '100%', 'z-index': '999'});
+        $(horScrollContainer).css({'position': 'fixed', 'top': horScrollMenuHeight, 'left': '0'});
+        $(horScrollContainer).wrap('<div class="horScrollStaticContainer"></div>');
+        $('.horScrollStaticContainer').css({
+            'position': 'relative', 
+            'top': horScrollMenuHeight, 
+            'overflow': 'hidden', 
+            'height': `${horScrollTotalHeight}px`
+        });
+        for(let i=0; i<horScrollBlocks.length; i++) {
+            $(horScrollBlocks[i]).css({
+                'position': 'absolute',
+                'width': '100vw',
+                'height': '100vh',
+                'top': '0',
+                'left': i*horScrollww+'px'
+            });
+        }
+        
+        window.addEventListener('scroll', horizontalScroll);
+        
+        $('a').on('click', (e) => {
+            if ($(e.target).attr('href').substring(0,4) == '#rec') {
+                const dn = horScrollBlocksShifts[$(e.target).attr('href').substring(1)];
+                $('html, body').animate({scrollTop: dn}, 400);
+            }
+        });
+    }
+    
+    function horizontalScroll() {
+        const wt = $(window).scrollTop();
+        let horScrollShift = +wt;
+        $(horScrollContainer).css('left', `${-horScrollShift}px`);
+    }
+}
