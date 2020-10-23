@@ -95,25 +95,36 @@ function bgNoise_init(parameters) {
     bgNoiser.style.opacity = parameters.opacity/100;
     bgNoiser.style.backgroundSize = `${parameters.grain}`;
     bgNoiseBlock.style.height = '0';
+    bgNoiseBlock.style.overflow = 'hidden';
 }
 
 /* горизонтальный скролл всей страницы */
 function fullPageHorScroll_init(parameters) {
     const horScrollBlocks = document.querySelectorAll(parameters.blocks),
-        horScrollMenu = document.querySelector(parameters.menu);
-
-    const horScrollwh = $(window).height(),
-        horScrollww = $(window).width(),
-        horScrollTotalHeight = +(horScrollBlocks.length-1)*horScrollww + horScrollwh,
-        horScrollMenuHeight = $(horScrollMenu).height(),
-        horScrollBlocksShifts = {};
-    let horScrollContainer = {};
+        horScrollMenu = document.querySelector(parameters.menu),
+        horScroll_minWidth = parameters.minWidth;
+    let horScroll_blockWidth = parameters.blockWidth;
         
-    if ($(window).width() > parameters.minWidth) {
+    horScroll_blockWidth = horScroll_blockWidth ? horScroll_blockWidth : $(window).width();
+    const horScrollwh = $(window).height(),
+        horScrollBlocksNum = horScrollBlocks.length,
+        horScrollTotalHeight = (horScrollBlocksNum-1)*horScroll_blockWidth + horScrollwh,
+        horScrollMenuHeight = $(horScrollMenu).height(),
+        horScrollBlockShifts = {};
+
+    if ($(window).width() > horScroll_minWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
-        horScrollContainer = document.querySelector('.horScrollContainer');
-        horScrollBlocks.forEach((e, i) => {
-            horScrollBlocksShifts[e.attributes.id.nodeValue] = i*horScrollww;
+        const horScrollContainer = document.querySelector('.horScrollContainer');
+
+        $(horScrollBlocks).css({
+            'position': 'absolute',
+            'width': horScroll_blockWidth+'px',
+            'height': '100vh',
+            'top': '0'
+        });
+        horScrollBlocks.forEach((block, i) => {
+            block.style.left = `${i*horScroll_blockWidth}px`;
+            horScrollBlockShifts['#'+block.getAttribute('id')] = `${i*horScroll_blockWidth}`;
         });
         $(horScrollMenu).css({'position': 'fixed', 'width': '100%', 'z-index': '999'});
         $(horScrollContainer).css({'position': 'fixed', 'top': horScrollMenuHeight, 'left': '0'});
@@ -124,29 +135,22 @@ function fullPageHorScroll_init(parameters) {
             'overflow': 'hidden', 
             'height': `${horScrollTotalHeight}px`
         });
-        for(let i=0; i<horScrollBlocks.length; i++) {
-            $(horScrollBlocks[i]).css({
-                'position': 'absolute',
-                'width': '100vw',
-                'height': '100vh',
-                'top': '0',
-                'left': i*horScrollww+'px'
-            });
-        }
-        
+
         window.addEventListener('scroll', horizontalScroll);
-        
+
+        function horizontalScroll() {
+            const wt = $(window).scrollTop();
+            let horScrollShift = +wt;
+            if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
+                horScrollContainer.style.transform = `translate(${-horScrollShift}px, 0)`;
+            }
+        }
+
         $('a').on('click', (e) => {
             if ($(e.target).attr('href').substring(0,4) == '#rec') {
-                const dn = horScrollBlocksShifts[$(e.target).attr('href').substring(1)];
+                const dn = horScrollBlockShifts[$(e.target).attr('href')];
                 $('html, body').animate({scrollTop: dn}, 400);
             }
         });
-    }
-    
-    function horizontalScroll() {
-        const wt = $(window).scrollTop();
-        let horScrollShift = +wt;
-        $(horScrollContainer).css('left', `${-horScrollShift}px`);
-    }
+    } 
 }
