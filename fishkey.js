@@ -101,7 +101,7 @@ function bgNoise_init(parameters) {
 /* горизонтальный скролл всей страницы */
 function fullPageHorScroll_init(parameters) {
     const horScrollBlocks = document.querySelectorAll(parameters.blocks),
-        horScrollMenu = document.querySelector(parameters.menu),
+        //horScrollMenu = document.querySelector(parameters.menu),
         horScroll_minWidth = parameters.minWidth;
     let horScroll_blockWidth = parameters.blockWidth;
         
@@ -109,9 +109,13 @@ function fullPageHorScroll_init(parameters) {
     const horScrollwh = $(window).height(),
         horScrollBlocksNum = horScrollBlocks.length,
         horScrollTotalHeight = (horScrollBlocksNum-1)*horScroll_blockWidth + horScrollwh,
-        horScrollMenuHeight = (horScrollMenu != undefined) ? $(horScrollMenu).height() : 0,
+        //horScrollMenuHeight = (horScrollMenu != undefined) ? $(horScrollMenu).height() : 0,
         horScrollBlockShifts = {};
     
+    if (parameters.menu) {
+        const horScrollMenu = document.querySelector(parameters.menu),
+            horScrollMenuHeight = $(horScrollMenu).height();
+    }
 
     if ($(window).width() > horScroll_minWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
@@ -127,7 +131,7 @@ function fullPageHorScroll_init(parameters) {
             block.style.left = `${i*horScroll_blockWidth}px`;
             horScrollBlockShifts['#'+block.getAttribute('id')] = `${i*horScroll_blockWidth}`;
         });
-        if (horScrollMenu != undefined) {
+        if (parameters.menu) {
             $(horScrollMenu).css({'position': 'fixed', 'width': '100%', 'z-index': '999'});
         }
         $(horScrollContainer).css({'position': 'fixed', 'top': horScrollMenuHeight, 'left': '0'});
