@@ -136,15 +136,10 @@ function fullPageHorScroll_init(parameters) {
             'height': `${horScrollTotalHeight}px`
         });
 
-        window.addEventListener('scroll', horizontalScroll);
-
-        function horizontalScroll() {
-            const wt = $(window).scrollTop();
-            let horScrollShift = +wt;
-            if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
-                horScrollContainer.style.transform = `translate(${-horScrollShift}px, 0)`;
-            }
-        }
+        //window.addEventListener('scroll', horizontalScroll);
+        window.addEventListener('scroll', () => {
+            horizontalScroll(horScrollBlocksNum, horScroll_blockWidth, horScrollContainer);
+        });
 
         $('a').on('click', (e) => {
             if ($(e.target).attr('href').substring(0,4) == '#rec') {
@@ -152,8 +147,16 @@ function fullPageHorScroll_init(parameters) {
                 $('html, body').animate({scrollTop: dn}, 400);
             }
         });
-    } 
+    }
 }
+function horizontalScroll(horScrollBlocksNum, horScroll_blockWidth, horScrollContainer) {
+    const wt = $(window).scrollTop();
+    let horScrollShift = +wt;
+    if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
+        horScrollContainer.style.transform = `translate(${-horScrollShift}px, 0)`;
+    }
+}
+
 
 /* горизонтальный скролл элементов одного блока */
 function horScrollBlock_init(parameters) {
@@ -176,27 +179,12 @@ function horScrollBlock_init(parameters) {
         horScrollBlock.style.backgroundColor = window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor;
         horScrollContainer.parentElement.style.overflow = 'visible';
 
-        window.addEventListener('scroll', horScrollBlock_handler);
-        
-        return {
-            headerTop,
-            horScrollContainer,
-            header,
-            horScrollBlock,
-            totalShift
-        };
-    } else {
-        return null;
+        window.addEventListener('scroll', () => {
+            horScrollBlock_handler(headerTop, horScrollContainer, header, horScrollBlock, totalShift);
+        });
     }
 }
-
-function horScrollBlock_handler() {
-    const headerTop = horScrollBlock_parameters.headerTop,
-        horScrollContainer = horScrollBlock_parameters.horScrollContainer,
-        header = horScrollBlock_parameters.header,
-        horScrollBlock = horScrollBlock_parameters.horScrollBlock,
-        totalShift = horScrollBlock_parameters.totalShift;
-
+function horScrollBlock_handler(headerTop, horScrollContainer, header, horScrollBlock, totalShift) {
     const wt = $(window).scrollTop(),
         horScrollShift = +wt - headerTop;
     if (wt < headerTop) {
