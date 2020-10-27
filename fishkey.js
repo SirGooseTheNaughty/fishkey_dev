@@ -154,3 +154,71 @@ function fullPageHorScroll_init(parameters) {
         });
     } 
 }
+
+/* горизонтальный скролл элементов одного блока */
+function horScrollBlock_init(parameters) {
+    const horScrollBlock = document.querySelector(parameters.block),
+        header = document.querySelector(parameters.header),
+        minWidth = parameters.minWidth,
+        totalShift = parameters.totalShift,
+        blockHeight = parameters.blockHeight;
+    
+    if ($(window).width() > minWidth) {
+        const headerTop = $(header).offset().top;
+        const children = $(horScrollBlock.querySelector('.t396__artboard')).children();
+
+        $(children).wrapAll('<div class="horScrollContainer"></div>');
+        const horScrollContainer = document.querySelector('.horScrollContainer');
+
+        $(horScrollContainer).css({top: '0', left: '0',});
+        $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'});
+        horScrollBlock.style.height = totalShift + blockHeight + 'px';
+        horScrollBlock.style.backgroundColor = window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor;
+        horScrollContainer.parentElement.style.overflow = 'visible';
+
+        window.addEventListener('scroll', horScrollBlock_handler);
+        
+        return {
+            headerTop,
+            horScrollContainer,
+            header,
+            horScrollBlock,
+            totalShift
+        };
+    } else {
+        return null;
+    }
+}
+
+function horScrollBlock_handler() {
+    const headerTop = horScrollBlock_parameters.headerTop,
+        horScrollContainer = horScrollBlock_parameters.horScrollContainer,
+        header = horScrollBlock_parameters.header,
+        horScrollBlock = horScrollBlock_parameters.horScrollBlock,
+        totalShift = horScrollBlock_parameters.totalShift;
+
+    const wt = $(window).scrollTop(),
+        horScrollShift = +wt - headerTop;
+    if (wt < headerTop) {
+        $(horScrollContainer).css({
+            'position': 'relative',
+            transform: 'translate(0)'
+        });
+        $(header).css({'position': 'relative'});
+    } else if (horScrollShift < totalShift) {
+        $(horScrollContainer).css({
+            'position': 'fixed',
+            transform: `translate(-${horScrollShift}px, ${$(header).height()}px)`
+        });
+        $(header).css({position: 'fixed', transform: 'translate(0)'});
+        horScrollBlock.style.paddingBottom = `${$(header).height()}px`;
+    } else {
+        $(horScrollContainer).css({
+            'position': 'relative',
+            'padding-bottom': '0',
+            transform: `translate(-${totalShift}px, ${totalShift}px)`
+        });
+        $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
+        horScrollBlock.style.paddingBottom = '0';
+    }
+}

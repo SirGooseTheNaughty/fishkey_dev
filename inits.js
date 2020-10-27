@@ -38,7 +38,14 @@ fullPageHorScroll_init({
 })
 
 
-
+горизонтальный скролл элементов в блоке
+const horScrollBlock_parameters = horScrollBlock_init({
+    block: '#rec123',           // id блока
+    header: '#rec456',          // id заголовка
+    minWidth: 1200,             // минимальная ширина экрана для анимации
+    totalShift: 1800,           // максимальное смещение блоков
+    blockHeight: 530            // высота блока со скроллом
+});
 
 
 
