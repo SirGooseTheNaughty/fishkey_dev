@@ -136,7 +136,6 @@ function fullPageHorScroll_init(parameters) {
             'height': `${horScrollTotalHeight}px`
         });
 
-        //window.addEventListener('scroll', horizontalScroll);
         window.addEventListener('scroll', () => {
             horizontalScroll(horScrollBlocksNum, horScroll_blockWidth, horScrollContainer);
         });
@@ -208,5 +207,127 @@ function horScrollBlock_handler(headerTop, horScrollContainer, header, horScroll
         });
         $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
         horScrollBlock.style.paddingBottom = '0';
+    }
+}
+
+
+/* появление текста */ // ДОДЕЛАТЬ
+function textApp_init(parameters) {
+    const txtAppConts = document.querySelectorAll(parameters.selectors),   // появляющийся текст
+        txtApp_MinWidth = parameters.minWidth,             // минимальная ширина экрана для анимации
+        txtApp_AnimSpeed = parameters.animSpeed,             // скорость появления слов (в миллимекундах)
+        txtApp_WordSpeed = parameters.wordSpeed,              // задержка между словами (в миллимекундах)
+        txtApp_divider = parameters.divider,            // 'symbol' для появления по символу, 'word' по слову, 'phrase' по предложению (через точку), 'line' по строке (через ;;)
+        txtAppWordConts = {};
+
+    if ($(window).width() > txtApp_MinWidth) {
+        txtAppConts.forEach((txtAppCont, contNum) => {
+            txtAppCont = txtAppCont.firstElementChild;
+            const txtApp = txtAppCont.textContent;
+            let txtAppWords = [];
+            if (txtApp_divider == 'word') {
+                txtAppWords = txtApp.split(' ');
+                txtAppCont.innerHTML = '';
+                txtAppWords.forEach((word, i) => {
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'>
+                                                <span class='txtAppWordCont${contNum}'>${word} </span>
+                                            </p>`;
+                });
+            } else if (txtApp_divider == 'phrase') {
+                txtAppWords = txtApp.split('. ');
+                txtAppCont.innerHTML = '';
+                txtAppWords.forEach((word, i) => {
+                    if (i == txtAppWords.length - 1) {
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: 1rem'>
+                                                    <span class='txtAppWordCont${contNum}'>${word} </span>
+                                                </p>`;
+                    } else {
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'>
+                                                    <span class='txtAppWordCont${contNum}'>${word}.</span>
+                                                </p>`;
+                    }
+                });
+            } else if (txtApp_divider == 'line') {
+                txtAppWords = txtApp.split(';;');
+                txtAppCont.innerHTML = '';
+                txtAppWords.forEach((word, i) => {
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'>
+                                                <span class='txtAppWordCont${contNum}'>${word} </span>
+                                            </p>`;
+                });
+            } else {
+                txtAppWords = txtApp.split('');
+                txtAppCont.innerHTML = '';
+                txtAppWords.forEach((word, i) => {
+                    if (word == ' ') {
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: 1rem'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                    } else {
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block;'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                    }
+                });
+            }
+
+            txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}`);
+
+            txtAppCont.style.paddingBottom = '0.15em';
+            $(txtAppWordConts[contNum]).css({
+                position: 'relative',
+                top: '1.5em',
+            }); 
+        });
+    }
+
+    function txtAppear(contNum) {
+        let i = 0;
+        const txtApp_interval = setInterval(() => {
+            if (!txtAppWordConts[contNum][i]) {
+                clearInterval(txtApp_interval);
+            }
+            else {
+                txtAppWordConts[contNum][i].style.transition = `${txtApp_AnimSpeed/1000}s ease`;
+                txtAppWordConts[contNum][i].style.top = '0';
+            }
+            i++;
+        }, txtApp_WordSpeed);
+    }
+}
+
+
+/* пишущая машинка */
+function typeWriter_init(parameters) {
+    const tw_TextElem = document.querySelector(parameters.selector),
+        tw_totalSpeed = parameters.totalSpeed,
+        tw_TimeOffset = parameters.timeOffset,
+        tw_MinWidth = parameters.minWidth,
+        tw_Text = tw_TextElem.innerText.split("");
+
+    let tw_isAnimated = false;
+    if ($(window).width() > tw_MinWidth) {
+        tw_TextElem.innerText = '';
+        tw_isAnimated = true;
+    }
+    return {
+        tw_totalSpeed,
+        tw_Text,
+        tw_TextElem,
+        tw_isAnimated
+    };
+}
+
+function tw_write(params) {
+    const speed = params.tw_totalSpeed / params.tw_Text.length;
+    const tw_interval = setInterval(function() {
+        if(!params.tw_Text[0]){
+                return clearInterval(tw_interval);
+        }
+        params.tw_TextElem.innerHTML += params.tw_Text.shift();
+    }, speed);
+    return false;
+}
+
+function tw_startWriting(params) {
+    if (params.tw_isAnimated) {
+        tw_write(params);
+        params.tw_isAnimated = false;
     }
 }
