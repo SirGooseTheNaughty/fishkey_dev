@@ -15,12 +15,11 @@
             </svg>`
         ];
         
-    const logoPaths = vectorDraw_init(vd_forSVG, vd_svgs);  // инициализация
+    const vectorDraw = vectorDraw_init(vd_forSVG, vd_svgs);  // инициализация
 </script>
 
-setTimeout(() => {
-    vectorDraw(logoPaths, 0);   // вместо цифры - номер появляющегося вектора
-}, 1500);
+вызывается по
+vectorDraw(вектор), где 'вектор' - номер рисующегося вектора с нуля
 
 
 кнопка в кружок 
@@ -62,21 +61,86 @@ setTimeout(() => {
 </script>
 
 
+горизонтальный скролл нескольких блоков
+<script>
+    horScroll_init({
+        selectors: '#rec123, #rec456, ...,      // id блоков
+        minWidth: 980                           // минимальная ширина экрана для анимации
+    });
+</script>
+
+
+появление заголовков
+<script>
+    const txtAppear = textApp_init({
+        selectors: '.tn-elem__123, .tn-elem__456, ...',     // селекторы заголовков
+        minWidth: 640,                                      // минимальная ширина экрана для анимации
+        animSpeed: 400,                                     // скорость появления всего заголовка
+        wordSpeed: 50,                                      // задержка между словами / символами / ...
+        divider: 'word'                                     // разделитель: 'symbol' для появления по символу, 'word' по слову,  
+    })                                                      // 'phrase' по предложению (через точку), 'line' по строке (через ;;)
+</script>
+
+вызывается по
+txtAppear(заголовок), где 'заголовок' - номер появляющегося заголовка с нуля
+
+
 пишущая машинка
-const tw_params = typeWriter_init({
-    selector: '[field="tn_text_1603118393520"]',    // селектор
-    totalSpeed: '4000',                             // время появления всего текста
-    minWidth: '1200',                               // минимальная ширина экрана для анимации
-});
+<script>
+    const tw_startWriting = typeWriter_init({
+        selector: '[field="tn_text_1470210011265"]',    // селектор
+        totalSpeed: '4000',                             // время появления всего текста
+        minWidth: '1200',                               // минимальная ширина экрана для анимации
+    });
+</script>
 
-document.addEventListener('scroll', () => {
-    if ($(window).scrollTop() + $(window).height() > $('#rec240809256').offset().top) {
-        tw_startWriting(tw_params);
-    }
-})
-
+вызывается по
+tw_startWriting()
 
 
+шрифт италиком
+<script>
+    italicLinks_init('selector')    // блок, в котором будут меняться ссылки (оставить пустым для всеей страницы)
+</script>
+
+
+прилипание элементов
+<script>
+    parallaxInit({
+        selector: '#rec123 img',        // любой селектор прилипающих элементов
+        minWidth: 1200                  // минимальная ширина экрана для анимации
+    })
+</script>
+
+
+односторонняя кнопка
+<script>
+    oneSideButton_init({
+        selectors: '[data-elem-id="1599820091591"], [data-elem-id="1602152450564"]',    // кнопки (второй уровень)
+        firstColor: 'red',              // основной цвет фона
+        secondColor: 'blue',            // второй цвет фона
+        whereTo: 'left',                // направление смены цвета
+        firstTextColor: 'blue',         // основной цвет текста
+        secondTextColor: 'red',         // второй цвет текста
+        animTime: 400,                  // время анимации (в миллисекундах)
+        minWidth: 1200                  // минимальная ширина экрана для анимации
+    });
+</script>
+
+
+двухсторонняя кнопка
+<script>
+    oneSideButton_init({
+        selectors: '[data-elem-id="1599820096839"]',    // кнопки (второй уровень)
+        firstColor: 'red',              // основной цвет фона
+        secondColor: 'blue',            // второй цвет фона
+        whereTo: 'left',                // направление смены цвета
+        firstTextColor: 'blue',         // основной цвет текста
+        secondTextColor: 'red',         // второй цвет текста
+        animTime: 400,                  // время анимации (в миллисекундах)
+        minWidth: 1200                  // минимальная ширина экрана для анимации
+    });
+</script>
 
 
 

@@ -1,5 +1,8 @@
 /* вырисовка вектора */
 function vectorDraw_init(vd_SelectorsForSVG, vd_svgs) {
+    function vectorDraw(vector) {
+        logoPaths[vector].classList.add('draw-svg');
+    }
     const vd_forSVG = document.querySelectorAll(vd_SelectorsForSVG);
     vd_forSVG.forEach((space, i) => {
         $(space).html(vd_svgs[i]);
@@ -21,11 +24,7 @@ function vectorDraw_init(vd_SelectorsForSVG, vd_svgs) {
         });
         space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
     });
-    return logoPaths;
-}
-
-function vectorDraw(logoPaths, vector) {
-    logoPaths[vector].classList.add('draw-svg');
+    return vectorDraw;
 }
 
 /* кнопка вжух в кружок */
@@ -211,7 +210,67 @@ function horScrollBlock_handler(headerTop, horScrollContainer, header, horScroll
 }
 
 
-/* появление текста */ // ДОДЕЛАТЬ
+/* ----- ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ----- */
+function horScroll_init(params) {
+    const horScrollBlocks = document.querySelectorAll(params.selectors),
+        horScrollMinWidth = params.minWidth,
+
+        horScrollwh = $(window).height(),
+        horScrollww = $(window).width(),
+        horScrollBlocksNum = $(horScrollBlocks).length,
+        horScrollTotalHeight = (horScrollBlocksNum-1)*horScrollww+horScrollwh,
+        horScrollBlockTop = $(horScrollBlocks[0]).offset().top,
+        horScrollStop = (horScrollBlocksNum-1)*horScrollww;
+    let horScrollContainer = '';
+
+    if ($(window).width() > horScrollMinWidth) {
+        $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
+        horScrollContainer = $('.horScrollContainer');  
+        $(horScrollContainer).wrap('<div class="horScrollStaticContainer"></div>');
+        $('.horScrollStaticContainer').css({
+            'background-color': horScrollBlocks[0].querySelector('.t396__artboard').style.backgroundColor, 
+            'position': 'relative', 
+            'overflow': 'hidden', 
+            'height': `${horScrollTotalHeight}px`
+        });
+        $(horScrollContainer).css({'position': 'relative', 'top': '0', 'left': '0'});
+        $(horScrollBlocks).css({
+            'position': 'absolute',
+            'width': '100vw',
+            'height': '100vh',
+            'top': '0'
+        });
+        horScrollBlocks.forEach((block, i) => {
+            block.style.left = i*horScrollww+'px';
+        });
+    
+        document.addEventListener('scroll', horizontalScroll);
+    }
+
+    function horizontalScroll() {
+        const wt = $(window).scrollTop();
+        let horScrollShift = +wt - horScrollBlockTop;
+        if (horScrollShift < 0) {
+            $(horScrollContainer).css({
+                position: 'relative',
+                transform: 'translate(0)'
+            });
+        } else if (horScrollShift < horScrollStop) {
+            $(horScrollContainer).css({
+                position: 'fixed',
+                transform: `translate(${-horScrollShift}px, 0)`
+            });
+        } else {
+            $(horScrollContainer).css({
+                position: 'relative',
+                transform: `translate(${-horScrollStop}px, ${horScrollStop}px)`
+            });
+        }
+    }
+}
+
+
+/* появление текста */
 function textApp_init(parameters) {
     const txtAppConts = document.querySelectorAll(parameters.selectors),   // появляющийся текст
         txtApp_MinWidth = parameters.minWidth,             // минимальная ширина экрана для анимации
@@ -219,6 +278,20 @@ function textApp_init(parameters) {
         txtApp_WordSpeed = parameters.wordSpeed,              // задержка между словами (в миллимекундах)
         txtApp_divider = parameters.divider,            // 'symbol' для появления по символу, 'word' по слову, 'phrase' по предложению (через точку), 'line' по строке (через ;;)
         txtAppWordConts = {};
+
+    function txtAppear(contNum) {
+        let i = 0;
+        const txtApp_interval = setInterval(() => {
+            if (!txtAppWordConts[contNum][i]) {
+                clearInterval(txtApp_interval);
+            }
+            else {
+                txtAppWordConts[contNum][i].style.transition = `${txtApp_AnimSpeed/1000}s ease`;
+                txtAppWordConts[contNum][i].style.top = '0';
+            }
+            i++;
+        }, txtApp_WordSpeed);
+    }
 
     if ($(window).width() > txtApp_MinWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
@@ -275,29 +348,33 @@ function textApp_init(parameters) {
                 top: '1.5em',
             }); 
         });
-    }
-
-    function txtAppear(contNum) {
-        let i = 0;
-        const txtApp_interval = setInterval(() => {
-            if (!txtAppWordConts[contNum][i]) {
-                clearInterval(txtApp_interval);
-            }
-            else {
-                txtAppWordConts[contNum][i].style.transition = `${txtApp_AnimSpeed/1000}s ease`;
-                txtAppWordConts[contNum][i].style.top = '0';
-            }
-            i++;
-        }, txtApp_WordSpeed);
+        return txtAppear;
+    } else {
+        return null;
     }
 }
 
 
 /* пишущая машинка */
 function typeWriter_init(parameters) {
+    function tw_write() {
+        const speed = tw_totalSpeed / tw_Text.length;
+        const tw_interval = setInterval(function() {
+            if(!tw_Text[0]){
+                    return clearInterval(tw_interval);
+            }
+            tw_TextElem.innerHTML += tw_Text.shift();
+        }, speed);
+        return false;
+    }
+    function tw_startWriting() {
+        if (tw_isAnimated) {
+            tw_write();
+            tw_isAnimated = false;
+        }
+    }
     const tw_TextElem = document.querySelector(parameters.selector),
         tw_totalSpeed = parameters.totalSpeed,
-        tw_TimeOffset = parameters.timeOffset,
         tw_MinWidth = parameters.minWidth,
         tw_Text = tw_TextElem.innerText.split("");
 
@@ -306,28 +383,242 @@ function typeWriter_init(parameters) {
         tw_TextElem.innerText = '';
         tw_isAnimated = true;
     }
-    return {
-        tw_totalSpeed,
-        tw_Text,
-        tw_TextElem,
-        tw_isAnimated
-    };
+    return tw_startWriting;
 }
 
-function tw_write(params) {
-    const speed = params.tw_totalSpeed / params.tw_Text.length;
-    const tw_interval = setInterval(function() {
-        if(!params.tw_Text[0]){
-                return clearInterval(tw_interval);
-        }
-        params.tw_TextElem.innerHTML += params.tw_Text.shift();
-    }, speed);
-    return false;
-}
 
-function tw_startWriting(params) {
-    if (params.tw_isAnimated) {
-        tw_write(params);
-        params.tw_isAnimated = false;
+/* ссылки италиком */
+function italicLinks_init(selector = '') {
+    if ($(window).width() > 1200) {
+        const it_links = document.querySelectorAll(`${selector} [href ^= "#rec"], ${selector} [href ^= "http"]`);
+        $(it_links).addClass('it-links');
     }
 }
+
+
+/* прилипание картинок */
+function parallaxInit(params) {
+    function listener(e) {
+        const coordinatesDiff = {
+            x: (e.clientX - parallaxRectCenter.x)/4,
+            y: (e.clientY - parallaxRectCenter.y)/4
+        };
+        parallaxTarget.style.transform = `translate(${coordinatesDiff.x}px, ${coordinatesDiff.y}px)`;
+    }
+
+    const parallaxTargets = document.querySelectorAll(params.selector),
+        parallaxMinScreenWidth = params.minWidth;
+
+    let parallaxTarget,
+        parallaxRect = {},
+        parallaxRectCenter = {x: 0, y: 0};
+
+    if (document.documentElement.clientWidth > parallaxMinScreenWidth) {
+        $(parallaxTargets).addClass('parallax');
+        $(parallaxTargets).css('transition', '0.4s ease-out');
+        $(parallaxTargets).on('mouseenter', function () {
+            parallaxTarget = this;
+            parallaxRect = parallaxTarget.getBoundingClientRect();
+            parallaxRectCenter = {
+                x: parallaxRect.x + parallaxRect.width/2,
+                y: parallaxRect.y + parallaxRect.height/2
+            };
+            $(this).attr('parallax', true);
+            document.addEventListener('mousemove', listener);
+        })
+        .on('mouseleave', function () {
+            document.removeEventListener('mousemove', listener);
+            $(this).attr('parallax', false);
+            parallaxTarget.style.transform = 'translate(0)';
+        });
+    }
+}
+
+
+/* односторонняя кнопка */
+function oneSideButton_init(params) {
+    const targetOneSideButtonsPars = document.querySelectorAll(params.selectors),  // кнопки (второй уровень)
+        oneSideButtonStyle = {
+            firstColor: params.firstColor,			    // код первого цвета
+            secondColor: params.secondColor,		    // код второго цвета
+            whereTo: params.whereTo,                // направление смещения: right / left / top / bottom
+            firstTextColor: params.firstTextColor,         // код первого цвета текста
+            secondTextColor: params.secondTextColor,         // код второго цвета текста
+            animTime: params.animTime                  // время анимации (в миллисекундах)
+        },
+        buttonBackgroundMinWidth = params.minWidth;    // минимальная ширина экрана для анимации
+
+    let animTimeout = '';
+    function changeOneSideButton(firstColor, secondColor, button) {
+        button.setAttribute('isAnimEnded', false);
+        $(button).css({
+            "transition": `${oneSideButtonStyle.animTime/1000}s ease`,
+            "background-position": oneSideButtonStyle.secondPosition
+        });
+        animTimeout = setTimeout(function(){
+            $(button).css({
+                'transition': 'none',
+                'background': `linear-gradient(${oneSideButtonStyle.whereTo}, ${secondColor} 50%, ${firstColor} 50%)`,
+                'background-position': oneSideButtonStyle.firstPosition,
+                'background-size': oneSideButtonStyle.backgroundSize
+            });
+            button.setAttribute('isAnimEnded', true);
+        }, oneSideButtonStyle.animTime);
+    }
+
+    if ($(window).width() > buttonBackgroundMinWidth) {
+        const targetButtons = [];
+        targetOneSideButtonsPars.forEach((button, i) => {
+            targetButtons[i] = button.firstElementChild;
+        });
+        oneSideButtonStyle.backgroundSize = (oneSideButtonStyle.whereTo == 'left' || oneSideButtonStyle.whereTo == 'right') ? '200% 100%' : '100% 200%';
+        if (oneSideButtonStyle.whereTo == 'left') {
+            oneSideButtonStyle.firstPosition = 'left bottom';
+            oneSideButtonStyle.secondPosition = 'right bottom';
+        } else if (oneSideButtonStyle.whereTo == 'right') {
+            oneSideButtonStyle.firstPosition = 'right bottom';
+            oneSideButtonStyle.secondPosition = 'left bottom';
+        } else if (oneSideButtonStyle.whereTo == 'top') {
+            oneSideButtonStyle.firstPosition = 'left top';
+            oneSideButtonStyle.secondPosition = 'left bottom';
+        } else if (oneSideButtonStyle.whereTo == 'bottom') {
+            oneSideButtonStyle.firstPosition = 'left bottom';
+            oneSideButtonStyle.secondPosition = 'left top';
+        }  
+        oneSideButtonStyle.whereTo = 'to ' + oneSideButtonStyle.whereTo;  
+        $(targetButtons).css({
+            'background': `linear-gradient(${oneSideButtonStyle.whereTo}, ${oneSideButtonStyle.secondColor} 50%, ${oneSideButtonStyle.firstColor} 50%)`,
+            'background-position': oneSideButtonStyle.firstPosition,
+            'background-size': oneSideButtonStyle.backgroundSize,
+            'color': oneSideButtonStyle.firstTextColor
+        });
+
+        
+
+        $(targetButtons).attr('isAnimEnded', true);
+        
+        $(targetButtons).on('mouseenter', function() {
+                if (this.getAttribute('isAnimEnded') == 'true') {
+                    changeOneSideButton(oneSideButtonStyle.secondColor, oneSideButtonStyle.firstColor, this);
+                } else {
+                    clearTimeout(animTimeout);
+                    $(this).css({"background-position": oneSideButtonStyle.firstPosition});
+                    this.setAttribute('isAnimEnded', true);
+                }
+                $(this).css('color', oneSideButtonStyle.secondTextColor);
+            })
+            .on('mouseleave', function() {
+                if (this.getAttribute('isAnimEnded') == 'true') {
+                    changeOneSideButton(oneSideButtonStyle.firstColor, oneSideButtonStyle.secondColor, this);
+                } else {
+                    clearTimeout(animTimeout);
+                    $(this).css({"background-position": oneSideButtonStyle.firstPosition});
+                    this.setAttribute('isAnimEnded', true);
+                }
+                $(this).css('color', oneSideButtonStyle.firstTextColor);
+            });
+    }
+}
+
+
+/* двухсторонняя кнопка */
+function twoSideButton_init(params) {
+    const targetTwoSideButtonsPar = document.querySelectorAll(params.selectors),  // кнопки
+        twoSideButtonStyle = {
+            firstColor: params.firstColor,			    // код первого цвета
+            secondColor: params.secondColor,		    // код второго цвета
+            whereTo: params.whereTo,                // направление смещения: right / left / top / bottom
+            firstTextColor: params.firstTextColor,
+            secondTextColor: params.secondTextColor,
+            animTime: params.animTime
+        },
+        twoSideButtonBackgroundMinWidth = params.minWidth;    // минимальная ширина экрана для анимации
+
+    if ($(window).width() > twoSideButtonBackgroundMinWidth) {
+        const targetTwoSideButtons= [];
+        targetTwoSideButtonsPar.forEach((button, i) => {
+            targetTwoSideButtons[i] = button.firstElementChild;
+        });
+        twoSideButtonStyle.backgroundSize = (twoSideButtonStyle.whereTo == 'left' || twoSideButtonStyle.whereTo == 'right') ? '200% 100%' : '100% 200%';
+        if (twoSideButtonStyle.whereTo == 'left') {
+            twoSideButtonStyle.firstPosition = 'left bottom';
+            twoSideButtonStyle.secondPosition = 'right bottom';
+        } else if (twoSideButtonStyle.whereTo == 'right') {
+            twoSideButtonStyle.firstPosition = 'right bottom';
+            twoSideButtonStyle.secondPosition = 'left bottom';
+        } else if (twoSideButtonStyle.whereTo == 'top') {
+            twoSideButtonStyle.firstPosition = 'left top';
+            twoSideButtonStyle.secondPosition = 'left bottom';
+        } else if (twoSideButtonStyle.whereTo == 'bottom') {
+            twoSideButtonStyle.firstPosition = 'left bottom';
+            twoSideButtonStyle.secondPosition = 'left top';
+        }  
+        twoSideButtonStyle.whereTo = 'to ' + twoSideButtonStyle.whereTo;
+
+        $(targetTwoSideButtons).css({
+            'background': `linear-gradient(${twoSideButtonStyle.whereTo}, ${twoSideButtonStyle.secondColor} 50%, ${twoSideButtonStyle.firstColor} 50%)`,
+            'background-position': twoSideButtonStyle.firstPosition,
+            'background-size': twoSideButtonStyle.backgroundSize,
+            'transition': `${twoSideButtonStyle.animTime/1000}s ease`,
+            'color': twoSideButtonStyle.firstTextColor
+        });
+        $(targetTwoSideButtons).hover(function() {
+            $(this).css({
+                "background-position": twoSideButtonStyle.secondPosition,
+                'color': twoSideButtonStyle.secondTextColor
+            });
+        },
+        function() {
+            $(this).css({
+                "background-position": twoSideButtonStyle.firstPosition,
+                'color': twoSideButtonStyle.firstTextColor
+            });
+        });
+    }
+}
+
+
+/* появление фото из угла */ // НЕ РАБОТАЕТ
+function cornerPhoto_init(params) {
+
+}
+
+
+    const cornerPhotos = document.querySelectorAll('[data-elem-id="1599909480763"], [data-elem-id="1599915620519"]');    // imgfield="tn_img_1599909480763"
+
+    $(cornerPhotos).wrap('<div class="photoWrapper"></div>');
+    const cornerPhotoWrappers = document.querySelectorAll('.photoWrapper');
+
+    const tempint = setInterval(() => {
+        if (window.getComputedStyle(cornerPhotos[0]).height != '0px') {
+            clearInterval(tempint);
+            cornerPhotoWrappers.forEach((wrapper, i) => {
+                wrapper.setAttribute('trueWidth', cornerPhotos[i].getAttribute('data-field-width-value'));
+                wrapper.setAttribute('trueHeight', window.getComputedStyle(cornerPhotos[i]).height);
+                $(wrapper).css({'width': '0', 'height': '0', 'overflow': 'hidden', 'transition': '0.4s ease-in'});
+                wrapper.firstElementChild.style.width = wrapper.getAttribute('trueWidth');
+                wrapper.firstElementChild.style.height = wrapper.getAttribute('trueHeight');
+            });
+
+            document.addEventListener('scroll', showOnScroll);
+        }
+    }, 50);
+
+
+    function showOnScroll() {
+        const wt = $(window).scrollTop(),
+            wh = $(window).height();
+
+        for(let i=0; i<cornerPhotoWrappers.length; i++) {
+            const et = $(cornerPhotoWrappers[i]).offset().top;
+            if(wt+wh/2 > et) {
+                $(cornerPhotoWrappers[i]).css({
+                    'width': cornerPhotoWrappers[i].getAttribute('trueWidth'), 
+                    'height': cornerPhotoWrappers[i].getAttribute('trueHeight'), 
+                });
+            } else {
+                $(cornerPhotoWrappers[i]).css({'width': '0', 'height': '0'});
+            }
+        }
+    }
+

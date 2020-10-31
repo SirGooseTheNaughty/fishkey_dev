@@ -7,6 +7,7 @@
         stroke-dashoffset: 0;
     }
 }
+
 /* шум на фоне */
 .bg-noise {
     background-repeat: repeat !important;
@@ -16,4 +17,9 @@
     position: fixed;
     top: 0;
     left: 0;
+}
+
+/* ссылки италиком */
+.it-links:hover {
+    font-style: italic;
 }
