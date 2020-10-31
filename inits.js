@@ -143,7 +143,36 @@ tw_startWriting()
 </script>
 
 
+текст над элементами
+<script>
+    hoverText_init({
+        objects: '[imgfield="tn_img_1602064595928"], ... ',     // селекторы элементов
+        cursor: '[data-elem-id="1602066288503"]',               // селектор текста (нужно создать отдельный текстовый элемент)
+        texts: [                                                // подписи для соответствующих элементов
+            'Енто Егор',
+            'Дас ист Игорь',
+            'Це мы милуемся!'
+            ],
+        isCursorHidden: false,                                  // будет ли исчезать стандартный курсор
+        minWidth: 1200                                          // минимальная ширина экрана для анимации
+    })
+</script>
 
+
+универсальный бургер
+<script>
+    uniBurger_init({
+        burgerBlock: '#rec234988686',                       // id блока с меню
+        burgerTogglersBlock: '#rec234988778',               // id блока с кнопками открытия/закрытия бургера
+        burgerOpen: '[data-elem-id="1601550106518"]',       // кнопка открытия бургера
+        burgerClose: '[data-elem-id="1601550106543"]',      // кнопка закрытия бургера
+        burgerTime: 1,                                      // время появления бургера
+        elementsTime: 0.5,                                  // время появления элементов меню
+        verticalPosition: 'center',                         // положение по вертикали (top / center / bottom)
+        horizontalPosition: 'center',                       // положение по горизонтали (left / center / right)
+        burgerShape: 'circle'                               // форма выплывания (circle / square / rect)
+    });
+</script>
 
 */
 

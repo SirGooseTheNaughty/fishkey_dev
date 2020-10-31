@@ -23,3 +23,40 @@
 .it-links:hover {
     font-style: italic;
 }
+
+/* универсальный бургер */
+.burgerWrapper {
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    right: 0;
+}
+.burgerToggler,
+.burgerBlock {
+    position: fixed;
+    width: 100vw;
+    top: 0;
+    left: 0;
+}
+.burgerToggler {
+    z-index: 99999 !important;
+}
+.burgerBlock {
+    height: 100vh;
+}
+.burgerBlock > div > div{
+    height: 100vh;
+}
+.burgerButton {
+    cursor: pointer;
+}
+.burgerHidden {
+    opacity: 0;
+    z-index: 0 !important;
+    pointer-events: none;
+}
+.burgerShown {
+    opacity: 1;
+    z-index: 9999 !important;
+    pointer-events: auto;
+}
