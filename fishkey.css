@@ -60,3 +60,69 @@
     z-index: 9999 !important;
     pointer-events: auto;
 }
+
+/* кнопка для бургера */
+#nav-icon {
+    width: 50px;
+    height: 40px;
+    position: relative;
+    transition: .5s ease-in-out;
+    cursor: pointer;
+}
+#nav-icon span {
+    position: absolute;
+    height: 4px;
+    width: 100%;
+    background: #BDBDBD;
+    border-radius: 1em;
+    opacity: 1;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+    transform-origin: center center;
+}
+#nav-icon span:nth-child(1) {
+    top: 0%;
+}
+#nav-icon span:nth-child(2) {
+    top: 50%;
+}
+#nav-icon span:nth-child(3) {
+    top: 100%;
+}
+#nav-icon.open {
+    display: grid;
+    place-items: center;
+}
+#nav-icon.open span {
+    top: 50%;
+}
+#nav-icon.open span:nth-child(1) {
+    transform: rotate(45deg);
+}
+#nav-icon.open span:nth-child(2) {
+    transform: scale(0);
+}
+#nav-icon.open span:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
+/* замена курсора */
+.cursor-changed {
+    position: fixed;
+    top: 0;
+    left: -100px;
+    overflow: visible;
+    z-index: 10000000000;
+    pointer-events: none;
+}
+.cursor-active,
+.cursor-disactive {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+}
+
+
+

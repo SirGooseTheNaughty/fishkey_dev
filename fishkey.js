@@ -210,17 +210,18 @@ function horScrollBlock_handler(headerTop, horScrollContainer, header, horScroll
 }
 
 
-/* ----- ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ----- */
+/* горизонтальный скролл нескольких блоков */
 function horScroll_init(params) {
     const horScrollBlocks = document.querySelectorAll(params.selectors),
         horScrollMinWidth = params.minWidth,
+        speedCoeff = params.speedCoeff,
 
         horScrollwh = $(window).height(),
         horScrollww = $(window).width(),
         horScrollBlocksNum = $(horScrollBlocks).length,
-        horScrollTotalHeight = (horScrollBlocksNum-1)*horScrollww+horScrollwh,
+        horScrollTotalHeight = (horScrollBlocksNum-1)*horScrollww/speedCoeff + horScrollwh,
         horScrollBlockTop = $(horScrollBlocks[0]).offset().top,
-        horScrollStop = (horScrollBlocksNum-1)*horScrollww;
+        horScrollStop = (horScrollBlocksNum-1)*horScrollww/speedCoeff;
     let horScrollContainer = '';
 
     if ($(window).width() > horScrollMinWidth) {
@@ -258,13 +259,65 @@ function horScroll_init(params) {
         } else if (horScrollShift < horScrollStop) {
             $(horScrollContainer).css({
                 position: 'fixed',
-                transform: `translate(${-horScrollShift}px, 0)`
+                transform: `translate(${-horScrollShift*speedCoeff}px, 0)`
             });
         } else {
             $(horScrollContainer).css({
                 position: 'relative',
-                transform: `translate(${-horScrollStop}px, ${horScrollStop}px)`
+                transform: `translate(${-horScrollStop*speedCoeff}px, ${horScrollStop}px)`
             });
+        }
+    }
+}
+
+
+/* смена экранов по скроллу */
+function screenChangeOnScroll_init(params) {
+    const pages = document.querySelectorAll(params.blocks);
+    let activePage = 0;
+
+    if ($(window).width() > params.minWidth) {
+        $(pages).css({
+            'position': 'fixed',
+            'width': '100vw',
+            'height': '100vh',
+            'top': '100vh',
+            'left': '0',
+        });
+        pages[0].style.top = '0';
+        pages.forEach(page => {
+            page.style.backgroundColor = window.getComputedStyle(page.querySelector('div').querySelector('div')).backgroundColor;
+            page.style.transition = `top ${params.changeTime}s cubic-bezier(.75,0,.25,1)`;
+        });
+    
+        document.addEventListener('wheel', pageChange);
+    }
+    
+    function pageChange(event) {
+        console.log(event);
+        let delta = event.deltaY;
+        if (delta >= 0) {
+            nextPage(1);
+        } else {
+            nextPage(-1);
+        }
+    }
+
+    function nextPage(direction) {
+        const nexPage = activePage+direction;
+        if(nexPage < pages.length && nexPage >= 0) {
+            document.removeEventListener('wheel', pageChange);
+            pages[nexPage].style.top = '0';
+            
+            if (direction > 0) {
+                pages[activePage].style.top = '-100vh';
+            } else {
+                pages[activePage].style.top = '100vh';
+            }
+            setTimeout(() => {
+                activePage = activePage + direction;
+                document.addEventListener('wheel', pageChange);
+            }, params.changeTime*1000);
         }
     }
 }
@@ -634,9 +687,8 @@ function hoverText_init(params) {
 /* универсальный бургер */
 function uniBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
-        burgerToggler = document.querySelector(params.burgerTogglersBlock),
-        burgerOpen = document.querySelector(params.burgerOpen),
-        burgerClose = document.querySelector(params.burgerClose),
+        triggerBlock = document.querySelector(params.triggerBlock),
+        triggerElem = triggerBlock.querySelector('.tn-elem'),
         burgerTransTime = params.burgerTime,
         burgerElemsTransTime = params.elementsTime,
         startPos = [
@@ -644,13 +696,42 @@ function uniBurger_init(params) {
             params.horizontalPosition
         ],
         burgerShape = params.burgerShape,
-        shownStyle = {'z-index': '9998'},
+        shownStyle = {'z-index': '99'},
         hiddenStyle = {
             'width': '0',
             'height': '0',
             'z-index': '0'
         },
+        triggerLineHeight = params.triggerLineHeight,
+        triggerColor = params.triggerColor,
         burgerLinks = burgerBlock.querySelectorAll('a');
+
+    // инициализация триггера
+    $(triggerBlock).css({
+        position: 'fixed',
+        width: '100vw',
+        height: '100vh',
+        top: '0',
+        left: '0',
+        'z-index': '100',
+        'pointer-events': 'none'
+    });
+    triggerElem.innerHTML = `
+        <div id="nav-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+    const burgerButton = triggerBlock.querySelector('#nav-icon');
+    burgerButton.style.width = triggerElem.getAttribute('data-field-width-value') + 'px';
+    burgerButton.style.height = triggerElem.getAttribute('data-field-height-value') + 'px';
+    burgerButton.style.pointerEvents = 'auto';
+    $(burgerButton).children().css({
+        height: triggerLineHeight,
+        'background-color': triggerColor
+    });
+        
 
     $(burgerBlock).wrap('<div class="burgerWrapper"></div>');
     const burgerWrapper = document.querySelector('.burgerWrapper');
@@ -735,9 +816,6 @@ function uniBurger_init(params) {
         const burgerBGColor = $(burgerBlock).children('div').children('div').css('background-color');
         $(burgerBlock).children('div').children('div').css('background-color', 'none');
         burgerBlock.classList.add('burgerBlock', 'burgerHidden');
-        burgerToggler.classList.add('burgerToggler');
-        burgerOpen.classList.add('burgerShown', 'burgerButton');
-        burgerClose.classList.add('burgerHidden', 'burgerButton');
         
         burgerReshape();
 
@@ -755,10 +833,8 @@ function uniBurger_init(params) {
     $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
 
     function toggleBurger() {
-        burgerOpen.classList.toggle('burgerShown');
-        burgerOpen.classList.toggle('burgerHidden');
-        burgerClose.classList.toggle('burgerHidden');
-        burgerClose.classList.toggle('burgerShown');
+        this.classList.toggle('open');
+
         if (burgerBlock.classList.contains('burgerHidden')) {
             document.documentElement.style.overflowY = 'burgerHidden';
             $(burgerWrapper).css(shownStyle);
@@ -777,57 +853,453 @@ function uniBurger_init(params) {
         }
     }
 
-    burgerOpen.addEventListener('click', toggleBurger);
-    burgerClose.addEventListener('click', toggleBurger);
+    burgerButton.addEventListener('click', toggleBurger);
     burgerLinks.forEach(burgerLink => burgerLink.addEventListener('click', toggleBurger));
 
     window.onresize = burgerReshape;
 }
 
 
-
-/* появление фото из угла */ // НЕ РАБОТАЕТ
-function cornerPhoto_init(params) {
-
+/* видео в кружок */
+function videoCircle_init(params) {
+    const videoCircle = document.querySelectorAll(params.videos);
+    videoCircle.forEach((video, i) => {
+        if (params.autoSize) {
+            params.circleDiams[i] = Math.max(video.getAttribute('data-field-height-value'), video.getAttribute('data-field-width-value'));
+        }
+        video.style.clipPath = `circle(${params.circleDiams[i]/2}px at center)`;
+        video.style.pointerEvents = 'none';
+    });
 }
 
 
-    const cornerPhotos = document.querySelectorAll('[data-elem-id="1599909480763"], [data-elem-id="1599915620519"]');    // imgfield="tn_img_1599909480763"
+/* замена курсора */
+function cursorChange_init(params) {
+    const minWidth = params.minWidth,
+        numStates = params.numStates,
+        normalStyle = params.normalStyle,
+        stateStyles = {},
+        stateInners = [];
 
-    $(cornerPhotos).wrap('<div class="photoWrapper"></div>');
-    const cornerPhotoWrappers = document.querySelectorAll('.photoWrapper');
+    if ($(window).width() > minWidth) {
+        cursorChange_add();
+    }
 
-    const tempint = setInterval(() => {
-        if (window.getComputedStyle(cornerPhotos[0]).height != '0px') {
-            clearInterval(tempint);
-            cornerPhotoWrappers.forEach((wrapper, i) => {
-                wrapper.setAttribute('trueWidth', cornerPhotos[i].getAttribute('data-field-width-value'));
-                wrapper.setAttribute('trueHeight', window.getComputedStyle(cornerPhotos[i]).height);
-                $(wrapper).css({'width': '0', 'height': '0', 'overflow': 'hidden', 'transition': '0.4s ease-in'});
-                wrapper.firstElementChild.style.width = wrapper.getAttribute('trueWidth');
-                wrapper.firstElementChild.style.height = wrapper.getAttribute('trueHeight');
-            });
+    function cursorChange_add() {
+        $("body").prepend(`
+            <div class="cursor-changed">
+                <div class="cursor-border"></div>
+                <div class="cursor-normalStyle"></div>
+            </div>`
+        );
+        const cursor = document.querySelector('.cursor-changed'),
+            cursorBorder = cursor.querySelector('.cursor-border'),
+            cursorNormal = cursor.querySelector('.cursor-normalStyle');
+        $(cursor).css({
+            position: 'fixed',
+            left: '-100px',
+            top: '0',
+            overflow: 'visible',
+            'z-index': '10000000000',
+            'pointer-events': 'none'
+        });
+        $(cursorBorder).css(normalStyle);
 
-            document.addEventListener('scroll', showOnScroll);
+        cursorNormal.innerHTML = params.normalInner;
+        for (let i = 0; i < numStates; i++) {
+            stateStyles[i] = params.stateStyles[i];
+            $(cursor).append(`<div class="cursor-state-${i}"></div>`);
+            stateInners[i] = document.querySelector(`.cursor-state-${i}`);
+            stateInners[i].innerHTML = params.stateInners[i];
+            stateInners[i].style.opacity = 0;
         }
-    }, 50);
+
+        $(cursor).children().css({
+            display: 'grid',
+            'place-items': 'center',
+            transform: 'translate(-50%, -50%)',
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            transition: '0.25s ease'
+        });
+
+        document.documentElement.style.cursor = 'none';
+
+        document.addEventListener('mousemove', (event) => {
+            $(cursor).css({
+                left: event.pageX,
+                top: event.pageY - $(window).scrollTop()
+            });
+        });
 
 
+        for (let i = 0; i < numStates; i++) {
+            params.triggers[i].style.cursor = 'none';
+            $(params.triggers[i]).attr('data-makes-cursor-state', i);
+            $(params.triggers[i]).mouseenter(turnCursorStateOn).mouseleave(turnCursorStateOff);
+        }
+
+        function turnCursorStateOn (e) {
+            $(stateInners).css('opacity','0');
+            stateInners.forEach(inner => inner.style.opacity = '0');
+            const state = this.getAttribute('data-makes-cursor-state');
+            $(cursorBorder).css(stateStyles[state]);
+            cursorNormal.style.opacity = 0;
+            stateInners[state].style.opacity = 1;
+        }
+        function turnCursorStateOff (e) {
+            console.log('unhovered ' + this.tagName);
+            stateInners.forEach(inner => inner.style.opacity = '0');
+            $(cursorBorder).css(normalStyle);
+            cursorNormal.style.opacity = 1;
+        }
+    }
+}
+
+
+/* переход на страницы по картинкам */
+function photoLink(params) {
+    if ($(window).width() > params.minWidth) {
+        for (let i = 0; i < params.photos.length; i++) {
+            const photo = document.querySelector(params.photos[i]);
+            photo.setAttribute('data-imgLink', params.links[i]);
+            photo.style.cursor = 'pointer';
+            photo.addEventListener('click', photoLinkOpener);
+        }
+    }
+
+    function photoLinkOpener () {
+        const link = this.getAttribute('data-imgLink');
+        $(this).clone().insertBefore(this);
+        const clone = this.previousSibling;
+        $(clone).css({
+            position: 'fixed',
+            top: this.getBoundingClientRect().top + 'px',
+            left: this.getBoundingClientRect().left + 'px',
+            'z-index': '999999'
+        });
+        setTimeout(() => {
+            $(clone).css({
+                transition: '1s ease',
+                top: '0',
+                left: '0',
+                width: '100vw'
+            });
+            setTimeout(() => {
+                setTimeout(() => clone.remove(), 250);
+                if (params.tab == 'new') {
+                    window.open(link, '_blank');
+                } else {
+                    document.location.href = link;
+                }
+            }, 1000);
+        }, 100);
+    }
+}
+
+
+/* фото за элементами */
+function bgPhotos_init(params) {
+    const LP__links = document.querySelectorAll(params.elements),
+        LP__photos = document.querySelectorAll(params.photos),
+        LP__linkCenters = {};
+    let activeLink = 0;
+
+    LP__links.forEach((LP__link, i) => {
+        const LP__linkRect = LP__link.getBoundingClientRect();
+        LP__linkCenters[i] = {
+            x: LP__linkRect.x + LP__linkRect.width/2,
+            y: LP__linkRect.y + LP__linkRect.height/2
+        };
+    });
+
+    function LP__mousemove(e) {
+        function LP__moveImage() {
+            const LP__photoCenterPosition = {
+                x: LP_mouseCoordinates.x - LP__linkCenters[activeLink].x,
+                y: LP_mouseCoordinates.y - LP__linkCenters[activeLink].y
+            };
+            LP__photos[activeLink].style.transform = `translate(${LP__photoCenterPosition.x}px, ${LP__photoCenterPosition.y}px)`;
+        }
+        const LP_mouseCoordinates = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        window.requestAnimationFrame(LP__moveImage);
+    }
+
+    if ($(window).width() > params.minWidth) {
+        LP__links.forEach((link, i) => {
+            $(link).attr('assocWith', i);
+            link.parentElement.style.zIndex = 5;
+            link.parentElement.style.cursor = 'pointer';
+            const newPadding = (parseInt(window.getComputedStyle(link).width, 10) - parseInt(window.getComputedStyle(link).height, 10))/2 + 'px';
+            link.style.padding = `${newPadding} 0 ${newPadding} 0`;
+            link.style.marginTop = '-' + newPadding;
+            link.style.borderRadius = '50%';
+        });
+        LP__photos.forEach((photo, i) => {
+            $(photo).attr('assocWith', i);
+            $(photo).css({
+                'position': 'absolute',
+                'z-index': '1',
+                'opacity': '0',
+                'transition': 'opacity 0.25s ease, transform 0.1s linear'
+            });
+        });
+    
+        $(LP__links).on('mouseenter', function () {
+            activeLink = $(this).attr('assocWith');
+            LP__photos[activeLink].style.opacity = 1;
+            LP__photos[activeLink].style.transition = 'opacity 0.25s ease, transform 0s';
+            document.addEventListener('mousemove', LP__mousemove);
+        })
+        .on('mouseleave', function () {
+            document.removeEventListener('mousemove', LP__mousemove);
+            LP__photos[activeLink].style.opacity = 0;
+            LP__photos[activeLink].style.transform = `translate(0)`;
+            LP__photos[activeLink].style.transition = 'opacity 0.25s ease, transform 0.25s linear';
+        });
+    }
+}
+
+
+/* след курсора */
+function cursorTrace_init(params) {
+    const mt_numPoints = params.numPoints,
+        mt_overallOpacity = params.opacity,
+        mt_cursorStyle = params.cursorStyle,
+        mt_trailStyle = params.trailStyle,
+        trailCoords = {
+            x: [],
+            y: []
+        };
+
+    let mouseX = 0,
+        mouseY= 0,
+        mt_refreshInt = '',
+        isRefreshing = false,
+        mt_circles = '';
+
+    if ($(window).width() > params.minWidth) {
+        $('body').prepend(
+            `<svg id="mouseTail" xmlns="http://www.w3.org/2000/svg" 
+            width="100vw" height="100vh" viewBox="0 0 100% 100%" 
+            style="position: fixed; top: 0; left: 0; z-index: 99999"></svg>`
+        );
+
+        const svgns = "http://www.w3.org/2000/svg",
+            svg = document.querySelector("#mouseTail");
+
+        let newCircle = {};
+        
+        for(let i = mt_numPoints; i > 0; i--) {
+            newCircle = document.createElementNS(svgns, "circle");
+            newCircle.style.opacity = mt_overallOpacity*(i/mt_numPoints)/Math.sqrt(mt_numPoints);
+            svg.appendChild(newCircle);
+        }
+        svg.style.pointerEvents = 'none';
+        mt_circles = document.querySelectorAll('#mouseTail circle');
+        $(mt_circles).attr(mt_trailStyle);
+        $(mt_circles[0]).attr(mt_cursorStyle);
+
+        for (let i = 0; i < 100; i++) {
+            trailCoords.x[i] = 0;
+            trailCoords.y[i] = 0;
+        }
+        
+        document.addEventListener('mousemove', function(event) {
+            mouseX = event.pageX;
+            mouseY = event.pageY;
+            if (!isRefreshing) {
+                mt_refreshInt = setInterval(trailCoordsRefresh, 1);
+                isRefreshing = true;
+            }
+        });
+    }
+
+    function trailCoordsRefresh() {
+        trailCoords.x.unshift(mouseX);
+        trailCoords.y.unshift(mouseY);
+        trailCoords.x.pop();
+        trailCoords.y.pop();
+
+        mt_circles.forEach((circle, i) => {
+            circle.setAttribute("transform", `matrix(1, 0, 0, 1, ${trailCoords.x[i]}, ${trailCoords.y[i]})`);
+        });
+
+        if ((mt_circles[0].getAttribute("transform") === mt_circles[98].getAttribute("transform"))) {
+            clearInterval(mt_refreshInt);
+            isRefreshing = false;
+        }
+    }
+}
+
+
+/* хвост курсора */
+function cursorTail (params) {
+    const mt_color = params.color,
+        mt_radius = params.radius,
+        mt_numPoints = params.numPoints,
+        mt_overallOpacity = params.opacity;
+
+    let mt_circles = '',
+        mouseX = 0,
+        mouseY= 0;
+
+    if ($(window).width() > params.minWidth) {
+        $('body').prepend(
+            `<svg id="mouseTail" xmlns="http://www.w3.org/2000/svg" 
+            width="100vw" height="100vh" viewBox="0 0 100% 100%" 
+            style="position: fixed; top: 0; left: 0; z-index: 99999"></svg>`
+        );
+
+        const svgns = "http://www.w3.org/2000/svg",
+            svg = document.querySelector("#mouseTail");
+    
+        let newCircle = {};
+        
+        for (let i = mt_numPoints; i > 0; i--) {
+            newCircle = document.createElementNS(svgns, "circle");
+            newCircle.style.opacity = mt_overallOpacity*(i/mt_numPoints)/Math.sqrt(mt_numPoints);
+            svg.appendChild(newCircle);
+        }
+        svg.style.pointerEvents = 'none';
+        mt_circles = document.querySelectorAll('#mouseTail circle');
+        $(mt_circles).attr({
+            transform: 'matrix(1, 0, 0, 1, 0, 0)',
+            r: mt_radius,
+            fill: mt_color
+        });
+    
+        setInterval(trailCoordsRefresh, 1);
+    
+        document.addEventListener('mousemove', function(event) {
+            mouseX = event.pageX;
+            mouseY = event.pageY;
+        });
+    }
+
+    function trailCoordsRefresh() {
+        let circleX = 0, circleY = 0, circleNewX = 0, circleNewY = 0, speed = 10;
+
+        mt_circles.forEach((circle, i) => {
+            circleX = circle.getAttribute('transform').split(', ')[4];
+            circleY = circle.getAttribute('transform').split(', ')[5];
+            circleY = circleY.substr(0, circleY.length-1);
+            circleNewX = +circleX + (mouseX - circleX)/(i + 1);
+            circleNewY = +circleY + (mouseY - circleY)/(i + 1);
+            circle.setAttribute("transform", `matrix(1, 0, 0, 1, ${circleNewX}, ${circleNewY})`);
+        });
+    }
+}
+
+
+/* появление фото из угла */ // НЕ РАБОТАЕТ
+function cornerPhotos_init(params) {
+    const cornerPhotos = document.querySelectorAll(params.photos),
+        transitionTime = params.transitionTime;
+
+    if ($(window).width() > params.minWidth) {
+        cornerPhotos.forEach((photo, i) => {
+            $(photo).append(`
+                <svg style="width: 100%; height: 100%; position: absolute; left: 0;">
+                    <defs>
+                        <clipPath id="mask-${i}" style="transform: scale(0); transition: transform ${transitionTime}s ease">
+                            <rect width="100%" height="100%" fill="#FFFFFF"></rect>
+                        </clipPath>
+                    </defs>
+                </svg>
+            `);
+            photo.style.clipPath = `url(#mask-${i})`;
+            photo.setAttribute('data-clipped', 'true');
+        });
+    
+        document.addEventListener('scroll', showOnScroll);
+    }
+    
     function showOnScroll() {
         const wt = $(window).scrollTop(),
             wh = $(window).height();
 
-        for(let i=0; i<cornerPhotoWrappers.length; i++) {
-            const et = $(cornerPhotoWrappers[i]).offset().top;
-            if(wt+wh/2 > et) {
-                $(cornerPhotoWrappers[i]).css({
-                    'width': cornerPhotoWrappers[i].getAttribute('trueWidth'), 
-                    'height': cornerPhotoWrappers[i].getAttribute('trueHeight'), 
-                });
-            } else {
-                $(cornerPhotoWrappers[i]).css({'width': '0', 'height': '0'});
+        cornerPhotos.forEach((photo, i) => {
+            const et = $(photo).offset().top;
+            if((wt+wh/2 > et) && (photo.getAttribute('data-clipped') == 'true')) {
+                document.querySelector(`#mask-${i}`).style.transform = 'scale(1)';
+                photo.setAttribute('data-clipped', 'false');
             }
+        });
+    }
+}
+
+
+/* перетаскивалка */
+function horDrag_init(params) {
+    const horDragGallery = document.querySelector(params.block),
+        horDragObj = horDragGallery.querySelector('div').firstElementChild;
+
+    let dragStartX = 0,
+        dragObjStartX = 0,
+        horDragMinLeft = 0,
+        horDragMaxLeft = 0;
+
+    if ($(window).width() > params.minWidth) {
+        horDragObj.style.overflow = 'visible';
+        horDragObj.style.cursor = 'pointer';
+        document.body.style.overflowX = 'hidden';
+
+        const elements = horDragObj.querySelectorAll('.tn-elem'),
+            lefts = [],
+            widths = [];
+
+        elements.forEach((el, i) => {
+            lefts[i] = +el.getBoundingClientRect().x;
+            widths[i] = +el.getAttribute('data-field-width-value');
+        });
+
+        const offsetLeft = Math.min.apply(Math, lefts),
+            maxRight = Math.max.apply(Math, lefts),
+            rightCorner = offsetLeft + maxRight + widths[lefts.indexOf(maxRight)];
+
+        $(horDragObj).css({
+            position: 'relative',
+            top: '0',
+            left: '0',
+            width: rightCorner + 'px'
+        });
+
+        horDragMaxLeft = $(window).width() - $(horDragObj).width();
+
+        horDragObj.addEventListener('mousedown', function(event) {
+            dragStartX = event.clientX;
+            document.addEventListener('mousemove', horDrag);
+        });
+        document.addEventListener('mouseup', function(event) {
+            document.removeEventListener('mousemove', horDrag);
+            dragObjStartX = +horDragObj.getAttribute('data-current-x');
+        });
+    }
+
+    function horDrag(event) {
+        const horDragShift = event.clientX - dragStartX,
+            horDragNewPos = dragObjStartX + horDragShift;
+        if (horDragNewPos < horDragMinLeft && horDragNewPos > horDragMaxLeft) {
+            horDragObj.style.transform = `translate(${dragObjStartX + horDragShift}px, 0)`;
+            horDragObj.setAttribute('data-current-x', dragObjStartX + horDragShift);
+        } else if (horDragNewPos > horDragMinLeft) {
+            horDragObj.style.transform = `translate(${horDragMinLeft}px, 0)`;
+            horDragObj.setAttribute('data-current-x', horDragMinLeft);
+        } else if (horDragNewPos < horDragMaxLeft) {
+            horDragObj.style.transform = `translate(${horDragMaxLeft}px, 0)`;
+            horDragObj.setAttribute('data-current-x', horDragMaxLeft);
         }
     }
+}
+
+
+
+
+    
 
 
