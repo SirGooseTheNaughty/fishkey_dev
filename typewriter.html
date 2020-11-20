@@ -1,23 +1,70 @@
 <script>
-    const tw_TextElem = document.querySelector('[field="tn_text_1470210011265"]'),
-        tw_totalSpeed = 4000,
-        tw_TimeOffset = 2000,
-        tw_MinWidth = 1200,    // минимальная ширина экрана для анимации
-        tw_Text = tw_TextElem.innerText.split("");
+    function typeWriter_init(parameters) {
+        const tw_TextElem = document.querySelector(parameters.selector),
+            tw_totalSpeed = parameters.totalSpeed,
+            tw_TimeOffset = parameters.timeOffset,
+            tw_MinWidth = parameters.minWidth,
+            tw_Text = tw_TextElem.innerText.split("");
 
-    function tw_write() {
-        const speed = tw_totalSpeed / tw_Text.length;
+        let tw_isAnimated = false;
+        if ($(window).width() > tw_MinWidth) {
+            tw_TextElem.innerText = '';
+            tw_isAnimated = true;
+        }
+        return {
+            tw_totalSpeed,
+            tw_Text,
+            tw_TextElem,
+            tw_isAnimated
+        }
+    }
+
+    function tw_write(params) {
+        const speed = params.tw_totalSpeed / params.tw_Text.length;
         const tw_interval = setInterval(function() {
-            if(!tw_Text[0]){
+            if(!params.tw_Text[0]){
                     return clearInterval(tw_interval);
             };
-            tw_TextElem.innerHTML += tw_Text.shift();
+            params.tw_TextElem.innerHTML += params.tw_Text.shift();
         }, speed);
         return false;
     };
-    
-    if ($(window).width() > tw_MinWidth) {
-        tw_TextElem.innerText = '';
-        setTimeout(tw_write, tw_TimeOffset);
+
+    function tw_startWriting(params) {
+        if (params.tw_isAnimated) {
+            tw_write(tw_params);
+            params.tw_isAnimated = false;
+        }
     }
+
+    /*
+    const tw_params = typeWriter_init({
+        selector: '[field="tn_text_1603118393520"]',
+        totalSpeed: '4000',
+        minWidth: '1200',
+    });
+
+    document.addEventListener('scroll', scrollWatch);
+
+    function scrollWatch() {
+        if ($(window).scrollTop() + $(window).height() > $('#rec240809256').offset().top) {
+            tw_write(params);
+            document.removeEventListener('scroll', scrollWatch);
+        }
+    }*/
+
+    /*
+    const tw_params = typeWriter_init({
+        selector: '[field="tn_text_1603118393520"]',
+        totalSpeed: '4000',
+        minWidth: '1200',
+    });
+
+    document.addEventListener('scroll', () => {
+        if ($(window).scrollTop() + $(window).height() > $('#rec240809256').offset().top) {
+            tw_startWriting(tw_params);
+        }
+    })
+    */
+
 </script>

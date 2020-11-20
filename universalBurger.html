@@ -7,13 +7,14 @@
         burgerElemsTransTime = 0.5,                                                 // время появления меню
         startPos = [                                                                // положение свернутого меню
             'center',                                                               // top / center / bottom
-            'center'                                                                  // left / center / right
+            'center'                                                                // left / center / right
         ],
         burgerShape = 'circle',
-        shownStyle = {},
+        shownStyle = {'z-index': '9998'},
         hiddenStyle = {
             'width': '0',
-            'height': '0'
+            'height': '0',
+            'z-index': '0'
         },
         burgerLinks = burgerBlock.querySelectorAll('a');
     $(burgerBlock).wrap('<div class="burgerWrapper"></div>');
@@ -22,12 +23,13 @@
     function burgerInit() {
         const burgerBGColor = $(burgerBlock).children('div').children('div').css('background-color');
         $(burgerBlock).children('div').children('div').css('background-color', 'none');
-        burgerBlock.classList.add('burgerBlock', 'hidden');
+        burgerBlock.classList.add('burgerBlock', 'burgerHidden');
         burgerToggler.classList.add('burgerToggler');
-        burgerOpen.classList.add('shown', 'burgerButton');
-        burgerClose.classList.add('hidden', 'burgerButton');
-        const ww = document.documentElement.clientWidth,
-            wh = document.documentElement.clientHeight;
+        burgerOpen.classList.add('burgerShown', 'burgerButton');
+        burgerClose.classList.add('burgerHidden', 'burgerButton');
+        const ww = $(window).width() + 17,
+            wh = $(window).height(),
+            maxDim = Math.max(ww, wh);
 
         switch (burgerShape) {
             case 'rect': 
@@ -50,8 +52,8 @@
                 }
                 break;
             case 'square': 
-                shownStyle.width = '100vw';
-                shownStyle.height = ww;
+                shownStyle.width = maxDim;
+                shownStyle.height = maxDim;
                 if (startPos[0] == 'center') {
                     hiddenStyle.top = '50%';
                     shownStyle.top = (wh - ww)/2 + 'px';
@@ -70,11 +72,9 @@
                 break;
             case 'circle': 
                 $(burgerWrapper).css('border-radius', '50%');
-                let diameter = 1.15*ww;
-                if ((startPos[0] == 'center') && (startPos[1] == 'center')) {
-                    diameter = 1.15*ww;
-                } else {
-                    diameter = 2.3*ww;
+                let diameter = 2*Math.sqrt(ww*ww/4 + wh*wh/4);
+                if ((startPos[0] != 'center') || (startPos[1] != 'center')) {
+                    diameter = 2*Math.sqrt(ww*ww + wh*wh);
                 }
                 if (startPos[0] == 'center') {
                     hiddenStyle.top = '50%';
@@ -117,20 +117,20 @@
     $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
 
     function toggleBurger(e) {
-        burgerOpen.classList.toggle('shown');
-        burgerOpen.classList.toggle('hidden');
-        burgerClose.classList.toggle('hidden');
-        burgerClose.classList.toggle('shown');
-        if (burgerBlock.classList.contains('hidden')) {
-            document.documentElement.style.overflowY = 'hidden';
+        burgerOpen.classList.toggle('burgerShown');
+        burgerOpen.classList.toggle('burgerHidden');
+        burgerClose.classList.toggle('burgerHidden');
+        burgerClose.classList.toggle('burgerShown');
+        if (burgerBlock.classList.contains('burgerHidden')) {
+            document.documentElement.style.overflowY = 'burgerHidden';
             $(burgerWrapper).css(shownStyle);
             setTimeout(() => {
-                burgerBlock.classList.remove('hidden');
-                burgerBlock.classList.add('shown');
+                burgerBlock.classList.remove('burgerHidden');
+                burgerBlock.classList.add('burgerShown');
             }, 1000*burgerTransTime);
         } else {
-            burgerBlock.classList.add('hidden');
-            burgerBlock.classList.remove('shown');
+            burgerBlock.classList.add('burgerHidden');
+            burgerBlock.classList.remove('burgerShown');
             setTimeout(() => {
                 document.documentElement.style.overflowY = 'auto';
                 $(burgerWrapper).css(hiddenStyle);
@@ -172,12 +172,14 @@
     .burgerButton {
         cursor: pointer;
     }
-    .hidden {
+    .burgerHidden {
         opacity: 0;
         z-index: 0 !important;
+        pointer-events: none;
     }
-    .shown {
+    .burgerShown {
         opacity: 1;
         z-index: 9999 !important;
+        pointer-events: auto;
     }
 </style>

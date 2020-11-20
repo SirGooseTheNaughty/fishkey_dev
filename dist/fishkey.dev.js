@@ -87,4 +87,19 @@ function buttonToCircle_init(selector, minWidth) {
       $('.buttonToCircleTxt').css('left', "0");
     });
   }
+<<<<<<< Updated upstream
+=======
+}
+/* шум на фоне */
+
+
+function bgNoise_init(parameters) {
+  var bgNoiseBlock = document.querySelector(parameters.selector),
+      bgNoiser = bgNoiseBlock.querySelector('[data-elem-type="shape"]').querySelector('.tn-atom');
+  parameters.grain = parameters.grain ? parameters.grain + 'px' : 'auto';
+  bgNoiser.classList.add('bg-noise');
+  bgNoiser.style.opacity = parameters.opacity / 100;
+  bgNoiser.style.backgroundSize = "".concat(parameters.grain);
+  bgNoiseBlock.style.height = '0';
+>>>>>>> Stashed changes
 }

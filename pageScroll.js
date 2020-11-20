@@ -12,44 +12,30 @@ function pageChange(event) {
 }
 
 let activePage = 0;
-const pages = $('#rec232182146, #rec232182383, #rec232182463');
-$(pages[0]).css({
+const pages = document.querySelectorAll('#rec246755730, #rec246756036, #rec246756063');
+$(pages).css({
     'position': 'fixed',
     'width': '100vw',
     'height': '100vh',
-    'top': '0',
+    'top': '100vh',
     'left': '0',
-    'z-index': '200',
-    'transition': '0.4 ease-in-out !important'
+    'transition': '0.4s ease-in-out'
 });
-for(let i=1; i<pages.length; i++) {
-    $(pages[i]).css({
-        'position': 'fixed',
-        'width': '80vw',
-        'height': '100vh',
-        'top': '100vh',
-        'left': '0',
-        'z-index': '1',
-        'transition': '0.4 ease-in-out !important'
-    });
-}
+pages[0].style.top = '0';
+pages[1].querySelector('div').style.transition = 'transform 0.1s linear';
 
 function nextPage(direction) {
     const nexPage = activePage+direction;
     if(nexPage < pages.length && nexPage >= 0) {
         document.removeEventListener('wheel', pageChange);
-        $(pages[nexPage]).css({
-            'width': '100vw',
-            'top': '0',
-            'z-index': '200'
-        });
-        $(pages[activePage]).css('z-index', '1');
+        pages[nexPage].style.top = '0';
+        
+        if (direction > 0) {
+            pages[activePage].style.top = '-100vh';
+        } else {
+            pages[activePage].style.top = '100vh';
+        }
         setTimeout(() => {
-            $(pages[activePage]).css({
-                'width': '80vw',
-                'top': '100vh',
-                'z-index': '1'
-            });
             activePage = activePage + direction;
             document.addEventListener('wheel', pageChange);
         }, 400);

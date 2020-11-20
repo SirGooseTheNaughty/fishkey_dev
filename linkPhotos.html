@@ -48,10 +48,12 @@
         LP__photo.style.left = LP__photoCenterPosition.x + 'px';
     }
 
-    setTimeout(() => {
-        LP__getLinksCenters();
-        LP__photos.forEach(LP__centerImage);
-    }, 3000);
+    // setTimeout(() => {
+    //     LP__getLinksCenters();
+    //     LP__photos.forEach(LP__centerImage);
+    // }, 3000);
+
+    LP__getLinksCenters();
     
     let activeLink = 0;
 
@@ -74,4 +76,76 @@
         LP__moveImage(LP__photos[activeLink], LP_mouseCoordinates);
     }
 
+</script>
+
+
+<script>
+    const LP__links = document.querySelectorAll('[data-elem-id="1601629312299"], [data-elem-id="1601629335350"], [data-elem-id="1601629345994"]'),
+        LP__photos = document.querySelectorAll('[data-elem-id="1601629376674"], [data-elem-id="1601629440924"], [data-elem-id="1601629451776"]');
+
+    LP__links.forEach((link, i) => {
+        $(link).attr('assocWith', i);
+        link.parentElement.style.zIndex = 5;
+        link.parentElement.style.cursor = 'pointer';
+        const newPadding = (parseInt(window.getComputedStyle(link).width, 10) - parseInt(window.getComputedStyle(link).height, 10))/2 + 'px';
+        link.style.padding = `${newPadding} 0 ${newPadding} 0`;
+        link.style.marginTop = '-' + newPadding;
+        link.style.borderRadius = '50%';
+    });
+    LP__photos.forEach((photo, i) => {
+        $(photo).attr('assocWith', i);
+        $(photo).css({
+            'position': 'absolute',
+            'z-index': '1',
+            'opacity': '0',
+            'transition': 'opacity 0.25s ease, transform 0.1s linear'
+        });
+    });
+
+    const LP__linkCenters = {};
+    LP__links.forEach((LP__link, i) => {
+        const LP__linkRect = LP__link.getBoundingClientRect();
+        LP__linkCenters[i] = {
+            x: LP__linkRect.x + LP__linkRect.width/2,
+            y: LP__linkRect.y + LP__linkRect.height/2
+        };
+    });
+
+    function LP__moveImage(LP_mouseCoordinates) {
+        const LP__photoCenterPosition = {
+            x: LP_mouseCoordinates.x - LP__linkCenters[activeLink].x,
+            y: LP_mouseCoordinates.y - LP__linkCenters[activeLink].y
+        };
+        LP__photos[activeLink].style.transform = `translate(${LP__photoCenterPosition.x}px, ${LP__photoCenterPosition.y}px)`;
+    }
+
+    function LP__mousemove(e) {
+        function LP__moveImage() {
+            const LP__photoCenterPosition = {
+                x: LP_mouseCoordinates.x - LP__linkCenters[activeLink].x,
+                y: LP_mouseCoordinates.y - LP__linkCenters[activeLink].y
+            };
+            LP__photos[activeLink].style.transform = `translate(${LP__photoCenterPosition.x}px, ${LP__photoCenterPosition.y}px)`;
+        }
+        const LP_mouseCoordinates = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        window.requestAnimationFrame(LP__moveImage);
+    }
+
+    let activeLink = 0;
+
+    $(LP__links).on('mouseenter', function () {
+        activeLink = $(this).attr('assocWith');
+        LP__photos[activeLink].style.opacity = 1;
+        LP__photos[activeLink].style.transition = 'opacity 0.25s ease, transform 0s'
+        document.addEventListener('mousemove', LP__mousemove);
+    })
+    .on('mouseleave', function () {
+        document.removeEventListener('mousemove', LP__mousemove);
+        LP__photos[activeLink].style.opacity = 0;
+        LP__photos[activeLink].style.transform = `translate(0)`;
+        LP__photos[activeLink].style.transition = 'opacity 0.25s ease, transform 0.25s linear'
+    });
 </script>

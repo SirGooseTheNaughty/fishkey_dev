@@ -36,3 +36,60 @@
     }
 
 </script>
+
+
+<script>
+    const horDragGallery = document.querySelector('#rec236537294'),
+        horDragObj = horDragGallery.querySelector('div').firstElementChild;
+
+    horDragObj.style.overflow = 'visible';
+    horDragObj.style.cursor = 'pointer';
+    document.body.style.overflowX = 'hidden';
+
+    const elements = horDragObj.querySelectorAll('.tn-elem'),
+        lefts = [],
+        widths = [];
+
+    elements.forEach((el, i) => {
+        lefts[i] = +el.getBoundingClientRect().x;
+        widths[i] = +el.getAttribute('data-field-width-value');
+    })
+
+    const offsetLeft = Math.min.apply(Math, lefts),
+        maxRight = Math.max.apply(Math, lefts),
+        rightCorner = offsetLeft + maxRight + widths[lefts.indexOf(maxRight)];
+
+    $(horDragObj).css({
+        position: 'relative',
+        top: '0',
+        left: '0',
+        width: rightCorner + 'px'
+    });
+
+    let dragStartX = 0,
+        dragObjStartX = 0;
+    const horDragMinLeft = 0,
+        horDragMaxLeft = $(window).width() - $(horDragObj).width();
+
+    horDragObj.addEventListener('mousedown', function(event) {
+        dragStartX = event.clientX;
+        document.addEventListener('mousemove', horDrag);
+    });
+    document.addEventListener('mouseup', function(event) {
+        document.removeEventListener('mousemove', horDrag);
+        dragObjStartX = parseInt(horDragObj.style.left, 10);
+    });
+
+    function horDrag(event) {
+        console.log(event);
+        const horDragShift = event.clientX - dragStartX,
+            horDragNewPos = dragObjStartX + horDragShift;
+        if (horDragNewPos < horDragMinLeft && horDragNewPos > horDragMaxLeft) {
+            horDragObj.style.left = dragObjStartX + horDragShift + 'px';
+        } else if (horDragNewPos > horDragMinLeft) {
+            horDragObj.style.left = horDragMinLeft + 'px';
+        } else if (horDragNewPos < horDragMaxLeft) {
+            horDragObj.style.left = horDragMaxLeft + 'px';
+        }
+    }
+</script>

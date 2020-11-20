@@ -4,13 +4,21 @@
         * {
             cursor: none !important;
         }
-        .cursor {
+        .cursor-changed {
             position: fixed;
             top: 0;
             left: -100px;
             overflow: visible;
             z-index: 10000000000;
             pointer-events: none;
+        }
+        .cursor-active,
+        .cursor-disactive {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
         }
         .cursor:after,
         .cursor:before {
@@ -42,23 +50,96 @@
             background-image: url('https://revistaelduende.com/wp-content/themes/elduende/img/ojos.gif');
             background-blend-mode: screen;
         }
-        .cursor.hover:after {
-            opacity: 0;
-        }
-        .cursor.hover:before {
-            opacity: 1;
-        }
     }
     /* -------------------------- */
 </style>
 
 <script>
     /* ----- ЗАМЕНА КУРСОРА ----- */
+    function cursorChange_init(params) {
+        const minWidth = params.minWidth,
+            activeStyle = params.activeStyle,
+            disactiveStyle = params.disactiveStyle;
+
+        if ($(window).width() > minWidth) {
+            cursorChange_add();
+        };
+
+        function cursorChange_add() {
+            $("body").prepend(`
+                <div class="cursor-changed">
+                    <div class="cursor-active"></div>
+                    <div class="cursor-disactive"></div>
+                </div>`
+            );
+            const cursor = document.querySelector('.cursor-changed'),
+                cursorActive = document.querySelector('.cursor-active'),
+                cursorDisactive = document.querySelector('.cursor-disactive');
+
+            $(cursorActive).css(activeStyle);
+            $(cursorDisactive).css(disactiveStyle);
+            cursorDisactive.style.opacity = '0';
+
+            if (params.isCursorHiddenEverywhere == 'true') {
+                document.documentElement.style.cursor = 'none';
+            } else if (params.isCursorHiddenOnElements == 'true') {
+                $(params.hoverElements).css('cursor', 'none');
+            }
+
+            document.addEventListener('mousemove', (event) => {
+                $(cursor).css({
+                    left: event.pageX,
+                    top: event.pageY - $(window).scrollTop()
+                });
+            });
+
+            $(params.hoverElements).mouseenter(function () {
+                cursorActive.style.opacity = '0';
+                cursorDisactive.style.opacity = '1';
+            }).mouseleave(function () {
+                cursorActive.style.opacity = '1';
+                cursorDisactive.style.opacity = '0';
+            });
+        }
+    }
     const cc_minWidth = 1200;   // минимальная ширина экрана
 
-    if ($(window).width() > cc_minWidth) {
+    if ($(window).width() > minWidth) {
         cursorChange_init();
     };
+    function cursorChange_init() {
+        $("body").prepend(`
+            <div class="cursor-changed">
+                <div class="cursor-active"></div>
+                <div class="cursor-disactive"></div>
+            </div>`
+        );
+        const cursor = document.querySelector('.cursor-changed'),
+            cursorActive = document.querySelector('.cursor-active'),
+            cursorDisactive = document.querySelector('.cursor-disactive');
+
+        $(cursorActive).css(activeStyle);
+        $(cursorDisactive).css(disactiveStyle);
+
+        document.addEventListener('mousemove', (event) => {
+            $(cursor).css({
+                left: e.pageX,
+                top: e.pageY - $(window).scrollTop()
+            });
+        });
+
+        $(".parallax").mouseenter(function () {
+            cursorActive.style.opacity = '0';
+            cursorDisactive.style.opacity = '1';
+        }).mouseleave(function () {
+            cursorActive.style.opacity = '1';
+            cursorDisactive.style.opacity = '0';
+        });
+    }
+    /* -------------------------- */
+</script>
+
+<script>
     function cursorChange_init() {
         $("body").prepend('<div class="cursor"></div>');
         $(document).mousemove(function (e) {
@@ -74,5 +155,4 @@
             $('.cursor').removeClass('hover');
         });
     }
-    /* -------------------------- */
 </script>
