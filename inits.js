@@ -173,7 +173,7 @@ tw_startWriting()
 <script>
     uniBurger_init({
         burgerBlock: '#rec234988686',                       // id блока с меню
-        triggerBlock: '#rec234988778',                      // id блока с кнопками открытия/закрытия бургера (должен быть с прозрачным фоном)
+        triggerBlock: '#rec234988778',                      // id блока с кнопкой открытия/закрытия бургера (должен быть с прозрачным фоном)
         burgerTime: 1,                                      // время появления бургера
         elementsTime: 0.5,                                  // время появления элементов меню
         verticalPosition: 'center',                         // положение по вертикали (top / center / bottom)
@@ -182,6 +182,20 @@ tw_startWriting()
         triggerLineHeight: 4,                               // толщина линий кнопки бургера
         triggerColor: 'black'                               // цвет кнопки бургера
     });
+</script>
+
+
+вытесняющий бургер
+<script>
+    pushingBurger_init({
+        burgerBlock: '#rec252049977',           // id блока с меню
+        triggerBlock: '#rec252376983',          // id блока с кнопкой открытия/закрытия бургера (должен быть с прозрачным фоном)
+        burgerPosition: 'left',                 // положение меню
+        burgerWidth: 500,                       // ширина меню (для положения слева/справа)
+        triggerLineHeight: 4,                   // толщина линий кнопки бургера
+        triggerColor: 'black',                  // цвет кнопки бургера
+        easeFunction: ''                        // кривая безье анимации появления (можно оставить пустым)
+    })
 </script>
 
 
@@ -359,6 +373,15 @@ tw_startWriting()
 </script>
 
 
+переключение страниц шторкой
+<script>
+    curtainChange_init({
+        selectors: '#rec253401070, #rec253401673, #rec253401517',   // активные блоки
+        easeTime: 0.8,                                              // время переключения (в секундах)
+        minWidth: 1200,                                             // минимальная ширина экрана
+        easeFunction: ''                                            // кривая безье анимации (можно оставить пустым)
+    })
+</script>
 
 
 */

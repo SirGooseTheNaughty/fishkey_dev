@@ -860,6 +860,117 @@ function uniBurger_init(params) {
 }
 
 
+/* вытесняющий бургер */
+function pushingBurger_init(params) {
+    const burgerBlock = document.querySelector(params.burgerBlock),
+        triggerBlock = document.querySelector(params.triggerBlock),
+        { burgerPosition, burgerWidth, triggerLineHeight, triggerColor } = params,
+        triggerElem = triggerBlock.querySelector('.tn-elem'),
+        allBlocks = document.querySelectorAll('[id ^= "rec"]'),
+        burgerLinks = burgerBlock.querySelectorAll('a'),
+        easeTime = 0.8,
+        burgerHeight = burgerBlock.querySelector('div').firstElementChild.getAttribute('data-artboard-height'),
+        easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)';
+
+    let pushingShiftX = 0,
+        pushingShiftY = 0;
+    
+    $(allBlocks).css('transition', `transform ${easeTime}s ${easeFunction}`);
+
+    $(burgerBlock).css({
+        position: 'fixed',
+        'z-index': '99',
+        width: '100vw',
+        'background-color': window.getComputedStyle(burgerBlock.querySelector('.t396__artboard')).backgroundColor
+    });
+
+    switch (burgerPosition) {
+        case 'top':
+            $(burgerBlock).css({
+                width: '100vw',
+                top: `-${burgerHeight}px`,
+                left: '0',
+            });
+            pushingShiftY = burgerHeight;
+            break;
+        case 'bottom':
+            $(burgerBlock).css({
+                width: '100vw',
+                bottom: `${-burgerHeight}px`,
+                left: '0',
+            });
+            pushingShiftY = -burgerHeight;
+            break;
+        case 'left':
+            $(burgerBlock).css({
+                width: burgerWidth + 'px',
+                height: '100vh',
+                top: '0',
+                left: `${-burgerWidth}px`,
+            });
+            pushingShiftX = burgerWidth;
+            break;
+        case 'right':
+            $(burgerBlock).css({
+                width: burgerWidth + 'px',
+                height: '100vh',
+                top: '0',
+                right: `${-burgerWidth}px`,
+            });
+            pushingShiftX = -burgerWidth;
+            break;
+        default:
+            $(burgerBlock).css({
+                width: '100vw',
+                top: `-${burgerHeight}px`,
+                left: '0',
+            });
+            pushingShiftY = burgerHeight;
+            break;
+    }
+
+    // инициализация триггера
+    $(triggerBlock).css({
+        position: 'fixed',
+        width: '100vw',
+        height: '100vh',
+        top: '0',
+        left: '0',
+        'z-index': '100',
+        'pointer-events': 'none'
+    });
+    triggerElem.innerHTML = `
+        <div id="nav-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+    const burgerButton = triggerBlock.querySelector('#nav-icon');
+    burgerButton.style.width = triggerElem.getAttribute('data-field-width-value') + 'px';
+    burgerButton.style.height = triggerElem.getAttribute('data-field-height-value') + 'px';
+    burgerButton.style.pointerEvents = 'auto';
+    $(burgerButton).children().css({
+        height: triggerLineHeight,
+        'background-color': triggerColor
+    });
+    // !!! инициализация триггера
+
+    burgerButton.addEventListener('click', toggleBurger);
+    $(burgerLinks).on('click', toggleBurger);
+
+    function toggleBurger() {
+        this.classList.toggle('open');
+        if (this.classList.contains('open')) {
+            $(allBlocks).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
+            triggerBlock.style.transform = 'translate(0)';
+        } else {
+            $(allBlocks).css('transform', 'translate(0)');
+        }
+    }
+}
+
+
 /* видео в кружок */
 function videoCircle_init(params) {
     const videoCircle = document.querySelectorAll(params.videos);
@@ -1196,7 +1307,7 @@ function cursorTail (params) {
 }
 
 
-/* появление фото из угла */ // НЕ РАБОТАЕТ
+/* появление фото из угла */
 function cornerPhotos_init(params) {
     const cornerPhotos = document.querySelectorAll(params.photos),
         transitionTime = params.transitionTime;
@@ -1296,6 +1407,100 @@ function horDrag_init(params) {
         }
     }
 }
+
+
+/* Переключение страниц шторкой */
+function curtainChange_init(params) {
+    let activePage = 0;
+    const pages = document.querySelectorAll(params.selectors),
+        pagesBGs = [],
+        wh = $(window).height(),
+        ww = $(window).width(),
+        numPages = pages.length,
+        {easeTime} = params,
+        easeFunction = params.easeFunction ? params.easeFunction : 'ease',
+        minWidth = params.minWidth ? params.minWidth : '1200';
+
+
+    if ($(window).width() > minWidth) {
+        pages.forEach((page, i) => pagesBGs[i] = page.querySelector('.t-bgimg'));
+        pagesBGs.forEach(page => page.style.transform = 'scale(1.2)');
+        pagesBGs[0].style.transform = 'scale(1)';
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            $('body').append(`
+                    <svg style="width: 100%; height: 100%">
+                        <defs>
+                            <clipPath id="page-mask">
+                                <rect width="${ww + 17}" height="${wh}" style="transform: scaleY(1); transition: transform ${easeTime}s ${easeFunction}" fill="#FFFFFF"></rect>
+                            </clipPath>
+                        </defs>
+                    </svg>
+                `);
+            pageMask = document.querySelector('#page-mask rect');
+    
+            pages.forEach((page, i) => {
+                $(page).css({
+                    position: 'fixed',
+                    width: '100vw',
+                    height: '100vh',
+                    top: '0',
+                    left: '0',
+                    'z-index': '3',
+                })
+                if (i > 0) {
+                    $(page).css({
+                        'z-index': '1',
+                        'pointer-events': 'none',
+                    })
+                }
+            });
+            
+            document.addEventListener('wheel', pageChange); 
+        });
+    }
+    
+
+    function pageChange(event) {
+        const direction = Math.sign(event.deltaY)*1;
+        const nextPage = activePage + direction;
+        if(nextPage < numPages && nextPage >= 0) {
+            changePage(nextPage);
+        }
+    }
+
+    function changePage(nextPage, animate = true) {
+        document.removeEventListener('wheel', pageChange);
+        pages[nextPage].style.zIndex = '2';
+        pages[nextPage].style.pointerEvents = 'auto';
+
+        pages[activePage].style.clipPath = `url(#page-mask)`;
+    
+        pagesBGs[nextPage].style.transition = `transform ${easeTime}s ease`;
+        pagesBGs[nextPage].style.transform = 'scale(1)';
+    
+        pageMask.style.transition = `transform ${easeTime}s ease`;
+        pageMask.style.transform = 'scaleY(0)';
+
+        setTimeout(() => {
+            pages[activePage].style.zIndex = '1';
+            pages[activePage].style.pointerEvents = 'none';
+            pages[nextPage].style.zIndex = '3';
+
+            pages[activePage].style.clipPath = 'none';
+    
+            pageMask.style.transition = 'none';
+            pageMask.style.transform = 'scaleY(1)';
+    
+            pagesBGs[activePage].style.transition = 'none';
+            pagesBGs[activePage].style.transform = 'scale(1.2)';
+
+            activePage = nextPage;
+            document.addEventListener('wheel', pageChange);
+        }, easeTime*1000);
+    }
+}
+    
 
 
 
