@@ -1,30 +1,62 @@
 /* вырисовка вектора */
-function vectorDraw_init(vd_SelectorsForSVG, vd_svgs) {
-    function vectorDraw(vector) {
-        logoPaths[vector].classList.add('draw-svg');
-    }
-    const vd_forSVG = document.querySelectorAll(vd_SelectorsForSVG);
-    vd_forSVG.forEach((space, i) => {
-        $(space).html(vd_svgs[i]);
-    });
+function vectorDraw_init(params) {
+    let { selectors, svgs, animTime, animFunction, trigger, hoverTriggers, offsets } = params;
     const logoLengths = [], logoPaths = [], desiredWidths = [], coeffs = [];
-    vd_forSVG.forEach((space, i) => {
-        logoPaths[i] = space.querySelector('path');
-        logoLengths[i] = logoPaths[i].getTotalLength();
-        desiredWidths[i] = +space.getAttribute('data-field-width-value');
-        coeffs[i] = desiredWidths[i]/(+space.querySelector('svg').getAttribute('width'));
-        $(logoPaths[i]).css({
-            'stroke-dasharray': logoLengths[i],
-            'stroke-dashoffset': logoLengths[i]
+
+    if ($(window).width() > params.minWidth) {
+        (trigger != 'hover' && trigger !='scroll') ? trigger = 'scroll' : null;
+        animFunction == '' ? animFunction = 'ease' : null;
+        const vd_forSVG = document.querySelectorAll(selectors);
+        vd_forSVG.forEach((svg, i) => isNaN(offsets[i]) ? offsets[i] = 0 : null);
+        vd_forSVG.forEach((space, i) => {
+            $(space).html(svgs[i]);
         });
-        $(space).css({
-            height: desiredWidths[i] + 'px',
-            display: 'grid',
-            'place-items': 'center'
+        vd_forSVG.forEach((space, i) => {
+            logoPaths[i] = space.querySelector('path');
+            logoLengths[i] = logoPaths[i].getTotalLength();
+            desiredWidths[i] = +space.getAttribute('data-field-width-value');
+            coeffs[i] = desiredWidths[i]/(+space.querySelector('svg').getAttribute('width'));
+            $(logoPaths[i]).css({
+                'stroke-dasharray': logoLengths[i],
+                'stroke-dashoffset': logoLengths[i],
+                'animation-duration': animTime + 's',
+                'animation-timing-function': animFunction
+            });
+            $(space).css({
+                height: desiredWidths[i] + 'px',
+                display: 'grid',
+                'place-items': 'center'
+            });
+            space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
         });
-        space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
-    });
-    return vectorDraw;
+        
+        if (trigger == 'hover') {
+            const triggers = [];
+            hoverTriggers.forEach((trigger, i) => triggers[i] = document.querySelector(trigger) );
+            triggers.forEach((trigger, i) => {
+                trigger.setAttribute('data-vectorNum', i);
+                trigger.addEventListener('mouseenter', hoverDraw);
+                trigger.addEventListener('mouseleave', hoverDraw);
+            })
+        } else {
+            scrollDraw();
+            document.addEventListener('scroll', scrollDraw);
+        }
+    }
+
+    function hoverDraw() {
+        const vector = this.getAttribute('data-vectorNum');
+        logoPaths[vector].classList.toggle('draw-svg');
+    }
+
+    function scrollDraw() {
+        const visible = logoPaths.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
+        visible.forEach((isVisible, i) => {
+            if (isVisible) {
+                logoPaths[i].classList.add('draw-svg');
+            }
+        })
+    }
 }
 
 /* кнопка вжух в кружок */
@@ -325,12 +357,9 @@ function screenChangeOnScroll_init(params) {
 
 /* появление текста */
 function textApp_init(parameters) {
-    const txtAppConts = document.querySelectorAll(parameters.selectors),   // появляющийся текст
-        txtApp_MinWidth = parameters.minWidth,             // минимальная ширина экрана для анимации
-        txtApp_AnimSpeed = parameters.animSpeed,             // скорость появления слов (в миллимекундах)
-        txtApp_WordSpeed = parameters.wordSpeed,              // задержка между словами (в миллимекундах)
-        txtApp_divider = parameters.divider,            // 'symbol' для появления по символу, 'word' по слову, 'phrase' по предложению (через точку), 'line' по строке (через ;;)
-        txtAppWordConts = {};
+    const { minWidth, animSpeed, wordSpeed, divider, offsets} = parameters;
+    const txtAppConts = document.querySelectorAll(parameters.selectors);   // появляющийся текст
+    const txtAppWordConts = [];
 
     function txtAppear(contNum) {
         let i = 0;
@@ -339,19 +368,28 @@ function textApp_init(parameters) {
                 clearInterval(txtApp_interval);
             }
             else {
-                txtAppWordConts[contNum][i].style.transition = `${txtApp_AnimSpeed/1000}s ease`;
+                txtAppWordConts[contNum][i].style.transition = `${animSpeed/1000}s ease`;
                 txtAppWordConts[contNum][i].style.top = '0';
             }
             i++;
-        }, txtApp_WordSpeed);
+        }, wordSpeed);
+    }
+    
+    function scrollTrigger() {
+        const appeared = txtAppWordConts.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
+        appeared.forEach((isVisible, i) => {
+            if (isVisible) {
+                txtAppear(i);
+            }
+        })
     }
 
-    if ($(window).width() > txtApp_MinWidth) {
+    if ($(window).width() > minWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
             txtAppCont = txtAppCont.firstElementChild;
             const txtApp = txtAppCont.textContent;
             let txtAppWords = [];
-            if (txtApp_divider == 'word') {
+            if (divider == 'word') {
                 txtAppWords = txtApp.split(' ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
@@ -359,7 +397,7 @@ function textApp_init(parameters) {
                                                 <span class='txtAppWordCont${contNum}'>${word} </span>
                                             </p>`;
                 });
-            } else if (txtApp_divider == 'phrase') {
+            } else if (divider == 'phrase') {
                 txtAppWords = txtApp.split('. ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
@@ -373,7 +411,7 @@ function textApp_init(parameters) {
                                                 </p>`;
                     }
                 });
-            } else if (txtApp_divider == 'line') {
+            } else if (divider == 'line') {
                 txtAppWords = txtApp.split(';;');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
@@ -401,9 +439,11 @@ function textApp_init(parameters) {
                 top: '1.5em',
             }); 
         });
-        return txtAppear;
-    } else {
-        return null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            scrollTrigger();
+            document.addEventListener('scroll', scrollTrigger);
+        })
     }
 }
 
@@ -411,7 +451,7 @@ function textApp_init(parameters) {
 /* пишущая машинка */
 function typeWriter_init(parameters) {
     function tw_write() {
-        const speed = tw_totalSpeed / tw_Text.length;
+        const speed = totalSpeed / tw_Text.length;
         const tw_interval = setInterval(function() {
             if(!tw_Text[0]){
                     return clearInterval(tw_interval);
@@ -420,23 +460,61 @@ function typeWriter_init(parameters) {
         }, speed);
         return false;
     }
+
     function tw_startWriting() {
-        if (tw_isAnimated) {
+        if (tw_isAnimated && ($(tw_TextElem).offset().top < $(window).scrollTop() + $(window).height() - offset)) {
             tw_write();
             tw_isAnimated = false;
         }
     }
-    const tw_TextElem = document.querySelector(parameters.selector),
-        tw_totalSpeed = parameters.totalSpeed,
-        tw_MinWidth = parameters.minWidth,
+
+    const { totalSpeed, minWidth, offset } = parameters;
+    const tw_TextElem = document.querySelector(parameters.selector).firstElementChild,
         tw_Text = tw_TextElem.innerText.split("");
 
     let tw_isAnimated = false;
-    if ($(window).width() > tw_MinWidth) {
+    if ($(window).width() > minWidth) {
         tw_TextElem.innerText = '';
         tw_isAnimated = true;
     }
-    return tw_startWriting;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        tw_startWriting();
+        document.addEventListener('scroll', tw_startWriting);
+    })
+}
+
+
+/* появление текста по букве */
+function lettersAppear_init(params) {
+    const { letterSpeed, totalSpeed, minWidth, offset } = params;
+    const textElem = document.querySelector(`${params.selector} .tn-atom`),
+        text = textElem.innerText.split('');
+
+    const maxDelay = totalSpeed - letterSpeed;
+
+    if ($(window).width() > minWidth) {
+        textElem.innerHTML = '';
+
+        text.forEach(letter => {
+            $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</span>`);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('scroll', appearOnScroll);
+            appearOnScroll();
+        });
+    }
+
+    function lettersAppear() {
+        $(textElem).children('span').css('opacity', '1');
+    }
+    function appearOnScroll() {
+        if ($(textElem).offset().top < $(window).scrollTop() + $(window).height() - offset ) {
+            lettersAppear();
+            document.removeEventListener('scroll', appearOnScroll)
+        }
+    }
 }
 
 
@@ -1309,15 +1387,14 @@ function cursorTail (params) {
 
 /* появление фото из угла */
 function cornerPhotos_init(params) {
-    const cornerPhotos = document.querySelectorAll(params.photos),
-        transitionTime = params.transitionTime;
+    const cornerPhotos = document.querySelectorAll(params.photos);
 
     if ($(window).width() > params.minWidth) {
         cornerPhotos.forEach((photo, i) => {
             $(photo).append(`
                 <svg style="width: 100%; height: 100%; position: absolute; left: 0;">
                     <defs>
-                        <clipPath id="mask-${i}" style="transform: scale(0); transition: transform ${transitionTime}s ease">
+                        <clipPath id="mask-${i}" style="transform: scale(${params.initialVisibility}); transition: transform ${params.transitionTime}s ease">
                             <rect width="100%" height="100%" fill="#FFFFFF"></rect>
                         </clipPath>
                     </defs>
@@ -1523,6 +1600,31 @@ function photoZoom_init(params) {
     }
 }
 
+
+// Маска курсором
+function cursorColorFilter_init(params) {
+    const { minWidth, clipRadius } = params;
+    const maskingPages = document.querySelectorAll(params.maskingPage);
+    const originalPages = document.querySelectorAll(params.originalPage);
+
+    if ($(window).width() > minWidth) {
+        maskingPages.forEach((page, i) => {
+            const originalPage = originalPages[i];
+            page.style.position = 'absolute';
+            page.style.width = window.getComputedStyle(originalPage).width;
+            page.style.height = window.getComputedStyle(originalPage).height;
+            page.style.top = $(originalPage).offset().top + 'px';
+            page.style.clipPath = `circle(${clipRadius} at -100px -100px)`;
+            page.style.zIndex = '50';
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            maskingPages.forEach(page => {
+                page.style.clipPath = `circle(${clipRadius}px at ${event.pageX}px ${event.pageY - $(page).offset().top}px`;
+            });
+        });
+    }
+}
 
 
     
