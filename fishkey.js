@@ -503,10 +503,13 @@ function textApp_init(parameters) {
             txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}`);
 
             txtAppCont.style.paddingBottom = '0.15em';
-            $(txtAppWordConts[contNum]).css({
-                position: 'relative',
-                top: '1.5em',
-            }); 
+
+            if (trigger == 'scroll') {
+                $(txtAppWordConts[contNum]).css({
+                    position: 'relative',
+                    top: '1.5em',
+                }); 
+            }
         });
         
         if (trigger == 'scroll') {
@@ -515,7 +518,7 @@ function textApp_init(parameters) {
                 document.addEventListener('scroll', scrollTrigger);
             })
         } else {
-            txtAppWordConts.forEach((cont, i) => {
+            txtAppConts.forEach((cont, i) => {
                 const contNum = i;
                 function reapp() {
                     txtReappear(contNum);
