@@ -282,6 +282,7 @@
     cursorChange_init({                         
         minWidth: 1200,                             // минимальная ширина экрана
         numStates: 2,                               // количество состояний курсора кроме основного
+        hasNewNormalStyle: true,
         normalStyle: {                              // стили основного состояния
             width: '32px',
             height: '32px',

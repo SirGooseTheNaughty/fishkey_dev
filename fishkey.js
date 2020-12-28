@@ -1155,9 +1155,13 @@ function cursorChange_init(params) {
             'z-index': '10000000000',
             'pointer-events': 'none'
         });
-        $(cursorBorder).css(normalStyle);
 
-        cursorNormal.innerHTML = params.normalInner;
+        if (params.hasNewNormalStyle) {
+            $(cursorBorder).css(normalStyle);
+            cursorNormal.innerHTML = params.normalInner;
+            document.documentElement.style.cursor = 'none';
+        }
+
         for (let i = 0; i < numStates; i++) {
             stateStyles[i] = params.stateStyles[i];
             $(cursor).append(`<div class="cursor-state-${i}"></div>`);
@@ -1175,8 +1179,6 @@ function cursorChange_init(params) {
             left: '0',
             transition: '0.25s ease'
         });
-
-        document.documentElement.style.cursor = 'none';
 
         document.addEventListener('mousemove', (event) => {
             $(cursor).css({
