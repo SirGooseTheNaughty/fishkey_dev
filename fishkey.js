@@ -1157,12 +1157,12 @@ function cursorChange_init(params) {
         });
 
         if (params.hasNewNormalStyle) {
-            $(cursorBorder).css(normalStyle);
             cursorNormal.innerHTML = params.normalInner;
             document.documentElement.style.cursor = 'none';
         } else {
             normalStyle.opacity = '0';
         }
+        $(cursorBorder).css(normalStyle);
 
         for (let i = 0; i < numStates; i++) {
             stateStyles[i] = params.stateStyles[i];
