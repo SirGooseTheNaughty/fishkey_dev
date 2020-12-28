@@ -463,7 +463,7 @@ function textApp_init(parameters) {
                 txtAppWords = txtApp.split(' ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
-                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 1rem 1rem 0; margin-bottom: -1rem'>
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
                                                 <span class='txtAppWordCont${contNum}'>${word} </span>
                                             </p>`;
                 });
