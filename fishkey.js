@@ -440,7 +440,7 @@ function textApp_init(parameters) {
     function txtReappear(contNum) {
         txtAppWordConts[contNum].forEach(word => {
             word.style.transition = `none`;
-            word.style.top = '1.5em';
+            word.style.top = '2em';
         });
         txtAppear(contNum);
     }
@@ -504,13 +504,14 @@ function textApp_init(parameters) {
             txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}`);
 
             txtAppCont.style.paddingBottom = '0.15em';
+            txtAppCont.style.overflow = 'hidden';
 
             $(txtAppWordConts[contNum]).css({
                 position: 'relative'
             }); 
             if (trigger == 'scroll') {
                 $(txtAppWordConts[contNum]).css({
-                    top: '1.5em',
+                    top: '2em',
                 }); 
             }
         });
