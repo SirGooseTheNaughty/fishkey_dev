@@ -1160,6 +1160,8 @@ function cursorChange_init(params) {
             $(cursorBorder).css(normalStyle);
             cursorNormal.innerHTML = params.normalInner;
             document.documentElement.style.cursor = 'none';
+        } else {
+            normalStyle.opacity = '0';
         }
 
         for (let i = 0; i < numStates; i++) {
