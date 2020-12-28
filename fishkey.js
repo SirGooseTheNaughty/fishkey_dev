@@ -418,7 +418,7 @@ function screenChangeOnScroll_init(params) {
 
 /* появление текста */
 function textApp_init(parameters) {
-    const { minWidth, animSpeed, wordSpeed, divider, offsets} = parameters;
+    const { minWidth, animSpeed, wordSpeed, divider, trigger, offsets} = parameters;
     const txtAppConts = document.querySelectorAll(parameters.selectors);   // появляющийся текст
     const txtAppWordConts = [];
 
@@ -434,6 +434,14 @@ function textApp_init(parameters) {
             }
             i++;
         }, wordSpeed);
+    }
+
+    function txtReappear(contNum) {
+        txtAppWordConts[contNum].forEach(word => {
+            word.style.transition = `none`;
+            word.style.top = '1.5em';
+        });
+        txtAppear(contNum);
     }
     
     function scrollTrigger() {
@@ -501,10 +509,20 @@ function textApp_init(parameters) {
             }); 
         });
         
-        document.addEventListener('DOMContentLoaded', () => {
-            scrollTrigger();
-            document.addEventListener('scroll', scrollTrigger);
-        })
+        if (trigger == 'scroll') {
+            document.addEventListener('DOMContentLoaded', () => {
+                scrollTrigger();
+                document.addEventListener('scroll', scrollTrigger);
+            })
+        } else {
+            txtAppWordConts.forEach((cont, i) => {
+                const contNum = i;
+                function reapp() {
+                    txtReappear(contNum);
+                }
+                cont.addEventListener('mouseenter', reapp);
+            })
+        }
     }
 }
 
