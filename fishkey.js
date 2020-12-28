@@ -504,9 +504,11 @@ function textApp_init(parameters) {
 
             txtAppCont.style.paddingBottom = '0.15em';
 
+            $(txtAppWordConts[contNum]).css({
+                position: 'relative'
+            }); 
             if (trigger == 'scroll') {
                 $(txtAppWordConts[contNum]).css({
-                    position: 'relative',
                     top: '1.5em',
                 }); 
             }
