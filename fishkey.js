@@ -1166,6 +1166,7 @@ function cursorChange_init(params) {
 
         for (let i = 0; i < numStates; i++) {
             stateStyles[i] = params.stateStyles[i];
+            stateStyles[i].opacity = '1';
             $(cursor).append(`<div class="cursor-state-${i}"></div>`);
             stateInners[i] = document.querySelector(`.cursor-state-${i}`);
             stateInners[i].innerHTML = params.stateInners[i];
