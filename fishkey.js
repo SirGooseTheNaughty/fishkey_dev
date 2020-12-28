@@ -1189,7 +1189,7 @@ function cursorChange_init(params) {
 
 
         for (let i = 0; i < numStates; i++) {
-            params.triggers[i].style.cursor = 'none';
+            $(params.triggers[i]).css('cursor', 'none');
             $(params.triggers[i]).attr('data-makes-cursor-state', i);
             $(params.triggers[i]).mouseenter(turnCursorStateOn).mouseleave(turnCursorStateOff);
         }
