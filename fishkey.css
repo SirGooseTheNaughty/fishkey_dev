@@ -1,4 +1,5 @@
 /* вырисовка вектора */
+/* вырисовка надписи вектором */
 .draw-svg {
     animation: draw 1s linear forwards;
 }

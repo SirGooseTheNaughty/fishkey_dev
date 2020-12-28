@@ -59,6 +59,67 @@ function vectorDraw_init(params) {
     }
 }
 
+
+/* вырисовка надписи вектором */
+function vectorDraw_init(params) {
+    let { selector, svg, animTime, offset, strokeWidth } = params;
+    let logoPaths = [];
+    let desiredWidth = 0;
+    let coeff = 0;
+
+    if ($(window).width() > params.minWidth) {
+        strokeWidth = strokeWidth ? strokeWidth + 'px' : '1px';
+        const vd_forSVG = document.querySelector(selector);
+        $(vd_forSVG).html(svg);
+        
+        desiredWidth = +vd_forSVG.getAttribute('data-field-width-value');
+        coeff = desiredWidth/(+vd_forSVG.querySelector('svg').getAttribute('width'));
+
+        $(vd_forSVG).css({
+            height: desiredWidth + 'px'
+        });
+        vd_forSVG.querySelector('svg').style.transformOrigin = `left`;
+        vd_forSVG.querySelector('svg').style.transform = `scale(${coeff})`;
+
+        logoPaths = vd_forSVG.querySelectorAll('path');
+        animTime = animTime/logoPaths.length;
+
+        logoPaths.forEach((path, i) => {
+            $(path).css({
+                'stroke-dasharray': path.getTotalLength(),
+                'stroke-dashoffset': path.getTotalLength(),
+                'animation-duration': animTime + 's',
+                'animation-delay': animTime*i + 's',
+                'animation-timing-function': 'linear',
+                stroke: path.getAttribute('fill'),
+                'stroke-width': strokeWidth,
+                'fill-opacity': '0',
+                transition: `fill-opacity ${animTime}s ease-in-out ${animTime*(i+0.5)}s`
+            });
+        });
+
+        scrollInit();
+        document.addEventListener('scroll', scrollInit);
+    }
+
+    function scrollInit() {
+        const isVisible = $(window).scrollTop() + $(window).height() > $(logoPaths[0]).offset().top + offset;
+        if (isVisible) {
+            document.removeEventListener('scroll', scrollInit);
+            scrollDraw();
+        }
+    }
+    function scrollDraw() {
+        logoPaths.forEach(path => {
+            path.classList.add('draw-svg');
+            $(path).css({
+                'fill-opacity': '1'
+            });
+        })
+    }
+}
+
+
 /* кнопка вжух в кружок */
 function buttonToCircle_init(selector, minWidth) {
     const buttonToCircle = $(selector),
@@ -487,7 +548,7 @@ function typeWriter_init(parameters) {
 
 /* появление текста по букве */
 function lettersAppear_init(params) {
-    const { letterSpeed, totalSpeed, minWidth, offset } = params;
+    const { letterSpeed, totalSpeed, minWidth, offset, delay } = params;
     const textElem = document.querySelector(`${params.selector} .tn-atom`),
         text = textElem.innerText.split('');
 
@@ -511,7 +572,9 @@ function lettersAppear_init(params) {
     }
     function appearOnScroll() {
         if ($(textElem).offset().top < $(window).scrollTop() + $(window).height() - offset ) {
-            lettersAppear();
+            setTimeout(() => {
+                lettersAppear();
+            }, 1000*delay);
             document.removeEventListener('scroll', appearOnScroll)
         }
     }
