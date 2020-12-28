@@ -1129,9 +1129,9 @@ function videoCircle_init(params) {
 function cursorChange_init(params) {
     const minWidth = params.minWidth,
         numStates = params.numStates,
-        normalStyle = params.normalStyle,
         stateStyles = {},
         stateInners = [];
+    let normalStyle = params.normalStyle;
 
     if ($(window).width() > minWidth) {
         cursorChange_add();
@@ -1160,7 +1160,7 @@ function cursorChange_init(params) {
             cursorNormal.innerHTML = params.normalInner;
             document.documentElement.style.cursor = 'none';
         } else {
-            normalStyle.opacity = '0';
+            normalStyle = {opacity: '0'};
         }
         $(cursorBorder).css(normalStyle);
 
