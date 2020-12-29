@@ -1026,12 +1026,12 @@ function uniBurger_init(params) {
 function pushingBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
         triggerBlock = document.querySelector(params.triggerBlock),
-        { burgerPosition, burgerWidth, triggerLineHeight, triggerColor } = params,
+        { burgerPosition, burgerWidth, burgerHeight, triggerLineHeight, triggerColor } = params,
         triggerElem = triggerBlock.querySelector('.tn-elem'),
         allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         burgerLinks = burgerBlock.querySelectorAll('a'),
         easeTime = 0.8,
-        burgerHeight = burgerBlock.querySelector('div').firstElementChild.getAttribute('data-artboard-height'),
+        //burgerHeight = burgerBlock.querySelector('div').firstElementChild.getAttribute('data-artboard-height'),
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)';
 
     let pushingShiftX = 0,
@@ -1041,9 +1041,9 @@ function pushingBurger_init(params) {
 
     $(burgerBlock).css({
         position: 'fixed',
-        top: '-100vh',
         'z-index': '99',
         width: '100vw',
+        height: burgerHeight + '%',
         'background-color': window.getComputedStyle(burgerBlock.querySelector('.t396__artboard')).backgroundColor
     });
 
