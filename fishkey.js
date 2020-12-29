@@ -61,7 +61,7 @@ function vectorDraw_init(params) {
 
 
 /* вырисовка надписи вектором */
-function vectorDraw_init(params) {
+function vectorWrite_init(params) {
     let { selector, svg, animTime, offset, strokeWidth } = params;
     let logoPaths = [];
     let desiredWidth = 0;

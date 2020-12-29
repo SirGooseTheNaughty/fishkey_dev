@@ -35,7 +35,7 @@
 
 вырисовка надписи вектором
 <script>
-    vectorDraw_init({
+    vectorWrite_init({
         selector: `[data-elem-id="1606811783003"]`,     // куда вставлять надпись
         svg: ``,                                        // код svg-изображения
         animTime: 2,                                    // время анимации
