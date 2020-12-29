@@ -22,9 +22,9 @@ function vectorDraw_init(params) {
                 'animation-duration': animTime + 's',
                 'animation-timing-function': animFunction
             });
-            $(space).css({
-                height: desiredWidths[i] + 'px'
-            });
+            // $(space).css({
+            //     height: desiredWidths[i] + 'px'
+            // });
             space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
             space.querySelector('svg').style.transformOrigin = 'top left';
         });
