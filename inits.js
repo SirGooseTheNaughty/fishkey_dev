@@ -21,7 +21,7 @@
         animTime: 0.5,                              // время анимации
         animFunction: 'ease',                       // кривая безье анимации (можно оставить пустым)
         minWidth: 1200,                             // минимальная ширина экрана для анимации
-        trigger: 'srcl',                            // триггер (scroll / hover)
+        trigger: 'scroll',                          // триггер (scroll / hover)
         hoverTriggers: [                            // селекторы триггеров (если hover)
             '[data-elem-id="1606915059508"]',
             '[data-elem-id="1606917547804"]',

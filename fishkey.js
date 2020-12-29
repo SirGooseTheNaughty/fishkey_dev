@@ -23,9 +23,7 @@ function vectorDraw_init(params) {
                 'animation-timing-function': animFunction
             });
             $(space).css({
-                height: desiredWidths[i] + 'px',
-                display: 'grid',
-                'place-items': 'center'
+                height: desiredWidths[i] + 'px'
             });
             space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
         });
