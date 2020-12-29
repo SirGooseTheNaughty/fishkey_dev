@@ -1038,6 +1038,7 @@ function pushingBurger_init(params) {
         pushingShiftY = 0;
 
     let {burgerHeight} = params;
+    burgerHeight = $(window).height()*burgerHeight/100;
     
     $(allBlocks).css('transition', `transform ${easeTime}s ${easeFunction}`);
 
@@ -1045,10 +1046,9 @@ function pushingBurger_init(params) {
         position: 'fixed',
         'z-index': '99',
         width: '100vw',
-        height: burgerHeight + 'vh',
+        height: burgerHeight + 'px',
         'background-color': window.getComputedStyle(burgerBlock.querySelector('.t396__artboard')).backgroundColor
     });
-    burgerHeight = $(window).height()*burgerHeight/100;
 
     switch (burgerPosition) {
         case 'top':
