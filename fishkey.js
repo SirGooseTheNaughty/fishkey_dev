@@ -1031,14 +1031,11 @@ function pushingBurger_init(params) {
         allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         burgerLinks = burgerBlock.querySelectorAll('a'),
         easeTime = 0.8,
-        //burgerHeight = burgerBlock.querySelector('div').firstElementChild.getAttribute('data-artboard-height'),
+        burgerHeight = burgerBlock.querySelector('div').firstElementChild.getAttribute('data-artboard-height'),
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)';
 
     let pushingShiftX = 0,
         pushingShiftY = 0;
-
-    let {burgerHeight} = params;
-    burgerHeight = $(window).height()*burgerHeight/100;
     
     $(allBlocks).css('transition', `transform ${easeTime}s ${easeFunction}`);
 
