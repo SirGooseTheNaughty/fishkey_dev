@@ -26,6 +26,7 @@ function vectorDraw_init(params) {
                 height: desiredWidths[i] + 'px'
             });
             space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
+            space.querySelector('svg').style.transformOrigin = 'top left';
         });
         
         if (trigger == 'hover') {
