@@ -22,9 +22,6 @@ function vectorDraw_init(params) {
                 'animation-duration': animTime + 's',
                 'animation-timing-function': animFunction
             });
-            // $(space).css({
-            //     height: desiredWidths[i] + 'px'
-            // });
             space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
             space.querySelector('svg').style.transformOrigin = 'top left';
         });
@@ -1044,6 +1041,7 @@ function pushingBurger_init(params) {
 
     $(burgerBlock).css({
         position: 'fixed',
+        top: '-100vh',
         'z-index': '99',
         width: '100vw',
         'background-color': window.getComputedStyle(burgerBlock.querySelector('.t396__artboard')).backgroundColor

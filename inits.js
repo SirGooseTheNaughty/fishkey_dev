@@ -222,7 +222,7 @@
     pushingBurger_init({
         burgerBlock: '#rec252049977',           // id блока с меню
         triggerBlock: '#rec252376983',          // id блока с кнопкой открытия/закрытия бургера (должен быть с прозрачным фоном)
-        burgerPosition: 'left',                 // положение меню
+        burgerPosition: 'left',                 // положение меню (top / left / bottom / right)
         burgerWidth: 500,                       // ширина меню (для положения слева/справа)
         triggerLineHeight: 4,                   // толщина линий кнопки бургера
         triggerColor: 'black',                  // цвет кнопки бургера
