@@ -177,13 +177,15 @@ function buttonToCircle_init(selector, minWidth) {
 /* шум на фоне */
 function bgNoise_init(parameters) {
     const bgNoiseBlock = document.querySelector(parameters.selector),
-        bgNoiser = bgNoiseBlock.querySelector('[data-elem-type="shape"]').querySelector('.tn-atom');
+        bgNoiser = bgNoiseBlock.querySelector('[data-elem-type="shape"]'),
+        bgGrainer = bgNoiser.querySelector('.tn-atom');
     parameters.grain = (parameters.grain) ? parameters.grain + 'px' : 'auto';
     bgNoiser.classList.add('bg-noise');
     bgNoiser.style.opacity = parameters.opacity/100;
-    bgNoiser.style.backgroundSize = `${parameters.grain}`;
     bgNoiseBlock.style.height = '0';
     bgNoiseBlock.style.overflow = 'hidden';
+    bgGrainer.style.backgroundRepeat = 'repeat';
+    bgGrainer.style.backgroundSize = `${parameters.grain}`;
 }
 
 /* горизонтальный скролл всей страницы */

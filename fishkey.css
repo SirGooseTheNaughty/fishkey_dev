@@ -11,13 +11,12 @@
 
 /* шум на фоне */
 .bg-noise {
-    background-repeat: repeat !important;
     pointer-events: none;
     width: 100vw !important;
     height: 100vh !important;
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0 !important;
+    left: 0 !important;
 }
 
 /* ссылки италиком */
