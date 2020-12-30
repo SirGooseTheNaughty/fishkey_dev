@@ -1151,8 +1151,7 @@ function videoCircle_init(params) {
 
 /* замена курсора */
 function cursorChange_init(params) {
-    const minWidth = params.minWidth,
-        numStates = params.numStates,
+    const { minWidth, numStates, sourceOfNormal, sourceOfStates, normalExternal, normalInternal, statesExternal, statesInternal } = params,
         stateStyles = {},
         stateInners = [];
     let normalStyle = params.normalStyle;
@@ -1181,7 +1180,12 @@ function cursorChange_init(params) {
         });
 
         if (params.hasNewNormalStyle) {
-            cursorNormal.innerHTML = params.normalInner;
+            if (sourceOfNormal == "internal") {
+                const gif = getGif(normalInternal);
+                cursorNormal.backgroundImage = gif;
+            } else {
+                cursorNormal.innerHTML = normalExternal;
+            }
             document.documentElement.style.cursor = 'none';
         } else {
             normalStyle = {opacity: '0'};
@@ -1193,8 +1197,20 @@ function cursorChange_init(params) {
             stateStyles[i].opacity = '1';
             $(cursor).append(`<div class="cursor-state-${i}"></div>`);
             stateInners[i] = document.querySelector(`.cursor-state-${i}`);
-            stateInners[i].innerHTML = params.stateInners[i];
             stateInners[i].style.opacity = 0;
+            if (sourceOfStates[i] == "internal") {
+                const { gif, width, height} = getGif(statesInternal[i]);
+                $(stateInners[i]).css({
+                    backgroundImage: gif,
+                    backgroundSize: "100%",
+                    width: width + 'px',
+                    height: height + "px"
+                })
+                stateInners[i].style.backgroundImage = gif;
+                stateInners[i].style.backgroundSize = "100%";
+            } else {
+                stateInners[i].innerHTML = statesExternal[i];
+            }
         }
 
         $(cursor).children().css({
@@ -1221,7 +1237,7 @@ function cursorChange_init(params) {
             $(params.triggers[i]).mouseenter(turnCursorStateOn).mouseleave(turnCursorStateOff);
         }
 
-        function turnCursorStateOn (e) {
+        function turnCursorStateOn () {
             $(stateInners).css('opacity','0');
             stateInners.forEach(inner => inner.style.opacity = '0');
             const state = this.getAttribute('data-makes-cursor-state');
@@ -1229,11 +1245,20 @@ function cursorChange_init(params) {
             cursorNormal.style.opacity = 0;
             stateInners[state].style.opacity = 1;
         }
-        function turnCursorStateOff (e) {
-            console.log('unhovered ' + this.tagName);
+        function turnCursorStateOff () {
             stateInners.forEach(inner => inner.style.opacity = '0');
             $(cursorBorder).css(normalStyle);
             cursorNormal.style.opacity = 1;
+        }
+        function getGif (selector) {
+            const cont = document.querySelector(selector);
+            const gif = cont.querySelector(`.tn-atom`).getAttribute('data-original');
+            $(cont).remove();
+            return {
+                gif: `url(${gif})`,
+                width: cont.getAttribute('data-field-width-value'),
+                height: cont.getAttribute('data-field-height-value')
+            }
         }
     }
 }

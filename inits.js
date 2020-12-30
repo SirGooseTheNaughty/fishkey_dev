@@ -281,44 +281,49 @@
     cursorChange_init({                         
         minWidth: 1200,                             // минимальная ширина экрана
         numStates: 2,                               // количество состояний курсора кроме основного
-        hasNewNormalStyle: true,
-        normalStyle: {                              // стили основного состояния
+        hasNewNormalStyle: false,                   // заменять ли нормальное состояние (вместо курсора)
+        sourceOfNormal: "external",                 // источник нормального состояния (external - вставить код, internal - селектор элемента в тильде)
+        sourceOfStates: [                           // источники дополнительных состояний
+            "internal",
+            "external"
+        ],
+        normalStyle: {                              // стиль основного состояния
             width: '32px',
             height: '32px',
             'border': '1px solid #4F4F4F',
             'border-radius': '50%'
         },
-        triggers: ['a', '#rec228688983 img'],       // элементы, активирующие дополнительные состояния
-        stateStyles: {                              // стили дополнительных состояний
-            '0': {
+        normalExternal:                             // код основного состояния (если external)
+            `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle r="3" fill="#4F4F4F" cx="16" cy="16"></circle>
+            </svg>`,
+        normalInternal: '',                         // селектор для основного состояния (если internal)
+        triggers: ['[data-elem-id="1609162301586"]', 'img'],       // элементы, активирующие дополнительные состояния
+        stateStyles: [                              // стили дополнительных состояний (в количестве как в numStates)
+            {
                 width: '50px',
                 height: '50px',
                 'border': '1px solid #78ACCD',
                 'border-radius': '50%'
             },
-            '1': {
+            {
                 width: '50px',
                 height: '50px',
                 'border': '1px solid #78ACCD',
                 'border-radius': '50%'
             }
-        },
-        normalInner:                                // внутренний элемент основного состояний (можно оставить '')
-            `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle r="3" fill="#4F4F4F" cx="16" cy="16"></circle>
-            </svg>`,
-        stateInners: {                              // внутренние элементы дополнительных состояний  (можно оставить '')
-            '0': `<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle r="4" fill="#78ACCD" cx="25" cy="25"></circle>
-                </svg>`,
-            '1': `<svg width="27" height="11" viewBox="0 0 27 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="14" cy="5" r="4" fill="#78ACCD"/>
-                    <path d="M1 6C5.16667 2.22688 16 -3.05548 26 6" stroke="#78ACCD" stroke-linecap="round"/>
-                    <path d="M1 6.00002C5.16667 9.33336 16 14 26 6.00002" stroke="#78ACCD" stroke-width="0.6" stroke-linecap="round"/>
-                </svg>`
-        }
+        ],
+        statesExternal: [                           // коды дополнительных состояний (если external) (в количестве как в numStates)
+            ``,                                     // здесь пропущено, так как первый sourceOfStates - internal
+            `<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle r="4" fill="#78ACCD" cx="25" cy="25"></circle>
+            </svg>`
+        ],
+        statesInternal: [                           // коды дополнительных состояний (если internal) (в количестве как в numStates)
+            '[data-elem-id="1609352398417"]',
+            ''                                      // здесь пропущено, так как второй sourceOfStates - external
+        ]
     })
-    
 </script>
 
 
