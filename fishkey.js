@@ -1772,8 +1772,3 @@ function bgChange_init(params) {
         body.style.backgroundColor = colors[currentColor];
     }
 }
-
-// comment just for the test
-    
-
-
