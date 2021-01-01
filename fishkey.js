@@ -1744,6 +1744,36 @@ function cursorColorFilter_init(params) {
 }
 
 
+// смена фонов
+function bgChange_init(params) {
+    const { colors, breakpointBlocks, offsets, animTime, minWidth } = params;
+    const breakpoints = [];
+    const body = document.querySelector('body');
+    breakpointBlocks.forEach((block, i) => {
+        breakpoints[i] = $(block).offset().top + offsets[i];
+    });
+
+    if ($(window).width() > minWidth) {
+        bgChange();
+        setTimeout(() => {
+            body.style.transition = `background-color ${animTime}s linear`;
+        }, 50);
+        document.addEventListener('scroll', bgChange);
+    }
+
+    function bgChange() {
+        const scr = $(window).scrollTop();
+        let currentColor = 0;
+        breakpoints.forEach((breakpoint, i) => {
+            if (scr > breakpoint) {
+                currentColor = i + 1;
+            }
+        });
+        body.style.backgroundColor = colors[currentColor];
+    }
+}
+
+
     
 
 
