@@ -182,7 +182,7 @@ function bgNoise_init(parameters) {
     parameters.grain = (parameters.grain) ? parameters.grain + 'px' : 'auto';
     bgNoiser.classList.add('bg-noise');
     bgNoiser.style.opacity = parameters.opacity/100;
-    bgNoiseBlock.style.height = '0';
+    //bgNoiseBlock.style.height = '0';
     bgNoiseBlock.style.overflow = 'hidden';
     bgGrainer.style.backgroundRepeat = 'repeat';
     bgGrainer.style.backgroundSize = `${parameters.grain}`;
