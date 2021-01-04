@@ -725,7 +725,7 @@ function parallax_init(params) {
         // };
         // parallaxTarget.style.transform = `translate(${coordinatesDiff.x}px, ${coordinatesDiff.y}px)`;
         parallaxTarget.setAttribute('data-target-x', (e.clientX - parallaxRectCenter.x)/4);
-        parallaxTarget.setAttribute('data-target-y', (e.clientY - parallaxRectCenter.x)/4);
+        parallaxTarget.setAttribute('data-target-y', (e.clientY - parallaxRectCenter.y)/4);
     }
 
     const parallaxTargets = document.querySelectorAll(params.selectors),
