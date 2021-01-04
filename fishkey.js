@@ -1,8 +1,7 @@
 /* утилита для плавного расчета координат */
-function initCoordTracking(obj, trigger, positioning, hasX, hasY, framerate = 25) {
+function initCoordTracking(obj, trigger, positioning, hasX, hasY, framerate = 20) {
     let isIntSet = false;
     let coordInt = '';
-    const stdFramerate = 25;
 
     if (hasX) {
         obj.setAttribute('data-current-x', 0);
@@ -75,7 +74,7 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, framerate = 25
     
     function oneCoordChange(curr, target) {
         const leng = target - curr;
-        const rise = (framerate/stdFramerate)*Math.sign(leng)*Math.cbrt(Math.abs(leng)*Math.abs(leng));
+        const rise = 0.8*Math.sign(leng)*Math.cbrt(Math.abs(leng)*Math.abs(leng));
         if (Math.abs(rise) < 1) {
             return target;
         }
@@ -730,7 +729,7 @@ function parallax_init(params) {
         parallaxRectCenter = {x: 0, y: 0};
 
     if ($(window).width() > parallaxMinScreenWidth) {
-        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, 40));
+        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
         $(parallaxTargets).addClass('parallax');
         $(parallaxTargets).on('mouseenter', function () {
             parallaxTarget = this;
@@ -923,7 +922,7 @@ function hoverText_init(params) {
             'pointer-events': 'none'
         });
 
-        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true, 20);
+        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true);
         document.addEventListener('mousemove', (e) => {
             hoverTextCursor.setAttribute('data-target-x', e.clientX);
             hoverTextCursor.setAttribute('data-target-y', e.clientY);
