@@ -1,3 +1,80 @@
+/* утилита для плавного расчета координат */
+function initCoordTracking(obj, hasX, hasY) {
+    let isIntSet = false;
+    let coordInt = '';
+    const framerate = 20;
+    const stdFramerate = 25;
+
+    if (hasX) {
+        obj.setAttribute('data-current-x', 0);
+        obj.setAttribute('data-target-x', 0);
+    }
+    if (hasY) {
+        obj.setAttribute('data-current-y', 0);
+        obj.setAttribute('data-target-y', 0);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        if (hasX) {
+            obj.setAttribute('data-target-x', e.clientX);
+        }
+        if (hasY) {
+            obj.setAttribute('data-target-y', e.clientY);
+        }
+        if (!isIntSet) {
+            coordInt = setInterval(() => {
+                requestAnimationFrame(moveObj);
+            }, framerate);
+            isIntSet = true;
+        }
+    });
+
+    function moveObj() {
+        const curr = {
+            x: null,
+            y: null
+        };
+        const target = {
+            x: null,
+            y: null
+        };
+        const newCoord = {
+            x: null,
+            y: null
+        };
+        let totalError = 0;
+        if (hasX) {
+            curr.x = +obj.getAttribute('data-current-x');
+            target.x = +obj.getAttribute('data-target-x');
+            newCoord.x = oneCoordChange(curr.x, target.x);
+            obj.setAttribute('data-current-x', newCoord.x);
+            obj.style.left = newCoord.x + 'px';
+            totalError += Math.abs(target.x - curr.x);
+        }
+        if (hasY) {
+            curr.y = +obj.getAttribute('data-current-y');
+            target.y = +obj.getAttribute('data-target-y');
+            newCoord.y = oneCoordChange(curr.y, target.y);
+            obj.setAttribute('data-current-y', newCoord.y);
+            obj.style.top = newCoord.y + 'px';
+            totalError += Math.abs(target.y - curr.y);
+        }
+        if (totalError < 1) {
+            clearInterval(coordInt);
+            isIntSet = false;
+        }
+    }
+    
+    function oneCoordChange(curr, target) {
+        const leng = target - curr;
+        const rise = (framerate/stdFramerate)*Math.sign(leng)*Math.cbrt(Math.abs(leng)*Math.abs(leng));
+        if (Math.abs(rise) < 1) {
+            return target;
+        }
+        return curr + rise;
+    }
+}
+
 /* вырисовка вектора */
 function vectorDraw_init(params) {
     let { selectors, svgs, animTime, animFunction, trigger, hoverTriggers, offsets } = params;
@@ -842,13 +919,15 @@ function hoverText_init(params) {
             'z-index': '9999',
             'pointer-events': 'none'
         });
+
+        initCoordTracking(hoverTextCursor, true, true);
     
-        $(document).mousemove(function (e) {
+        /*$(document).mousemove(function (e) {
             $(hoverTextCursor).css({
                 "left": e.pageX,
                 "top": e.pageY - $(window).scrollTop()
             });
-        });
+        });*/
     
         $(".textHover").mouseenter(function(event) {
                 hoverTextCursor.firstElementChild.innerText = event.target.getAttribute('data-text');
