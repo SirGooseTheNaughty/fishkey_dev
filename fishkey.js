@@ -182,7 +182,7 @@ function bgNoise_init(parameters) {
     parameters.grain = (parameters.grain) ? parameters.grain + 'px' : 'auto';
     bgNoiser.classList.add('bg-noise');
     bgNoiser.style.opacity = parameters.opacity/100;
-    //bgNoiseBlock.style.height = '0';
+    bgNoiseBlock.style.height = '0';
     bgNoiseBlock.style.overflow = 'hidden';
     bgGrainer.style.backgroundRepeat = 'repeat';
     bgGrainer.style.backgroundSize = `${parameters.grain}`;
@@ -534,6 +534,22 @@ function textApp_init(parameters) {
 
 /* пишущая машинка */
 function typeWriter_init(parameters) {
+    const { totalSpeed, minWidth } = parameters;
+    let { offset } = parameters;
+    const tw_TextElem = document.querySelector(parameters.selector).firstElementChild,
+        tw_Text = tw_TextElem.innerText.split("");
+
+    if ($(window).width() > minWidth) {
+        tw_TextElem.innerText = '';
+    }
+
+    offset = $(window).height()*offset/100;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        tw_startWriting();
+        document.addEventListener('scroll', tw_startWriting);
+    })
+
     function tw_write() {
         const speed = totalSpeed / tw_Text.length;
         const tw_interval = setInterval(function() {
@@ -546,26 +562,11 @@ function typeWriter_init(parameters) {
     }
 
     function tw_startWriting() {
-        if (tw_isAnimated && ($(tw_TextElem).offset().top < $(window).scrollTop() + $(window).height() - offset)) {
+        if ($(tw_TextElem).offset().top < $(window).scrollTop() + $(window).height() - offset) {
             tw_write();
-            tw_isAnimated = false;
+            document.removeEventListener('scroll', tw_startWriting);
         }
     }
-
-    const { totalSpeed, minWidth, offset } = parameters;
-    const tw_TextElem = document.querySelector(parameters.selector).firstElementChild,
-        tw_Text = tw_TextElem.innerText.split("");
-
-    let tw_isAnimated = false;
-    if ($(window).width() > minWidth) {
-        tw_TextElem.innerText = '';
-        tw_isAnimated = true;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        tw_startWriting();
-        document.addEventListener('scroll', tw_startWriting);
-    })
 }
 
 
@@ -614,7 +615,7 @@ function italicLinks_init(selector = '') {
 
 
 /* прилипание картинок */
-function parallaxInit(params) {
+function parallax_init(params) {
     function listener(e) {
         const coordinatesDiff = {
             x: (e.clientX - parallaxRectCenter.x)/4,
@@ -623,7 +624,7 @@ function parallaxInit(params) {
         parallaxTarget.style.transform = `translate(${coordinatesDiff.x}px, ${coordinatesDiff.y}px)`;
     }
 
-    const parallaxTargets = document.querySelectorAll(params.selector),
+    const parallaxTargets = document.querySelectorAll(params.selectors),
         parallaxMinScreenWidth = params.minWidth;
 
     let parallaxTarget,

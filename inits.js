@@ -123,7 +123,7 @@ dev
 
 пишущая машинка
 <script>
-    const tw_startWriting = typeWriter_init({
+    typeWriter_init({
         selector: '[data-elem-id="1470210011265"]',     // селектор
         totalSpeed: '4000',                             // время появления всего текста
         minWidth: '1200',                               // минимальная ширина экрана для анимации
@@ -153,8 +153,8 @@ dev
 
 прилипание элементов
 <script>
-    parallaxInit({
-        selector: '#rec123 img',        // любой селектор прилипающих элементов
+    parallax_init({
+        selectors: '#rec123 img',       // любые селекторы прилипающих элементов
         minWidth: 1200                  // минимальная ширина экрана для анимации
     })
 </script>
