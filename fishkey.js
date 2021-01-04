@@ -1,5 +1,5 @@
 /* утилита для плавного расчета координат */
-function initCoordTracking(obj, trigger, hasX, hasY) {
+function initCoordTracking(obj, trigger, positioning, hasX, hasY) {
     let isIntSet = false;
     let coordInt = '';
     const framerate = 20;
@@ -36,13 +36,21 @@ function initCoordTracking(obj, trigger, hasX, hasY) {
             x: null,
             y: null
         };
+        const translation = {
+            x: 0,
+            y: 0
+        };
         let totalError = 0;
         if (hasX) {
             curr.x = +obj.getAttribute('data-current-x');
             target.x = +obj.getAttribute('data-target-x');
             newCoord.x = oneCoordChange(curr.x, target.x);
             obj.setAttribute('data-current-x', newCoord.x);
-            obj.style.left = newCoord.x + 'px';
+            if (positioning == 'abs') {
+                obj.style.left = newCoord.x + 'px';
+            } else {
+                translation.x = newCoord.x + 'px';
+            }
             totalError += Math.abs(target.x - curr.x);
         }
         if (hasY) {
@@ -50,8 +58,15 @@ function initCoordTracking(obj, trigger, hasX, hasY) {
             target.y = +obj.getAttribute('data-target-y');
             newCoord.y = oneCoordChange(curr.y, target.y);
             obj.setAttribute('data-current-y', newCoord.y);
-            obj.style.top = newCoord.y + 'px';
+            if (positioning == 'abs') {
+                obj.style.top = newCoord.y + 'px';
+            } else {
+                translation.y = newCoord.y + 'px';
+            }
             totalError += Math.abs(target.y - curr.y);
+        }
+        if (positioning == 'rel') {
+            obj.style.transform = `translate(${translation.x}, ${translation.y})`;
         }
         if (totalError < 1) {
             clearInterval(coordInt);
@@ -720,8 +735,8 @@ function parallax_init(params) {
         parallaxRect = {},
         parallaxRectCenter = {x: 0, y: 0};
 
-    if (document.documentElement.clientWidth > parallaxMinScreenWidth) {
-        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', true, true));
+    if ($(window).width() > parallaxMinScreenWidth) {
+        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
         $(parallaxTargets).addClass('parallax');
         $(parallaxTargets).css('transition', '0.4s ease-out');
         $(parallaxTargets).on('mouseenter', function () {
@@ -914,7 +929,7 @@ function hoverText_init(params) {
             'pointer-events': 'none'
         });
 
-        initCoordTracking(hoverTextCursor, 'mousemove', true, true);
+        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true);
         document.addEventListener('mousemove', (e) => {
             hoverTextCursor.setAttribute('data-target-x', e.clientX);
             hoverTextCursor.setAttribute('data-target-y', e.clientY);
