@@ -1,8 +1,7 @@
 /* утилита для плавного расчета координат */
-function initCoordTracking(obj, trigger, positioning, hasX, hasY) {
+function initCoordTracking(obj, trigger, positioning, hasX, hasY, framerate = 25) {
     let isIntSet = false;
     let coordInt = '';
-    const framerate = 20;
     const stdFramerate = 25;
 
     if (hasX) {
@@ -719,11 +718,6 @@ function italicLinks_init(selector = '') {
 /* прилипание картинок */
 function parallax_init(params) {
     function listener(e) {
-        // const coordinatesDiff = {
-        //     x: (e.clientX - parallaxRectCenter.x)/4,
-        //     y: (e.clientY - parallaxRectCenter.y)/4
-        // };
-        // parallaxTarget.style.transform = `translate(${coordinatesDiff.x}px, ${coordinatesDiff.y}px)`;
         parallaxTarget.setAttribute('data-target-x', (e.clientX - parallaxRectCenter.x)/4);
         parallaxTarget.setAttribute('data-target-y', (e.clientY - parallaxRectCenter.y)/4);
     }
@@ -736,9 +730,8 @@ function parallax_init(params) {
         parallaxRectCenter = {x: 0, y: 0};
 
     if ($(window).width() > parallaxMinScreenWidth) {
-        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
+        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, 40));
         $(parallaxTargets).addClass('parallax');
-        $(parallaxTargets).css('transition', '0.4s ease-out');
         $(parallaxTargets).on('mouseenter', function () {
             parallaxTarget = this;
             parallaxRect = parallaxTarget.getBoundingClientRect();
@@ -752,7 +745,6 @@ function parallax_init(params) {
         .on('mouseleave', function () {
             document.removeEventListener('mousemove', listener);
             $(this).attr('parallax', false);
-            //parallaxTarget.style.transform = 'translate(0)';
             parallaxTarget.setAttribute('data-target-x', 0);
             parallaxTarget.setAttribute('data-target-y', 0);
         });
@@ -931,7 +923,7 @@ function hoverText_init(params) {
             'pointer-events': 'none'
         });
 
-        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true);
+        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true, 20);
         document.addEventListener('mousemove', (e) => {
             hoverTextCursor.setAttribute('data-target-x', e.clientX);
             hoverTextCursor.setAttribute('data-target-y', e.clientY);
