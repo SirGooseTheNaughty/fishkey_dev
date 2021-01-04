@@ -1416,21 +1416,12 @@ function bgPhotos_init(params) {
     });
 
     function LP__mousemove(e) {
-        function LP__moveImage() {
-            const LP__photoCenterPosition = {
-                x: LP_mouseCoordinates.x - LP__linkCenters[activeLink].x,
-                y: LP_mouseCoordinates.y - LP__linkCenters[activeLink].y
-            };
-            LP__photos[activeLink].style.transform = `translate(${LP__photoCenterPosition.x}px, ${LP__photoCenterPosition.y}px)`;
-        }
-        const LP_mouseCoordinates = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        window.requestAnimationFrame(LP__moveImage);
+        LP__photos[activeLink].setAttribute('data-target-x', (e.clientX - LP__linkCenters[activeLink].x));
+        LP__photos[activeLink].setAttribute('data-target-y', (e.clientY - LP__linkCenters[activeLink].y));
     }
 
     if ($(window).width() > params.minWidth) {
+        LP__photos.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
         LP__links.forEach((link, i) => {
             $(link).attr('assocWith', i);
             link.parentElement.style.zIndex = 5;
