@@ -704,11 +704,13 @@ function italicLinks_init(selector = '') {
 /* прилипание картинок */
 function parallax_init(params) {
     function listener(e) {
-        const coordinatesDiff = {
-            x: (e.clientX - parallaxRectCenter.x)/4,
-            y: (e.clientY - parallaxRectCenter.y)/4
-        };
-        parallaxTarget.style.transform = `translate(${coordinatesDiff.x}px, ${coordinatesDiff.y}px)`;
+        // const coordinatesDiff = {
+        //     x: (e.clientX - parallaxRectCenter.x)/4,
+        //     y: (e.clientY - parallaxRectCenter.y)/4
+        // };
+        // parallaxTarget.style.transform = `translate(${coordinatesDiff.x}px, ${coordinatesDiff.y}px)`;
+        parallaxTarget.setAttribute('data-target-x', (e.clientX - parallaxRectCenter.x)/4);
+        parallaxTarget.setAttribute('data-target-y', (e.clientY - parallaxRectCenter.x)/4);
     }
 
     const parallaxTargets = document.querySelectorAll(params.selectors),
@@ -719,6 +721,7 @@ function parallax_init(params) {
         parallaxRectCenter = {x: 0, y: 0};
 
     if (document.documentElement.clientWidth > parallaxMinScreenWidth) {
+        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', true, true));
         $(parallaxTargets).addClass('parallax');
         $(parallaxTargets).css('transition', '0.4s ease-out');
         $(parallaxTargets).on('mouseenter', function () {
