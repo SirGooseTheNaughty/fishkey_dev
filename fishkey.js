@@ -903,11 +903,8 @@ function hoverText_init(params) {
             obj.classList.add('textHover');
         });
 
-        let hiddenCursor = 'auto',
-            transitionStyle = 'opacity 0.25s ease, left 0.4s linear, top 0.4s linear';
         if (isCursorHidden) {
             hiddenCursor = 'none';
-            transitionStyle = 'opacity 0.25s ease';
         }
     
         $(hoverTextCursor).css({
@@ -922,23 +919,16 @@ function hoverText_init(params) {
 
         initCoordTracking(hoverTextCursor, true, true);
     
-        /*$(document).mousemove(function (e) {
-            $(hoverTextCursor).css({
-                "left": e.pageX,
-                "top": e.pageY - $(window).scrollTop()
-            });
-        });*/
-    
         $(".textHover").mouseenter(function(event) {
                 hoverTextCursor.firstElementChild.innerText = event.target.getAttribute('data-text');
-                hoverTextCursor.style.transition = transitionStyle;
+                hoverTextCursor.style.transition = 'opacity 0.25s ease';
                 hoverTextCursor.style.opacity = '1';
-                document.documentElement.style.cursor= hiddenCursor;
+                document.documentElement.style.cursor = hiddenCursor;
             })
             .mouseleave(function(event) {
                 hoverTextCursor.style.transition = 'opacity 0.1s ease';
                 hoverTextCursor.style.opacity = '0';
-                document.documentElement.style.cursor= 'auto';
+                document.documentElement.style.cursor = 'auto';
             });
     } 
 }

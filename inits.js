@@ -4,8 +4,8 @@ prod
 <link rel="stylesheet" type="text/css" href="https://sirgoosethenaughty.github.io/fishkey/fishkey.css"/>
 
 dev
-<script type="text/javascript" src="https://sirgoosethenaughty.github.io/fishkey_dev/fishkey_dev.js"></script>
-<link rel="stylesheet" type="text/css" href="https://sirgoosethenaughty.github.io/fishkey_dev/fishkey_dev.css"/>
+<script type="text/javascript" src="https://sirgoosethenaughty.github.io/fishkey_dev/fishkey.js"></script>
+<link rel="stylesheet" type="text/css" href="https://sirgoosethenaughty.github.io/fishkey_dev/fishkey.css"/>
 
 
 вырисовка вектора 
