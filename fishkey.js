@@ -1,5 +1,5 @@
 /* утилита для плавного расчета координат */
-function initCoordTracking(obj, hasX, hasY) {
+function initCoordTracking(obj, trigger, hasX, hasY) {
     let isIntSet = false;
     let coordInt = '';
     const framerate = 20;
@@ -14,13 +14,7 @@ function initCoordTracking(obj, hasX, hasY) {
         obj.setAttribute('data-target-y', 0);
     }
 
-    document.addEventListener('mousemove', (e) => {
-        if (hasX) {
-            obj.setAttribute('data-target-x', e.clientX);
-        }
-        if (hasY) {
-            obj.setAttribute('data-target-y', e.clientY);
-        }
+    document.addEventListener(trigger, (e) => {
         if (!isIntSet) {
             coordInt = setInterval(() => {
                 requestAnimationFrame(moveObj);
@@ -917,7 +911,11 @@ function hoverText_init(params) {
             'pointer-events': 'none'
         });
 
-        initCoordTracking(hoverTextCursor, true, true);
+        initCoordTracking(hoverTextCursor, 'mousemove', true, true);
+        document.addEventListener('mousemove', (e) => {
+            hoverTextCursor.setAttribute('data-target-x', e.clientX);
+            hoverTextCursor.setAttribute('data-target-y', e.clientY);
+        });
     
         $(".textHover").mouseenter(function(event) {
                 hoverTextCursor.firstElementChild.innerText = event.target.getAttribute('data-text');
