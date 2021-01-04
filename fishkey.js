@@ -752,7 +752,9 @@ function parallax_init(params) {
         .on('mouseleave', function () {
             document.removeEventListener('mousemove', listener);
             $(this).attr('parallax', false);
-            parallaxTarget.style.transform = 'translate(0)';
+            //parallaxTarget.style.transform = 'translate(0)';
+            parallaxTarget.setAttribute('data-target-x', 0);
+            parallaxTarget.setAttribute('data-target-y', 0);
         });
     }
 }
