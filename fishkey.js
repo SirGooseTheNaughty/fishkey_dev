@@ -7,7 +7,13 @@ function vectorDraw_init(params) {
         (trigger != 'hover' && trigger !='scroll') ? trigger = 'scroll' : null;
         animFunction == '' ? animFunction = 'ease' : null;
         const vd_forSVG = document.querySelectorAll(selectors);
-        vd_forSVG.forEach((svg, i) => isNaN(offsets[i]) ? offsets[i] = 0 : null);
+        offsets.forEach((offset, i) => {
+            if (isNaN(offset)) {
+                offsets[i] = 0;
+            } else {
+                offsets[i] = $(window).height()*offset/100;
+            }
+        });
         vd_forSVG.forEach((space, i) => {
             $(space).html(svgs[i]);
         });
@@ -67,6 +73,7 @@ function vectorWrite_init(params) {
         strokeWidth = strokeWidth ? strokeWidth + 'px' : '1px';
         const vd_forSVG = document.querySelector(selector);
         $(vd_forSVG).html(svg);
+        isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
         
         desiredWidth = +vd_forSVG.getAttribute('data-field-width-value');
         coeff = desiredWidth/(+vd_forSVG.querySelector('svg').getAttribute('width'));
@@ -420,6 +427,13 @@ function textApp_init(parameters) {
     const txtAppConts = document.querySelectorAll(parameters.selectors);   // появляющийся текст
     const txtAppWordConts = [];
     const spacing = parameters.spacing ? parameters.spacing : '5px';
+    offsets.forEach((offset, i) => {
+        if (isNaN(offsets[i])) {
+            offsets[i] = 0;
+        } else {
+            offsets[i] = $(window).height()*offset/100;
+        }
+    });
 
     function txtAppear(contNum) {
         let i = 0;
@@ -572,9 +586,11 @@ function typeWriter_init(parameters) {
 
 /* появление текста по букве */
 function lettersAppear_init(params) {
-    const { letterSpeed, totalSpeed, minWidth, offset, delay } = params;
+    const { letterSpeed, totalSpeed, minWidth, delay } = params;
     const textElem = document.querySelector(`${params.selector} .tn-atom`),
         text = textElem.innerText.split('');
+    let { offset } = params;
+    isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
 
     const maxDelay = totalSpeed - letterSpeed;
 
@@ -1752,6 +1768,13 @@ function bgChange_init(params) {
     const body = document.querySelector('body');
     breakpointBlocks.forEach((block, i) => {
         breakpoints[i] = $(block).offset().top + offsets[i];
+    });
+    offsets.forEach((offset, i) => {
+        if (isNaN(offset)) {
+            offsets[i] = 0;
+        } else {
+            offsets[i] = $(window).height()*offset/100;
+        }
     });
 
     if ($(window).width() > minWidth) {
