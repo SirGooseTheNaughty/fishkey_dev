@@ -1,7 +1,10 @@
 /* утилита для плавного расчета координат */
-function initCoordTracking(obj, trigger, positioning, hasX, hasY, framerate = 20) {
+function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
     let isIntSet = false;
     let coordInt = '';
+    const framerate = params.framerate ? params.framerate : 20;
+    const speed = params.speed ? params.speed : 1;
+    const tolerance = params.tolerance ? params.tolerance : 1;
 
     if (hasX) {
         obj.setAttribute('data-current-x', 0);
@@ -74,7 +77,7 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, framerate = 20
     
     function oneCoordChange(curr, target) {
         const leng = target - curr;
-        const rise = 0.8*Math.sign(leng)*Math.cbrt(Math.abs(leng)*Math.abs(leng));
+        const rise = 0.8*Math.sign(leng)*Math.cbrt(speed*Math.abs(leng)*Math.abs(leng));
         if (Math.abs(rise) < 1) {
             return target;
         }
@@ -1421,7 +1424,7 @@ function bgPhotos_init(params) {
     }
 
     if ($(window).width() > params.minWidth) {
-        LP__photos.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
+        LP__photos.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, {framerate: 10, speed: 0.1, tolerance: 0.1}));
         LP__links.forEach((link, i) => {
             $(link).attr('assocWith', i);
             link.parentElement.style.zIndex = 5;
