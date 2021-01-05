@@ -2,9 +2,9 @@
 function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
     let isIntSet = false;
     let coordInt = '';
-    const framerate = params.framerate ? params.framerate : 20;
-    const speed = params.speed ? params.speed : 1;
-    const tolerance = params.tolerance ? params.tolerance : 1;
+    const framerate = params.framerate || 20;
+    const speed = params.delaySpeed || 1;
+    const tolerance = params.tolerance || 1;
 
     if (hasX) {
         obj.setAttribute('data-current-x', 0);
@@ -69,7 +69,7 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
         if (positioning == 'rel') {
             obj.style.transform = `translate(${translation.x}, ${translation.y})`;
         }
-        if (totalError < 1) {
+        if (totalError < tolerance) {
             clearInterval(coordInt);
             isIntSet = false;
         }
@@ -286,19 +286,25 @@ function bgNoise_init(parameters) {
 function fullPageHorScroll_init(parameters) {
     const horScrollBlocks = document.querySelectorAll(parameters.blocks),
         horScrollMenu = document.querySelector(parameters.menu),
-        horScroll_minWidth = parameters.minWidth;
-    let horScroll_blockWidth = parameters.blockWidth;
+        horScroll_minWidth = parameters.minWidth,
+        horScroll_blockWidth = parameters.blockWidth || $(window).width(),
+        hasDelay = parameters.hasDelay || false,
+        delaySpeed = parameters.delaySpeed || 1;
         
-    horScroll_blockWidth = horScroll_blockWidth ? horScroll_blockWidth : $(window).width();
     const horScrollwh = $(window).height(),
         horScrollBlocksNum = horScrollBlocks.length,
         horScrollTotalHeight = (horScrollBlocksNum-1)*horScroll_blockWidth + horScrollwh,
         horScrollMenuHeight = $(horScrollMenu).height(),
         horScrollBlockShifts = {};
 
+    let horScrollContainer = {};
+
     if ($(window).width() > horScroll_minWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
-        const horScrollContainer = document.querySelector('.horScrollContainer');
+        horScrollContainer = document.querySelector('.horScrollContainer');
+        if (hasDelay) {
+            initCoordTracking(horScrollContainer, 'scroll', 'rel', true, false, {delaySpeed, framerate: 15});
+        }
 
         $(horScrollBlocks).css({
             'position': 'absolute',
@@ -320,9 +326,15 @@ function fullPageHorScroll_init(parameters) {
             'height': `${horScrollTotalHeight}px`
         });
 
-        window.addEventListener('scroll', () => {
-            horizontalScroll(horScrollBlocksNum, horScroll_blockWidth, horScrollContainer);
-        });
+        if (hasDelay) {
+            window.addEventListener('scroll', () => {
+                horizontalScrollDelay();
+            });
+        } else {
+            window.addEventListener('scroll', () => {
+                horizontalScroll();
+            });
+        }
 
         $('a').on('click', (e) => {
             if ($(e.target).attr('href').substring(0,4) == '#rec') {
@@ -331,12 +343,19 @@ function fullPageHorScroll_init(parameters) {
             }
         });
     }
-}
-function horizontalScroll(horScrollBlocksNum, horScroll_blockWidth, horScrollContainer) {
-    const wt = $(window).scrollTop();
-    let horScrollShift = +wt;
-    if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
-        horScrollContainer.style.transform = `translate(${-horScrollShift}px, 0)`;
+    function horizontalScroll() {
+        const wt = $(window).scrollTop();
+        let horScrollShift = +wt;
+        if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
+            horScrollContainer.style.transform = `translate(${-horScrollShift}px, 0)`;
+        }
+    }
+    function horizontalScrollDelay() {
+        const wt = $(window).scrollTop();
+        let horScrollShift = +wt;
+        if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
+            horScrollContainer.setAttribute('data-target-x', -horScrollShift);
+        }
     }
 }
 
@@ -400,6 +419,8 @@ function horScroll_init(params) {
     const horScrollBlocks = document.querySelectorAll(params.selectors),
         horScrollMinWidth = params.minWidth,
         speedCoeff = params.speedCoeff,
+        hasDelay = params.hasDelay || false,
+        delaySpeed = params.delaySpeed || 1,
 
         horScrollwh = $(window).height(),
         horScrollww = $(window).width(),
@@ -411,7 +432,10 @@ function horScroll_init(params) {
 
     if ($(window).width() > horScrollMinWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
-        horScrollContainer = $('.horScrollContainer');  
+        horScrollContainer = document.querySelector('.horScrollContainer');
+        if (hasDelay) {
+            initCoordTracking(horScrollContainer, 'scroll', 'rel', true, true, {framerate: 15, delaySpeed});
+        }
         $(horScrollContainer).wrap('<div class="horScrollStaticContainer"></div>');
         $('.horScrollStaticContainer').css({
             'background-color': horScrollBlocks[0].querySelector('.t396__artboard').style.backgroundColor, 
@@ -430,7 +454,11 @@ function horScroll_init(params) {
             block.style.left = i*horScrollww+'px';
         });
     
-        document.addEventListener('scroll', horizontalScroll);
+        if (hasDelay) {
+            document.addEventListener('scroll', horizontalScrollDelay);
+        } else {
+            document.addEventListener('scroll', horizontalScroll);
+        }
     }
 
     function horizontalScroll() {
@@ -451,6 +479,32 @@ function horScroll_init(params) {
                 position: 'relative',
                 transform: `translate(${-horScrollStop*speedCoeff}px, ${horScrollStop}px)`
             });
+        }
+    }
+
+    function horizontalScrollDelay() {
+        const wt = $(window).scrollTop();
+        let horScrollShift = +wt - horScrollBlockTop;
+        if (horScrollShift < 0) {
+            $(horScrollContainer).css({
+                position: 'relative'
+            });
+            horScrollContainer.setAttribute('data-target-x', 0);
+            horScrollContainer.setAttribute('data-target-y', 0);
+        } else if (horScrollShift < horScrollStop) {
+            $(horScrollContainer).css({
+                position: 'fixed'
+            });
+            horScrollContainer.setAttribute('data-target-x', -horScrollShift*speedCoeff);
+            horScrollContainer.setAttribute('data-target-y', 0);
+            horScrollContainer.setAttribute('data-current-y', 0);
+        } else {
+            $(horScrollContainer).css({
+                position: 'relative'
+            });
+            horScrollContainer.setAttribute('data-current-y', horScrollStop);
+            horScrollContainer.setAttribute('data-target-x', -horScrollStop*speedCoeff);
+            horScrollContainer.setAttribute('data-target-y', horScrollStop);
         }
     }
 }
@@ -1250,7 +1304,8 @@ function videoCircle_init(params) {
 /* замена курсора */
 function cursorChange_init(params) {
     const { minWidth, numStates, sourceOfNormal, sourceOfStates, normalExternal, normalInternal, statesExternal, statesInternal } = params,
-        hasDelay = params.hasDelay ? params.hasDelay : false;
+        hasDelay = params.hasDelay || false,
+        delaySpeed = params.delaySpeed || 1,
         stateStyles = {},
         stateInners = [];
     let normalStyle = params.normalStyle;
@@ -1323,7 +1378,7 @@ function cursorChange_init(params) {
         });
 
         if (hasDelay) {
-            initCoordTracking(cursor, 'mousemove', 'abs', true, true, {})
+            initCoordTracking(cursor, 'mousemove', 'abs', true, true, {delaySpeed, framerate: 15});
             document.addEventListener('mousemove', (e) => {
                 cursor.setAttribute('data-target-x', e.clientX);
                 cursor.setAttribute('data-target-y', e.clientY);
@@ -1433,7 +1488,7 @@ function bgPhotos_init(params) {
     }
 
     if ($(window).width() > params.minWidth) {
-        LP__photos.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, {framerate: 10, speed: 0.1, tolerance: 0.1}));
+        LP__photos.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, {framerate: 10, delaySpeed: 0.1, tolerance: 0.1}));
         LP__links.forEach((link, i) => {
             $(link).attr('assocWith', i);
             link.parentElement.style.zIndex = 5;
@@ -1642,7 +1697,7 @@ function horDrag_init(params) {
     const horDragGallery = document.querySelector(params.block),
         horDragObj = horDragGallery.querySelector('div').firstElementChild;
     const hasDelay = params.hasDelay || false;
-    const speed = params.speed || 1.2;
+    const delaySpeed = params.delaySpeed || 1.2;
 
     let dragStartX = 0,
         dragObjStartX = 0,
@@ -1651,7 +1706,7 @@ function horDrag_init(params) {
 
     if ($(window).width() > params.minWidth) {
         if (hasDelay) {
-            initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {speed, framerate: 15});
+            initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {delaySpeed, framerate: 15});
         }
         horDragObj.style.overflow = 'visible';
         horDragObj.style.cursor = 'pointer';

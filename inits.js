@@ -69,6 +69,8 @@ dev
     fullPageHorScroll_init({
         blocks: '#rec123, #rec456, ...',    // id блоков
         menu: '#rec1234',                   // id меню
+        hasDelay: true,
+        delaySpeed: 1,
         minWidth: 1200,                      // минимальная ширина экрана для анимации
         blockWidth: ''
     })
@@ -287,7 +289,8 @@ dev
         minWidth: 1200,                             // минимальная ширина экрана
         numStates: 2,                               // количество состояний курсора кроме основного
         hasNewNormalStyle: false,                   // заменять ли нормальное состояние (вместо курсора)
-        hasDelay: true,                             // отставание (плавное перемещение) true - есть, false - нет
+        hasDelay: true,                             // отставание (плавное перемещение) true - есть, false - нет (опц)
+        delaySpeed: 1,                              // задержка отставания (0.1 - 5) (опц)
         sourceOfNormal: "external",                 // источник нормального состояния (external - вставить код, internal - селектор элемента в тильде)
         sourceOfStates: [                           // источники дополнительных состояний
             "internal",
@@ -385,7 +388,7 @@ dev
         block: '#rec236537294',         // перетаскиваемый блок
         minWidth: 1200,                 // минимальная ширина экрана
         hasDelay: true,                 // плавная прокрутка (опц)
-        speed: 1                        // скорость при отставании (0.1 - 5) (опц)
+        delaySpeed: 1                   // скорость при отставании (0.1 - 5) (опц)
     })
 </script>
 
