@@ -1641,6 +1641,8 @@ function cornerPhotos_init(params) {
 function horDrag_init(params) {
     const horDragGallery = document.querySelector(params.block),
         horDragObj = horDragGallery.querySelector('div').firstElementChild;
+    const hasDelay = params.hasDelay || false;
+    const speed = params.speed || 1.2;
 
     let dragStartX = 0,
         dragObjStartX = 0,
@@ -1648,6 +1650,9 @@ function horDrag_init(params) {
         horDragMaxLeft = 0;
 
     if ($(window).width() > params.minWidth) {
+        if (hasDelay) {
+            initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {speed, framerate: 15});
+        }
         horDragObj.style.overflow = 'visible';
         horDragObj.style.cursor = 'pointer';
         document.body.style.overflowX = 'hidden';
@@ -1674,14 +1679,25 @@ function horDrag_init(params) {
 
         horDragMaxLeft = $(window).width() - $(horDragObj).width();
 
-        horDragObj.addEventListener('mousedown', function(event) {
-            dragStartX = event.clientX;
-            document.addEventListener('mousemove', horDrag);
-        });
-        document.addEventListener('mouseup', function(event) {
-            document.removeEventListener('mousemove', horDrag);
-            dragObjStartX = +horDragObj.getAttribute('data-current-x');
-        });
+        if (hasDelay) {
+            horDragObj.addEventListener('mousedown', function(event) {
+                dragStartX = event.clientX;
+                document.addEventListener('mousemove', horDragDelay);
+            });
+            document.addEventListener('mouseup', function(event) {
+                document.removeEventListener('mousemove', horDragDelay);
+                dragObjStartX = +horDragObj.getAttribute('data-target-x');
+            });
+        } else {
+            horDragObj.addEventListener('mousedown', function(event) {
+                dragStartX = event.clientX;
+                document.addEventListener('mousemove', horDrag);
+            });
+            document.addEventListener('mouseup', function(event) {
+                document.removeEventListener('mousemove', horDrag);
+                dragObjStartX = +horDragObj.getAttribute('data-current-x');
+            });
+        }
     }
 
     function horDrag(event) {
@@ -1696,6 +1712,18 @@ function horDrag_init(params) {
         } else if (horDragNewPos < horDragMaxLeft) {
             horDragObj.style.transform = `translate(${horDragMaxLeft}px, 0)`;
             horDragObj.setAttribute('data-current-x', horDragMaxLeft);
+        }
+    }
+
+    function horDragDelay(event) {
+        const horDragShift = event.clientX - dragStartX,
+            horDragNewPos = dragObjStartX + horDragShift;
+        if (horDragNewPos < horDragMinLeft && horDragNewPos > horDragMaxLeft) {
+            horDragObj.setAttribute('data-target-x', dragObjStartX + horDragShift);
+        } else if (horDragNewPos > horDragMinLeft) {
+            horDragObj.setAttribute('data-target-x', horDragMinLeft);
+        } else if (horDragNewPos < horDragMaxLeft) {
+            horDragObj.setAttribute('data-target-x', horDragMaxLeft);
         }
     }
 }
