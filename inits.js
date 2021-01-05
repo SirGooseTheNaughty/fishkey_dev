@@ -72,7 +72,9 @@ dev
         hasDelay: true,
         delaySpeed: 1,
         minWidth: 1200,                      // минимальная ширина экрана для анимации
-        blockWidth: ''
+        blockWidth: '',
+        hasDelay: true,             
+        delaySpeed: 1
     })
 </script>
 
@@ -84,7 +86,9 @@ dev
         header: '#rec456',          // id заголовка
         minWidth: 1200,             // минимальная ширина экрана для анимации
         totalShift: 1800,           // максимальное смещение блоков
-        blockHeight: 530            // высота блока со скроллом
+        blockHeight: 530,           // высота блока со скроллом
+        hasDelay: true,             
+        delaySpeed: 1
     });
 </script>
 
@@ -94,7 +98,9 @@ dev
     horScroll_init({
         selectors: '#rec123, #rec456, ...',     // id блоков
         speedCoeff: 2,                          // коэффициент ускорения скролла
-        minWidth: 980                           // минимальная ширина экрана для анимации
+        minWidth: 980,                          // минимальная ширина экрана для анимации
+        hasDelay: true,             
+        delaySpeed: 1
     });
 </script>
 

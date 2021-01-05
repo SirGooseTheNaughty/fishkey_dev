@@ -366,14 +366,23 @@ function horScrollBlock_init(parameters) {
         header = document.querySelector(parameters.header),
         minWidth = parameters.minWidth,
         totalShift = parameters.totalShift,
-        blockHeight = parameters.blockHeight;
+        blockHeight = parameters.blockHeight,
+        hasDelay = parameters.hasDelay || false,
+        delaySpeed = parameters.delaySpeed || 1;
+
+    let headerTop = 0,
+        horScrollContainer = {};
     
     if ($(window).width() > minWidth) {
-        const headerTop = $(header).offset().top;
+        headerTop = $(header).offset().top;
         const children = $(horScrollBlock.querySelector('.t396__artboard')).children();
 
         $(children).wrapAll('<div class="horScrollContainer"></div>');
-        const horScrollContainer = document.querySelector('.horScrollContainer');
+        horScrollContainer = document.querySelector('.horScrollContainer');
+
+        if (hasDelay) {
+            initCoordTracking(horScrollContainer, 'scroll', 'rel', true, true, {delaySpeed, framerate: 15});
+        }
 
         $(horScrollContainer).css({top: '0', left: '0',});
         $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'});
@@ -381,35 +390,77 @@ function horScrollBlock_init(parameters) {
         horScrollBlock.style.backgroundColor = window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor;
         horScrollContainer.parentElement.style.overflow = 'visible';
 
-        window.addEventListener('scroll', () => {
-            horScrollBlock_handler(headerTop, horScrollContainer, header, horScrollBlock, totalShift);
-        });
+        if (hasDelay) {
+            window.addEventListener('scroll', () => {
+                horScrollBlockDelay_handler();
+            });
+        } else {
+            window.addEventListener('scroll', () => {
+                horScrollBlock_handler();
+            });
+        }
     }
-}
-function horScrollBlock_handler(headerTop, horScrollContainer, header, horScrollBlock, totalShift) {
-    const wt = $(window).scrollTop(),
-        horScrollShift = +wt - headerTop;
-    if (wt < headerTop) {
-        $(horScrollContainer).css({
-            'position': 'relative',
-            transform: 'translate(0)'
-        });
-        $(header).css({'position': 'relative'});
-    } else if (horScrollShift < totalShift) {
-        $(horScrollContainer).css({
-            'position': 'fixed',
-            transform: `translate(-${horScrollShift}px, ${$(header).height()}px)`
-        });
-        $(header).css({position: 'fixed', transform: 'translate(0)'});
-        horScrollBlock.style.paddingBottom = `${$(header).height()}px`;
-    } else {
-        $(horScrollContainer).css({
-            'position': 'relative',
-            'padding-bottom': '0',
-            transform: `translate(-${totalShift}px, ${totalShift}px)`
-        });
-        $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
-        horScrollBlock.style.paddingBottom = '0';
+
+    function horScrollBlock_handler() {
+        const wt = $(window).scrollTop(),
+            horScrollShift = +wt - headerTop;
+        if (wt < headerTop) {
+            $(horScrollContainer).css({
+                'position': 'relative',
+                transform: 'translate(0)'
+            });
+            $(header).css({'position': 'relative'});
+        } else if (horScrollShift < totalShift) {
+            $(horScrollContainer).css({
+                'position': 'fixed',
+                transform: `translate(-${horScrollShift}px, ${$(header).height()}px)`
+            });
+            $(header).css({position: 'fixed', transform: 'translate(0)'});
+            horScrollBlock.style.paddingBottom = `${$(header).height()}px`;
+        } else {
+            $(horScrollContainer).css({
+                'position': 'relative',
+                'padding-bottom': '0',
+                transform: `translate(-${totalShift}px, ${totalShift}px)`
+            });
+            $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
+            horScrollBlock.style.paddingBottom = '0';
+        }
+    }
+
+    function horScrollBlockDelay_handler() {
+        const wt = $(window).scrollTop(),
+            horScrollShift = +wt - headerTop;
+        if (wt < headerTop) {
+            $(horScrollContainer).css({
+                'position': 'relative'
+            });
+            horScrollContainer.setAttribute('data-target-x', 0);
+            horScrollContainer.setAttribute('data-target-y', 0);
+            horScrollContainer.setAttribute('data-current-y', 0);
+            $(header).css({'position': 'relative'});
+        } else if (horScrollShift < totalShift) {
+            $(horScrollContainer).css({
+                'position': 'fixed'
+            });
+            horScrollContainer.setAttribute('data-target-x', -horScrollShift);
+            horScrollContainer.setAttribute('data-target-y', $(header).height());
+            horScrollContainer.setAttribute('data-current-y', $(header).height());
+
+            $(header).css({position: 'fixed', transform: 'translate(0)'});
+            horScrollBlock.style.paddingBottom = `${$(header).height()}px`;
+        } else {
+            $(horScrollContainer).css({
+                'position': 'relative',
+                'padding-bottom': '0'
+            });
+            horScrollContainer.setAttribute('data-target-x', -totalShift);
+            horScrollContainer.setAttribute('data-target-y', totalShift);
+            horScrollContainer.setAttribute('data-current-y', totalShift);
+
+            $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
+            horScrollBlock.style.paddingBottom = '0';
+        }
     }
 }
 
