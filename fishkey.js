@@ -1250,6 +1250,7 @@ function videoCircle_init(params) {
 /* замена курсора */
 function cursorChange_init(params) {
     const { minWidth, numStates, sourceOfNormal, sourceOfStates, normalExternal, normalInternal, statesExternal, statesInternal } = params,
+        hasDelay = params.hasDelay ? params.hasDelay : false;
         stateStyles = {},
         stateInners = [];
     let normalStyle = params.normalStyle;
@@ -1321,12 +1322,20 @@ function cursorChange_init(params) {
             transition: '0.25s ease'
         });
 
-        document.addEventListener('mousemove', (event) => {
-            $(cursor).css({
-                left: event.pageX,
-                top: event.pageY - $(window).scrollTop()
+        if (hasDelay) {
+            initCoordTracking(cursor, 'mousemove', 'abs', true, true, {})
+            document.addEventListener('mousemove', (e) => {
+                cursor.setAttribute('data-target-x', e.clientX);
+                cursor.setAttribute('data-target-y', e.clientY);
             });
-        });
+        } else {
+            document.addEventListener('mousemove', (event) => {
+                $(cursor).css({
+                    left: event.pageX,
+                    top: event.pageY - $(window).scrollTop()
+                });
+            });
+        }
 
 
         for (let i = 0; i < numStates; i++) {
