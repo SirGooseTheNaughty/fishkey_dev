@@ -64,7 +64,7 @@
 /* кнопка для бургера */
 #nav-icon {
     width: 50px;
-    height: 40px;
+    height: 36px;
     position: relative;
     transition: .5s ease-in-out;
     cursor: pointer;

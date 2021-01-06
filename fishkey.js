@@ -87,12 +87,14 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
 
 /* вырисовка вектора */
 function vectorDraw_init(params) {
-    let { selectors, svgs, animTime, animFunction, trigger, hoverTriggers, offsets } = params;
+    let { selectors, svgs, trigger, hoverTriggers, offsets } = params;
+    const animFunction = params.animFunction || 'ease';
+    const animTime = params.animTime || 0.5;
+    const minWidth = params.minWidth || 0;
     const logoLengths = [], logoPaths = [], desiredWidths = [], coeffs = [];
 
-    if ($(window).width() > params.minWidth) {
+    if ($(window).width() > minWidth) {
         (trigger != 'hover' && trigger !='scroll') ? trigger = 'scroll' : null;
-        animFunction == '' ? animFunction = 'ease' : null;
         const vd_forSVG = document.querySelectorAll(selectors);
         offsets.forEach((offset, i) => {
             if (isNaN(offset)) {
@@ -151,12 +153,15 @@ function vectorDraw_init(params) {
 
 /* вырисовка надписи вектором */
 function vectorWrite_init(params) {
-    let { selector, svg, animTime, offset, strokeWidth } = params;
+    let { selector, svg, offset } = params;
     let logoPaths = [];
     let desiredWidth = 0;
     let coeff = 0;
+    const animTime = params.animTime || 0.5;
+    const minWidth = params.minWidth || 0;
+    const strokeWidth = params.strokeWidth || 1;
 
-    if ($(window).width() > params.minWidth) {
+    if ($(window).width() > minWidth) {
         strokeWidth = strokeWidth ? strokeWidth + 'px' : '1px';
         const vd_forSVG = document.querySelector(selector);
         $(vd_forSVG).html(svg);
@@ -211,8 +216,9 @@ function vectorWrite_init(params) {
 
 
 /* кнопка вжух в кружок */
-function buttonToCircle_init(selector, minWidth) {
-    const buttonToCircle = $(selector),
+function buttonToCircle_init(params) {
+    const minWidth = params.minWidth || 1200;
+    const buttonToCircle = $(params.selector),
         buttonTextHolder = $(buttonToCircle).children(),
         buttonStyle = {
             'bgColor': $(buttonTextHolder).css('background-color'),
@@ -272,21 +278,21 @@ function buttonToCircle_init(selector, minWidth) {
 function bgNoise_init(parameters) {
     const bgNoiseBlock = document.querySelector(parameters.selector),
         bgNoiser = bgNoiseBlock.querySelector('[data-elem-type="shape"]'),
-        bgGrainer = bgNoiser.querySelector('.tn-atom');
-    parameters.grain = (parameters.grain) ? parameters.grain + 'px' : 'auto';
+        bgGrainer = bgNoiser.querySelector('.tn-atom'),
+        grain = parameters.grain ? parameters.grain + 'px' : 'auto';
     bgNoiser.classList.add('bg-noise');
-    bgNoiser.style.opacity = parameters.opacity/100;
+    bgNoiser.style.opacity = parameters.opacity/100 || 0.05;
     bgNoiseBlock.style.height = '0';
     bgNoiseBlock.style.overflow = 'hidden';
     bgGrainer.style.backgroundRepeat = 'repeat';
-    bgGrainer.style.backgroundSize = `${parameters.grain}`;
+    bgGrainer.style.backgroundSize = `${grain}`;
 }
 
 /* горизонтальный скролл всей страницы */
 function fullPageHorScroll_init(parameters) {
     const horScrollBlocks = document.querySelectorAll(parameters.blocks),
-        horScrollMenu = document.querySelector(parameters.menu),
-        horScroll_minWidth = parameters.minWidth,
+        horScrollMenu = parameters.menu ? document.querySelector(parameters.menu) : null,
+        horScroll_minWidth = parameters.minWidth || 1200,
         horScroll_blockWidth = parameters.blockWidth || $(window).width(),
         hasDelay = parameters.hasDelay || false,
         delaySpeed = parameters.delaySpeed || 1;
@@ -294,7 +300,7 @@ function fullPageHorScroll_init(parameters) {
     const horScrollwh = $(window).height(),
         horScrollBlocksNum = horScrollBlocks.length,
         horScrollTotalHeight = (horScrollBlocksNum-1)*horScroll_blockWidth + horScrollwh,
-        horScrollMenuHeight = $(horScrollMenu).height(),
+        horScrollMenuHeight = horScrollMenu ? $(horScrollMenu).height() : 0,
         horScrollBlockShifts = {};
 
     let horScrollContainer = {};
@@ -316,7 +322,9 @@ function fullPageHorScroll_init(parameters) {
             block.style.left = `${i*horScroll_blockWidth}px`;
             horScrollBlockShifts['#'+block.getAttribute('id')] = `${i*horScroll_blockWidth}`;
         });
-        $(horScrollMenu).css({'position': 'fixed', 'width': '100%', 'z-index': '999'});
+        if (horScrollMenu) {
+            $(horScrollMenu).css({'position': 'fixed', 'width': '100%', 'z-index': '999'});
+        }
         $(horScrollContainer).css({'position': 'fixed', 'top': horScrollMenuHeight, 'left': '0'});
         $(horScrollContainer).wrap('<div class="horScrollStaticContainer"></div>');
         $('.horScrollStaticContainer').css({
@@ -364,7 +372,7 @@ function fullPageHorScroll_init(parameters) {
 function horScrollBlock_init(parameters) {
     const horScrollBlock = document.querySelector(parameters.block),
         header = document.querySelector(parameters.header),
-        minWidth = parameters.minWidth,
+        minWidth = parameters.minWidth || 1200,
         totalShift = parameters.totalShift,
         blockHeight = parameters.blockHeight,
         hasDelay = parameters.hasDelay || false,
@@ -467,9 +475,9 @@ function horScrollBlock_init(parameters) {
 
 /* горизонтальный скролл нескольких блоков */
 function horScroll_init(params) {
-    const horScrollBlocks = document.querySelectorAll(params.selectors),
-        horScrollMinWidth = params.minWidth,
-        speedCoeff = params.speedCoeff,
+    const horScrollBlocks = document.querySelectorAll(params.blocks),
+        horScrollMinWidth = params.minWidth || 1200,
+        speedCoeff = params.speedCoeff || 1,
         hasDelay = params.hasDelay || false,
         delaySpeed = params.delaySpeed || 1,
 
@@ -564,9 +572,11 @@ function horScroll_init(params) {
 /* смена экранов по скроллу */
 function screenChangeOnScroll_init(params) {
     const pages = document.querySelectorAll(params.blocks);
+    const minWidth = params.minWidth || 1200;
+    const animTime = params.animTime || 0.8;
     let activePage = 0;
 
-    if ($(window).width() > params.minWidth) {
+    if ($(window).width() > minWidth) {
         $(pages).css({
             'position': 'fixed',
             'width': '100vw',
@@ -577,14 +587,13 @@ function screenChangeOnScroll_init(params) {
         pages[0].style.top = '0';
         pages.forEach(page => {
             page.style.backgroundColor = window.getComputedStyle(page.querySelector('div').querySelector('div')).backgroundColor;
-            page.style.transition = `top ${params.changeTime}s cubic-bezier(.75,0,.25,1)`;
+            page.style.transition = `top ${animTime}s cubic-bezier(.75,0,.25,1)`;
         });
     
         document.addEventListener('wheel', pageChange);
     }
     
     function pageChange(event) {
-        console.log(event);
         let delta = event.deltaY;
         if (delta >= 0) {
             nextPage(1);
@@ -594,7 +603,7 @@ function screenChangeOnScroll_init(params) {
     }
 
     function nextPage(direction) {
-        const nexPage = activePage+direction;
+        const nexPage = activePage + direction;
         if(nexPage < pages.length && nexPage >= 0) {
             document.removeEventListener('wheel', pageChange);
             pages[nexPage].style.top = '0';
@@ -607,7 +616,7 @@ function screenChangeOnScroll_init(params) {
             setTimeout(() => {
                 activePage = activePage + direction;
                 document.addEventListener('wheel', pageChange);
-            }, params.changeTime*1000);
+            }, animTime*1000);
         }
     }
 }
@@ -615,10 +624,14 @@ function screenChangeOnScroll_init(params) {
 
 /* появление текста */
 function textApp_init(parameters) {
-    const { minWidth, animSpeed, wordSpeed, divider, trigger, offsets} = parameters;
+    const { divider, trigger } = parameters;
     const txtAppConts = document.querySelectorAll(parameters.selectors);   // появляющийся текст
+    const spacing = parameters.spacing ? parameters.spacing + 'px' : '5px';
+    const minWidth = parameters.minWidth || 0;
+    const animSpeed = parameters.animSpeed || 400;
+    const wordSpeed = parameters.wordSpeed || 50;
+    const offsets = parameters.offsets || null;
     const txtAppWordConts = [];
-    const spacing = parameters.spacing ? parameters.spacing : '5px';
     offsets.forEach((offset, i) => {
         if (isNaN(offsets[i])) {
             offsets[i] = 0;
@@ -663,7 +676,7 @@ function textApp_init(parameters) {
             txtAppCont = txtAppCont.firstElementChild;
             const txtApp = txtAppCont.textContent;
             let txtAppWords = [];
-            if (divider == 'word') {
+            if (divider == 'w') {
                 txtAppWords = txtApp.split(' ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
@@ -671,7 +684,7 @@ function textApp_init(parameters) {
                                                 <span class='txtAppWordCont${contNum}'>${word} </span>
                                             </p>`;
                 });
-            } else if (divider == 'phrase') {
+            } else if (divider == 'p') {
                 txtAppWords = txtApp.split('. ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
@@ -685,7 +698,7 @@ function textApp_init(parameters) {
                                                 </p>`;
                     }
                 });
-            } else if (divider == 'line') {
+            } else if (divider == 'l') {
                 txtAppWords = txtApp.split(';;');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
@@ -740,8 +753,9 @@ function textApp_init(parameters) {
 
 /* пишущая машинка */
 function typeWriter_init(parameters) {
-    const { totalSpeed, minWidth } = parameters;
-    let { offset } = parameters;
+    const totalSpeed = parameters.totalSpeed || 2000;
+    const minWidth = parameters.minWidth || 0;
+    let offset = parameters.offset || 0;
     const tw_TextElem = document.querySelector(parameters.selector).firstElementChild,
         tw_Text = tw_TextElem.innerText.split("");
 
@@ -778,10 +792,13 @@ function typeWriter_init(parameters) {
 
 /* появление текста по букве */
 function lettersAppear_init(params) {
-    const { letterSpeed, totalSpeed, minWidth, delay } = params;
+    const letterSpeed = parameters.letterSpeed || 2;
+    const totalSpeed = parameters.totalSpeed || 3;
+    const minWidth = parameters.minWidth || 0;
+    const delay = parameters.delay || 0;
+    let offset = parameters.offset || 0;
     const textElem = document.querySelector(`${params.selector} .tn-atom`),
         text = textElem.innerText.split('');
-    let { offset } = params;
     isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
 
     const maxDelay = totalSpeed - letterSpeed;
@@ -814,7 +831,8 @@ function lettersAppear_init(params) {
 
 
 /* ссылки италиком */
-function italicLinks_init(selector = '') {
+function italicLinks_init(params) {
+    const selector = params.selector || '';
     if ($(window).width() > 1200) {
         const it_links = document.querySelectorAll(`${selector} [href ^= "#rec"], ${selector} [href ^= "http"]`);
         $(it_links).addClass('it-links');
@@ -824,19 +842,14 @@ function italicLinks_init(selector = '') {
 
 /* прилипание картинок */
 function parallax_init(params) {
-    function listener(e) {
-        parallaxTarget.setAttribute('data-target-x', (e.clientX - parallaxRectCenter.x)/4);
-        parallaxTarget.setAttribute('data-target-y', (e.clientY - parallaxRectCenter.y)/4);
-    }
-
     const parallaxTargets = document.querySelectorAll(params.selectors),
-        parallaxMinScreenWidth = params.minWidth;
+        minWidth = params.minWidth || 1200;
 
     let parallaxTarget,
         parallaxRect = {},
         parallaxRectCenter = {x: 0, y: 0};
 
-    if ($(window).width() > parallaxMinScreenWidth) {
+    if ($(window).width() > minWidth) {
         parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
         $(parallaxTargets).addClass('parallax');
         $(parallaxTargets).on('mouseenter', function () {
@@ -856,6 +869,11 @@ function parallax_init(params) {
             parallaxTarget.setAttribute('data-target-y', 0);
         });
     }
+
+    function listener(e) {
+        parallaxTarget.setAttribute('data-target-x', (e.clientX - parallaxRectCenter.x)/4);
+        parallaxTarget.setAttribute('data-target-y', (e.clientY - parallaxRectCenter.y)/4);
+    }
 }
 
 
@@ -863,14 +881,14 @@ function parallax_init(params) {
 function oneSideButton_init(params) {
     const targetOneSideButtonsPars = document.querySelectorAll(params.selectors),  // кнопки (второй уровень)
         oneSideButtonStyle = {
-            firstColor: params.firstColor,			    // код первого цвета
-            secondColor: params.secondColor,		    // код второго цвета
-            whereTo: params.whereTo,                // направление смещения: right / left / top / bottom
-            firstTextColor: params.firstTextColor,         // код первого цвета текста
-            secondTextColor: params.secondTextColor,         // код второго цвета текста
-            animTime: params.animTime                  // время анимации (в миллисекундах)
+            firstColor: params.firstColor || 'black',			    // код первого цвета
+            secondColor: params.secondColor || 'white',		    // код второго цвета
+            whereTo: params.whereTo || 'left',                // направление смещения: right / left / top / bottom
+            firstTextColor: params.firstTextColor || 'white',         // код первого цвета текста
+            secondTextColor: params.secondTextColor || 'black',         // код второго цвета текста
+            animTime: params.animTime || 400                  // время анимации (в миллисекундах)
         },
-        buttonBackgroundMinWidth = params.minWidth;    // минимальная ширина экрана для анимации
+        minWidth = params.minWidth || 1200;    // минимальная ширина экрана для анимации
 
     let animTimeout = '';
     function changeOneSideButton(firstColor, secondColor, button) {
@@ -890,7 +908,7 @@ function oneSideButton_init(params) {
         }, oneSideButtonStyle.animTime);
     }
 
-    if ($(window).width() > buttonBackgroundMinWidth) {
+    if ($(window).width() > minWidth) {
         const targetButtons = [];
         targetOneSideButtonsPars.forEach((button, i) => {
             targetButtons[i] = button.firstElementChild;
@@ -949,16 +967,16 @@ function oneSideButton_init(params) {
 function twoSideButton_init(params) {
     const targetTwoSideButtonsPar = document.querySelectorAll(params.selectors),  // кнопки
         twoSideButtonStyle = {
-            firstColor: params.firstColor,			    // код первого цвета
-            secondColor: params.secondColor,		    // код второго цвета
-            whereTo: params.whereTo,                // направление смещения: right / left / top / bottom
-            firstTextColor: params.firstTextColor,
-            secondTextColor: params.secondTextColor,
-            animTime: params.animTime
+            firstColor: params.firstColor || 'black',			    // код первого цвета
+            secondColor: params.secondColor || 'white',		    // код второго цвета
+            whereTo: params.whereTo || 'left',                // направление смещения: right / left / top / bottom
+            firstTextColor: params.firstTextColor || 'white',         // код первого цвета текста
+            secondTextColor: params.secondTextColor || 'black',         // код второго цвета текста
+            animTime: params.animTime || 400                  // время анимации (в миллисекундах)
         },
-        twoSideButtonBackgroundMinWidth = params.minWidth;    // минимальная ширина экрана для анимации
+        minWidth = params.minWidth || 1200;    // минимальная ширина экрана для анимации
 
-    if ($(window).width() > twoSideButtonBackgroundMinWidth) {
+    if ($(window).width() > minWidth) {
         const targetTwoSideButtons= [];
         targetTwoSideButtonsPar.forEach((button, i) => {
             targetTwoSideButtons[i] = button.firstElementChild;
@@ -1004,11 +1022,11 @@ function twoSideButton_init(params) {
 
 /* текст над элементами */
 function hoverText_init(params) {
-    const hoverTextObjects = document.querySelectorAll(params.objects),
+    const hoverTextObjects = document.querySelectorAll(params.selectors),
         hoverTextCursor = document.querySelector(params.cursor),
         hoverTexts = params.texts,
-        isCursorHidden = params.isCursorHidden,
-        minWidth = params.minWidth;
+        isCursorHidden = params.isCursorHidden || false,
+        minWidth = params.minWidth || 1200;
 
     if ($(window).width() > minWidth) {
         hoverTextObjects.forEach((obj, i) => {
@@ -1056,21 +1074,22 @@ function uniBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
         triggerBlock = document.querySelector(params.triggerBlock),
         triggerElem = triggerBlock.querySelector('.tn-elem'),
-        burgerTransTime = params.burgerTime,
-        burgerElemsTransTime = params.elementsTime,
+        burgerTransTime = params.burgerTime || 1,
+        burgerElemsTransTime = params.elementsTime || 0.4,
         startPos = [
-            params.verticalPosition,
-            params.horizontalPosition
+            params.verticalPosition || 'top',
+            params.horizontalPosition || 'left'
         ],
-        burgerShape = params.burgerShape,
+        burgerShape = params.burgerShape || 'circle',
         shownStyle = {'z-index': '99'},
         hiddenStyle = {
             'width': '0',
             'height': '0',
             'z-index': '0'
         },
-        triggerLineHeight = params.triggerLineHeight,
-        triggerColor = params.triggerColor,
+        triggerLineHeight = params.triggerLineHeight || 4,
+        triggerColor = params.triggerColor || 'white',
+        triggerScaleMobile = params.triggerScaleMobile || 1,
         burgerLinks = burgerBlock.querySelectorAll('a');
 
     // инициализация триггера
@@ -1098,6 +1117,12 @@ function uniBurger_init(params) {
         height: triggerLineHeight,
         'background-color': triggerColor
     });
+    if ($(window).width() < 900) {
+        burgerButton.style.transform = `scale(${triggerScaleMobile})`;
+        $(burgerButton).children().css({
+            height: triggerLineHeight/triggerScaleMobile
+        });
+    }
         
 
     $(burgerBlock).wrap('<div class="burgerWrapper"></div>');
@@ -1231,26 +1256,38 @@ function uniBurger_init(params) {
 function pushingBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
         triggerBlock = document.querySelector(params.triggerBlock),
-        { burgerPosition, burgerWidth, triggerLineHeight, triggerColor } = params,
+        burgerPosition = params.burgerPosition || 'top',
+        burgerWidth = params.burgerWidth || $(window).width(),
+        triggerLineHeight = params.triggerLineHeight || 4,
+        triggerColor = params.triggerColor || 'black',
+        triggerScaleMobile = params.triggerScaleMobile || 1,
+        easeTime = params.easeTime || 0.8,
+        easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)',
         triggerElem = triggerBlock.querySelector('.tn-elem'),
-        allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         burgerLinks = burgerBlock.querySelectorAll('a'),
-        easeTime = 0.8,
-        burgerHeight = burgerBlock.querySelector('div').firstElementChild.getAttribute('data-artboard-height'),
-        easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)';
+        burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
+        burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
+        burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : burgerArtboard.getAttribute('data-artboard-height');
+    
+    const allBlocks = document.querySelectorAll('[id ^= "rec"]'),
+        allUsedBlocks = [...allBlocks].filter(block => !block.querySelector('.t-popup') && block != triggerBlock && block != burgerBlock);
 
     let pushingShiftX = 0,
         pushingShiftY = 0;
     
-    $(allBlocks).css('transition', `transform ${easeTime}s ${easeFunction}`);
+    $(allUsedBlocks).wrapAll('<div class="pushingBurger_blocksWrapper"></div>');
+    const blocksWrapper = document.querySelector('.pushingBurger_blocksWrapper');
+    $(blocksWrapper).css('transition', `transform ${easeTime}s ${easeFunction}`);
 
     $(burgerBlock).css({
         position: 'fixed',
         'z-index': '99',
         width: '100vw',
         height: burgerHeight + 'px',
+        transition: `transform ${easeTime}s ${easeFunction}`,
         'background-color': window.getComputedStyle(burgerBlock.querySelector('.t396__artboard')).backgroundColor
     });
+    $(burgerBlock).attr('data-burgeropened', 'false');
 
     switch (burgerPosition) {
         case 'top':
@@ -1277,6 +1314,7 @@ function pushingBurger_init(params) {
                 left: `${-burgerWidth}px`,
             });
             pushingShiftX = burgerWidth;
+            $('body').css('overflowX', 'hidden');
             break;
         case 'right':
             $(burgerBlock).css({
@@ -1286,6 +1324,7 @@ function pushingBurger_init(params) {
                 right: `${-burgerWidth}px`,
             });
             pushingShiftX = -burgerWidth;
+            $('body').css('overflowX', 'hidden');
             break;
         default:
             $(burgerBlock).css({
@@ -1319,21 +1358,31 @@ function pushingBurger_init(params) {
     burgerButton.style.height = triggerElem.getAttribute('data-field-height-value') + 'px';
     burgerButton.style.pointerEvents = 'auto';
     $(burgerButton).children().css({
-        height: triggerLineHeight,
+        height: triggerLineHeight + 'px',
         'background-color': triggerColor
     });
+    if ($(window).width() < 900) {
+        burgerButton.style.transform = `scale(${triggerScaleMobile})`;
+        $(burgerButton).children().css({
+            height: triggerLineHeight/triggerScaleMobile
+        });
+    }
     // !!! инициализация триггера
 
     burgerButton.addEventListener('click', toggleBurger);
     $(burgerLinks).on('click', toggleBurger);
 
     function toggleBurger() {
-        this.classList.toggle('open');
-        if (this.classList.contains('open')) {
-            $(allBlocks).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
-            triggerBlock.style.transform = 'translate(0)';
+        if ($(burgerBlock).attr('data-burgeropened') == 'false') {
+            $(blocksWrapper).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
+            $(burgerBlock).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
+            $(burgerBlock).attr('data-burgeropened', 'true');
+            burgerButton.classList.add('open');
         } else {
-            $(allBlocks).css('transform', 'translate(0)');
+            $(blocksWrapper).css('transform', 'translate(0)');
+            $(burgerBlock).css('transform', 'translate(0)');
+            $(burgerBlock).attr('data-burgeropened', 'false');
+            burgerButton.classList.remove('open');
         }
     }
 }
@@ -1342,8 +1391,9 @@ function pushingBurger_init(params) {
 /* видео в кружок */
 function videoCircle_init(params) {
     const videoCircle = document.querySelectorAll(params.videos);
+    const autoSize = params.autoSize == undefined ? true : params.autoSize;
     videoCircle.forEach((video, i) => {
-        if (params.autoSize) {
+        if (autoSize) {
             params.circleDiams[i] = Math.max(video.getAttribute('data-field-height-value'), video.getAttribute('data-field-width-value'));
         }
         video.style.clipPath = `circle(${params.circleDiams[i]/2}px at center)`;
@@ -1354,7 +1404,20 @@ function videoCircle_init(params) {
 
 /* замена курсора */
 function cursorChange_init(params) {
-    const { minWidth, numStates, sourceOfNormal, sourceOfStates, normalExternal, normalInternal, statesExternal, statesInternal } = params,
+    const triggers = params.triggers || null,
+        hasNewNormalStyle = params.hasNewNormalStyle || false,
+        isCursorHidden = params.isCursorHidden || false,
+        sourceOfNormal = params.sourceOfNormal || 'external',
+        minWidth = params.minWidth || 1200,
+        numStates = params.numStates || 0,
+        sourceOfStates = params.sourceOfStates || 'external',
+        normalExternal = params.normalExternal || 
+            `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle r="10" fill="#000000" cx="10" cy="10"></circle>
+            </svg>`,
+        normalInternal = params.normalInternal || null,
+        statesExternal = params.statesExternal || null,
+        statesInternal = params.statesInternal || null,
         hasDelay = params.hasDelay || false,
         delaySpeed = params.delaySpeed || 1,
         stateStyles = {},
@@ -1384,14 +1447,16 @@ function cursorChange_init(params) {
             'pointer-events': 'none'
         });
 
-        if (params.hasNewNormalStyle) {
+        if (hasNewNormalStyle) {
             if (sourceOfNormal == "internal") {
                 const gif = getGif(normalInternal);
                 cursorNormal.backgroundImage = gif;
             } else {
                 cursorNormal.innerHTML = normalExternal;
             }
-            document.documentElement.style.cursor = 'none';
+            if (isCursorHidden) {
+                document.documentElement.style.cursor = 'none';
+            }
         } else {
             normalStyle = {opacity: '0'};
         }
@@ -1445,9 +1510,9 @@ function cursorChange_init(params) {
 
 
         for (let i = 0; i < numStates; i++) {
-            $(params.triggers[i]).css('cursor', 'none');
-            $(params.triggers[i]).attr('data-makes-cursor-state', i);
-            $(params.triggers[i]).mouseenter(turnCursorStateOn).mouseleave(turnCursorStateOff);
+            $(triggers[i]).css('cursor', 'none');
+            $(triggers[i]).attr('data-makes-cursor-state', i);
+            $(triggers[i]).mouseenter(turnCursorStateOn).mouseleave(turnCursorStateOff);
         }
 
         function turnCursorStateOn () {
@@ -1479,17 +1544,20 @@ function cursorChange_init(params) {
 
 /* переход на страницы по картинкам */
 function photoLink(params) {
+    const { photos } = params;
     if ($(window).width() > params.minWidth) {
-        for (let i = 0; i < params.photos.length; i++) {
-            const photo = document.querySelector(params.photos[i]);
-            photo.setAttribute('data-imgLink', params.links[i]);
+        photos.forEach((photoSelector, i) => {
+            const photo = document.querySelector(photoSelector);
+            photo.setAttribute('data-imgLink', photo.querySelector('a').getAttribute('href'));
+            photo.querySelector('a').removeAttribute('href');
             photo.style.cursor = 'pointer';
             photo.addEventListener('click', photoLinkOpener);
-        }
+        });
     }
 
     function photoLinkOpener () {
         const link = this.getAttribute('data-imgLink');
+        const newTab = params.newTab || false;
         $(this).clone().insertBefore(this);
         const clone = this.previousSibling;
         $(clone).css({
@@ -1507,7 +1575,7 @@ function photoLink(params) {
             });
             setTimeout(() => {
                 setTimeout(() => clone.remove(), 250);
-                if (params.tab == 'new') {
+                if (newTab) {
                     window.open(link, '_blank');
                 } else {
                     document.location.href = link;
@@ -1577,8 +1645,9 @@ function bgPhotos_init(params) {
 
 /* след курсора */
 function cursorTrace_init(params) {
-    const mt_numPoints = params.numPoints,
-        mt_overallOpacity = params.opacity,
+    const minWidth = params.minWidth || 1200,
+        mt_numPoints = params.numPoints || 50,
+        mt_overallOpacity = params.opacity || 0.2,
         mt_cursorStyle = params.cursorStyle,
         mt_trailStyle = params.trailStyle,
         trailCoords = {
@@ -1592,7 +1661,7 @@ function cursorTrace_init(params) {
         isRefreshing = false,
         mt_circles = '';
 
-    if ($(window).width() > params.minWidth) {
+    if ($(window).width() > minWidth) {
         $('body').prepend(
             `<svg id="mouseTail" xmlns="http://www.w3.org/2000/svg" 
             width="100vw" height="100vh" viewBox="0 0 100% 100%" 
@@ -1649,10 +1718,10 @@ function cursorTrace_init(params) {
 
 /* хвост курсора */
 function cursorTail (params) {
-    const mt_color = params.color,
-        mt_radius = params.radius,
-        mt_numPoints = params.numPoints,
-        mt_overallOpacity = params.opacity;
+    const mt_color = params.color || 'red',
+        mt_radius = params.radius || 10,
+        mt_numPoints = params.numPoints || 50,
+        mt_overallOpacity = params.opacity || 0.5;
 
     let mt_circles = '',
         mouseX = 0,
@@ -1708,14 +1777,23 @@ function cursorTail (params) {
 
 /* появление фото из угла */
 function cornerPhotos_init(params) {
-    const cornerPhotos = document.querySelectorAll(params.photos);
+    const cornerPhotos = document.querySelectorAll(params.photos),
+        initialVisibility = params.initialVisibility || 0,
+        transitionTime = params.transitionTime || 0.5,
+        minWidth = params.minWidth || 0,
+        offsets = [];
 
-    if ($(window).width() > params.minWidth) {
+    cornerPhotos.forEach((photo, i) => {
+        const offsetPercentage = params.offsets[i] || 0;
+        offsets[i] = offsetPercentage*$(window).height();
+    });
+
+    if ($(window).width() > minWidth) {
         cornerPhotos.forEach((photo, i) => {
             $(photo).append(`
                 <svg style="width: 100%; height: 100%; position: absolute; left: 0;">
                     <defs>
-                        <clipPath id="mask-${i}" style="transform: scale(${params.initialVisibility}); transition: transform ${params.transitionTime}s ease">
+                        <clipPath id="mask-${i}" style="transform: scale(${initialVisibility}); transition: transform ${transitionTime}s ease">
                             <rect width="100%" height="100%" fill="#FFFFFF"></rect>
                         </clipPath>
                     </defs>
@@ -1734,7 +1812,7 @@ function cornerPhotos_init(params) {
 
         cornerPhotos.forEach((photo, i) => {
             const et = $(photo).offset().top;
-            if((wt+wh/2 > et) && (photo.getAttribute('data-clipped') == 'true')) {
+            if((wt + wh - offsets[i] > et) && (photo.getAttribute('data-clipped') == 'true')) {
                 document.querySelector(`#mask-${i}`).style.transform = 'scale(1)';
                 photo.setAttribute('data-clipped', 'false');
             }
@@ -1748,7 +1826,7 @@ function horDrag_init(params) {
     const horDragGallery = document.querySelector(params.block),
         horDragObj = horDragGallery.querySelector('div').firstElementChild;
     const hasDelay = params.hasDelay || false;
-    const delaySpeed = params.delaySpeed || 1.2;
+    const delaySpeed = params.delaySpeed || 1;
 
     let dragStartX = 0,
         dragObjStartX = 0,
@@ -1843,9 +1921,9 @@ function curtainChange_init(params) {
         wh = $(window).height(),
         ww = $(window).width(),
         numPages = pages.length,
-        {easeTime} = params,
-        easeFunction = params.easeFunction ? params.easeFunction : 'ease',
-        minWidth = params.minWidth ? params.minWidth : '1200';
+        easeTime = params.easeTime || 0.8,
+        easeFunction = params.easeFunction || 'ease',
+        minWidth = params.minWidth || 0;
 
 
     if ($(window).width() > minWidth) {
@@ -1931,9 +2009,10 @@ function curtainChange_init(params) {
 /* Зум фото */
 function photoZoom_init(params) {
     const photos = document.querySelectorAll(params.photos),
-        { easeTime, scale } = params,
-        minWidth = params.minWidth ? params.minWidth : 1200,
-        easeFunction = params.easeFunction ? params.easeFunction : 'ease-in-out';
+        easeTime = params.easeTime || 0.4,
+        scale = params.scale || 1.2,
+        minWidth = params.minWidth || 1200,
+        easeFunction = params.easeFunction || 'ease-in-out';
 
     if ($(window).width() > minWidth) {
         photos.forEach(photo => {
@@ -1952,9 +2031,10 @@ function photoZoom_init(params) {
 
 // Маска курсором
 function cursorColorFilter_init(params) {
-    const { minWidth, clipRadius } = params;
-    const maskingPages = document.querySelectorAll(params.maskingPage);
-    const originalPages = document.querySelectorAll(params.originalPage);
+    const minWidth = params.minWidth || 1200,
+        clipRadius = params.clipRadius || 100,
+        maskingPages = document.querySelectorAll(params.maskingPage),
+        originalPages = document.querySelectorAll(params.originalPage);
 
     if ($(window).width() > minWidth) {
         maskingPages.forEach((page, i) => {
@@ -1978,18 +2058,15 @@ function cursorColorFilter_init(params) {
 
 // смена фонов
 function bgChange_init(params) {
-    const { colors, breakpointBlocks, offsets, animTime, minWidth } = params;
-    const breakpoints = [];
+    const { colors, breakpointBlocks } = params,
+        minWidth = params.minWidth || 0,
+        animTime = params.animTime || 0.5,
+    const breakpoints = [],
+        offsets = [];
     const body = document.querySelector('body');
     breakpointBlocks.forEach((block, i) => {
         breakpoints[i] = $(block).offset().top + offsets[i];
-    });
-    offsets.forEach((offset, i) => {
-        if (isNaN(offset)) {
-            offsets[i] = 0;
-        } else {
-            offsets[i] = $(window).height()*offset/100;
-        }
+        offsets[i] = $(window).height()*params.offsets[i]/100 || 0;
     });
 
     if ($(window).width() > minWidth) {
