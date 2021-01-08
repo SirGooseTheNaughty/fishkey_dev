@@ -153,19 +153,19 @@ function vectorDraw_init(params) {
 
 /* вырисовка надписи вектором */
 function vectorWrite_init(params) {
-    let { selector, svg, offset } = params;
+    let { selector, svg } = params;
     let logoPaths = [];
     let desiredWidth = 0;
     let coeff = 0;
+    let strokeWidth = params.strokeWidth || 0.5;
+    const offset = params.offset ? params.offset*$(window).height() : 0;
     const animTime = params.animTime || 0.5;
     const minWidth = params.minWidth || 0;
-    const strokeWidth = params.strokeWidth || 1;
 
     if ($(window).width() > minWidth) {
         strokeWidth = strokeWidth ? strokeWidth + 'px' : '1px';
         const vd_forSVG = document.querySelector(selector);
         $(vd_forSVG).html(svg);
-        isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
         
         desiredWidth = +vd_forSVG.getAttribute('data-field-width-value');
         coeff = desiredWidth/(+vd_forSVG.querySelector('svg').getAttribute('width'));
@@ -179,16 +179,18 @@ function vectorWrite_init(params) {
         logoPaths = vd_forSVG.querySelectorAll('path');
         animTime = animTime/logoPaths.length;
 
+        $(logoPaths).css({
+            'animation-timing-function': 'linear',
+            'stroke-width': strokeWidth,
+            'fill-opacity': '0',
+        });
         logoPaths.forEach((path, i) => {
             $(path).css({
                 'stroke-dasharray': path.getTotalLength(),
                 'stroke-dashoffset': path.getTotalLength(),
+                stroke: path.getAttribute('fill'),
                 'animation-duration': animTime + 's',
                 'animation-delay': animTime*i + 's',
-                'animation-timing-function': 'linear',
-                stroke: path.getAttribute('fill'),
-                'stroke-width': strokeWidth,
-                'fill-opacity': '0',
                 transition: `fill-opacity ${animTime}s ease-in-out ${animTime*(i+0.5)}s`
             });
         });
