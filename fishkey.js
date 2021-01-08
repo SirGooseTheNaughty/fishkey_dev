@@ -2060,7 +2060,7 @@ function cursorColorFilter_init(params) {
 function bgChange_init(params) {
     const { colors, breakpointBlocks } = params,
         minWidth = params.minWidth || 0,
-        animTime = params.animTime || 0.5,
+        animTime = params.animTime || 0.5;
     const breakpoints = [],
         offsets = [];
     const body = document.querySelector('body');
