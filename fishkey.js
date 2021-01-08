@@ -1364,6 +1364,11 @@ function pushingBurger_init(params) {
 
     burgerButton.addEventListener('click', toggleBurger);
     $(burgerLinks).on('click', toggleBurger);
+    if (params.addTriggers) {   // если надо добавить триггеры
+        const addTriggers = document.querySelectorAll(params.addTriggers);
+        $(addTriggers).on('click', toggleBurger);
+        $(addTriggers).css('cursor', 'pointer');
+    }
 
     function toggleBurger() {
         if ($(burgerBlock).attr('data-burgeropened') == 'false') {
