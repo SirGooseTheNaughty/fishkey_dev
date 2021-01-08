@@ -1256,11 +1256,10 @@ function uniBurger_init(params) {
 function pushingBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
         triggerBlock = document.querySelector(params.triggerBlock),
-        burgerPosition = params.burgerPosition || 'top',
+        burgerPosition = params.burgerPosition,
         burgerWidth = params.burgerWidth || $(window).width(),
         triggerLineHeight = params.triggerLineHeight || 4,
         triggerColor = params.triggerColor || 'black',
-        triggerScaleMobile = params.triggerScaleMobile || 1,
         easeTime = params.easeTime || 0.8,
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)',
         triggerElem = triggerBlock.querySelector('.tn-elem'),
@@ -1361,12 +1360,6 @@ function pushingBurger_init(params) {
         height: triggerLineHeight + 'px',
         'background-color': triggerColor
     });
-    if ($(window).width() < 900) {
-        burgerButton.style.transform = `scale(${triggerScaleMobile})`;
-        $(burgerButton).children().css({
-            height: triggerLineHeight/triggerScaleMobile
-        });
-    }
     // !!! инициализация триггера
 
     burgerButton.addEventListener('click', toggleBurger);
