@@ -370,7 +370,7 @@ dev
 
 хвост курсора
 <script>
-    cursorTail({
+    cursorTail_init({
         color: 'red',               // цвет
         radius: 25,                 // радиус кружка
         numPoints: 50,              // количество точек в хвосте (влияет на длину и время перемещения)

@@ -1717,7 +1717,7 @@ function cursorTrace_init(params) {
 
 
 /* хвост курсора */
-function cursorTail (params) {
+function cursorTail_init(params) {
     const mt_color = params.color || 'red',
         mt_radius = params.radius || 10,
         mt_numPoints = params.numPoints || 50,
