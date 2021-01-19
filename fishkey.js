@@ -1785,7 +1785,7 @@ function cornerPhotos_init(params) {
 
     cornerPhotos.forEach((photo, i) => {
         const offsetPercentage = params.offsets[i] || 0;
-        offsets[i] = offsetPercentage*$(window).height();
+        offsets[i] = offsetPercentage*$(window).height()/100;
     });
 
     if ($(window).width() > minWidth) {
