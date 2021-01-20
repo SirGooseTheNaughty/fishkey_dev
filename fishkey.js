@@ -1589,21 +1589,15 @@ function photoLink(params) {
 /* фото за элементами */
 function bgPhotos_init(params) {
     const LP__links = document.querySelectorAll(params.elements),
-        LP__photos = document.querySelectorAll(params.photos),
-        LP__linkCenters = {};
+        LP__photos = document.querySelectorAll(params.photos);
     let activeLink = 0;
 
-    LP__links.forEach((LP__link, i) => {
-        const LP__linkRect = LP__link.getBoundingClientRect();
-        LP__linkCenters[i] = {
-            x: LP__linkRect.x + LP__linkRect.width/2,
-            y: LP__linkRect.y + LP__linkRect.height/2
-        };
-    });
+    let currentRect;
+    let currentCenter;
 
     function LP__mousemove(e) {
-        LP__photos[activeLink].setAttribute('data-target-x', (e.clientX - LP__linkCenters[activeLink].x));
-        LP__photos[activeLink].setAttribute('data-target-y', (e.clientY - LP__linkCenters[activeLink].y));
+        LP__photos[activeLink].setAttribute('data-target-x', (e.clientX - currentCenter.x));
+        LP__photos[activeLink].setAttribute('data-target-y', (e.clientY - currentCenter.y));
     }
 
     if ($(window).width() > params.minWidth) {
@@ -1611,7 +1605,6 @@ function bgPhotos_init(params) {
         LP__links.forEach((link, i) => {
             $(link).attr('assocWith', i);
             link.parentElement.style.zIndex = 5;
-            link.parentElement.style.cursor = 'pointer';
             const newPadding = (parseInt(window.getComputedStyle(link).width, 10) - parseInt(window.getComputedStyle(link).height, 10))/2 + 'px';
             link.style.padding = `${newPadding} 0 ${newPadding} 0`;
             link.style.marginTop = '-' + newPadding;
@@ -1620,24 +1613,31 @@ function bgPhotos_init(params) {
         LP__photos.forEach((photo, i) => {
             $(photo).attr('assocWith', i);
             $(photo).css({
-                'position': 'relative',
                 'z-index': '1',
                 'opacity': '0',
                 'transition': 'opacity 0.25s ease, transform 0.1s linear'
             });
         });
     
-        $(LP__links).on('mouseenter', function () {
+        $(LP__links).on('mouseenter', function (e) {
             activeLink = $(this).attr('assocWith');
             LP__photos[activeLink].style.opacity = 1;
             LP__photos[activeLink].style.transition = 'opacity 0.25s ease, transform 0s';
+            currentRect = LP__links[activeLink].getBoundingClientRect();
+            currentCenter = {
+                x: currentRect.x + currentRect.width/2,
+                y: currentRect.y + currentRect.height/2
+            };
+            LP__photos[activeLink].setAttribute('data-current-x', (e.clientX - currentCenter.x));
+            LP__photos[activeLink].setAttribute('data-current-y', (e.clientY - currentCenter.y));
             document.addEventListener('mousemove', LP__mousemove);
         })
         .on('mouseleave', function () {
             document.removeEventListener('mousemove', LP__mousemove);
-            LP__photos[activeLink].style.opacity = 0;
-            LP__photos[activeLink].style.transform = `translate(0)`;
             LP__photos[activeLink].style.transition = 'opacity 0.25s ease, transform 0.25s linear';
+            LP__photos[activeLink].style.opacity = 0;
+            LP__photos[activeLink].setAttribute('data-target-x', 0);
+            LP__photos[activeLink].setAttribute('data-target-y', 0);
         });
     }
 }
