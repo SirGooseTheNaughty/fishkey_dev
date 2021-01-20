@@ -51,7 +51,7 @@ dev
 кнопка в кружок 
 <script>
     buttonToCircle_init({
-        selector: '[data-elem-id-123123]',      // селектор кнопки
+        selector: '[data-elem-id="123123"]',    // селектор кнопки
         minWidth: 1200                          // минимальная ширина экрана
     });
 </script>

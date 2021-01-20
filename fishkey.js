@@ -836,7 +836,7 @@ function lettersAppear_init(params) {
 function italicLinks_init(params) {
     const selector = params.selector || '';
     if ($(window).width() > 1200) {
-        const it_links = document.querySelectorAll(`${selector} [href ^= "#rec"], ${selector} [href ^= "http"]`);
+        const it_links = document.querySelectorAll(`${selector} a`);
         $(it_links).addClass('it-links');
     }
 }
