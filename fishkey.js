@@ -221,10 +221,10 @@ function vectorWrite_init(params) {
 function buttonToCircle_init(params) {
     const minWidth = params.minWidth || 1200;
     const buttonToCircle = $(params.selector),
-        buttonTextHolder = $(buttonToCircle).children(),
+        buttonTextHolder = buttonToCircle.firstElementChild,
         buttonStyle = {
             'bgColor': $(buttonTextHolder).css('background-color'),
-            'borderRadius': getComputedStyle(buttonTextHolder[0]).borderStartEndRadius,
+            'borderRadius': getComputedStyle(buttonTextHolder).borderStartEndRadius,
             'width': buttonTextHolder[0].offsetWidth,
             'height': buttonTextHolder[0].offsetHeight
         };
