@@ -1620,7 +1620,7 @@ function bgPhotos_init(params) {
         LP__photos.forEach((photo, i) => {
             $(photo).attr('assocWith', i);
             $(photo).css({
-                'position': 'absolute',
+                'position': 'relative',
                 'z-index': '1',
                 'opacity': '0',
                 'transition': 'opacity 0.25s ease, transform 0.1s linear'
