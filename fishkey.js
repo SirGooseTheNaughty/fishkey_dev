@@ -220,13 +220,13 @@ function vectorWrite_init(params) {
 /* кнопка вжух в кружок */
 function buttonToCircle_init(params) {
     const minWidth = params.minWidth || 1200;
-    const buttonToCircle = $(params.selector),
+    const buttonToCircle = document.querySelector(params.selector),
         buttonTextHolder = buttonToCircle.firstElementChild,
         buttonStyle = {
             'bgColor': $(buttonTextHolder).css('background-color'),
-            'borderRadius': getComputedStyle(buttonTextHolder).borderStartEndRadius,
-            'width': buttonTextHolder[0].offsetWidth,
-            'height': buttonTextHolder[0].offsetHeight
+            'borderRadius': window.getComputedStyle(buttonTextHolder).borderStartEndRadius,
+            'width': buttonTextHolder.offsetWidth,
+            'height': buttonTextHolder.offsetHeight
         };
 
     if ($(window).width() > minWidth) {
