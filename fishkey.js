@@ -224,7 +224,7 @@ function buttonToCircle_init(params) {
         buttonTextHolder = buttonToCircle.firstElementChild,
         buttonStyle = {
             'bgColor': $(buttonTextHolder).css('background-color'),
-            'borderRadius': window.getComputedStyle(buttonTextHolder).borderStartEndRadius,
+            'borderRadius': window.getComputedStyle(buttonTextHolder).borderStartEndRadius || window.getComputedStyle(buttonTextHolder).borderRadius,
             'width': buttonTextHolder.offsetWidth,
             'height': buttonTextHolder.offsetHeight
         };
@@ -238,7 +238,7 @@ function buttonToCircle_init(params) {
         $(buttonTextHolder).css({
             'position': 'relative',
             'background': 'transparent',
-            'transition': '0.7s cubic-bezier(0.9, 0, 0.1, 1)',
+            'transition': 'color 0.7s cubic-bezier(0.9, 0, 0.1, 1)',
             'z-index': 100,
             'border': '1px solid ' + buttonStyle.bgColor
         });
@@ -259,7 +259,7 @@ function buttonToCircle_init(params) {
         });
         $('.buttonToCircleTxt').css({
             'position': 'relative',
-            'transition': '0.7s cubic-bezier(0.9, 0, 0.1, 1)',
+            'transition': 'left 0.7s cubic-bezier(0.9, 0, 0.1, 1)',
             'left': '0'
         });
 
