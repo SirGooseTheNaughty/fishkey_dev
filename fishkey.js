@@ -1478,7 +1478,7 @@ function cursorChange_init(params) {
                 stateInners[i].style.backgroundImage = gif;
                 stateInners[i].style.backgroundSize = "100%";
             } else {
-                stateInners[i].innerHTML = statesExternal[i];
+                stateInners[i].innerHTML = statesExternal ? statesExternal[i] : "";
             }
         }
 
