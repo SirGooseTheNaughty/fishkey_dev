@@ -1407,14 +1407,12 @@ function cursorChange_init(params) {
     const triggers = params.triggers || null,
         hasNewNormalStyle = params.hasNewNormalStyle || false,
         isCursorHidden = params.isCursorHidden || false,
+        enableMixBlendMode = params.mixBlendMode || false,
         sourceOfNormal = params.sourceOfNormal || 'external',
         minWidth = params.minWidth || 1200,
         numStates = params.numStates || 0,
         sourceOfStates = params.sourceOfStates || 'external',
-        normalExternal = params.normalExternal || 
-            `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle r="10" fill="#000000" cx="10" cy="10"></circle>
-            </svg>`,
+        normalExternal = params.normalExternal || '',
         normalInternal = params.normalInternal || null,
         statesExternal = params.statesExternal || null,
         statesInternal = params.statesInternal || null,
@@ -1444,7 +1442,8 @@ function cursorChange_init(params) {
             top: '0',
             overflow: 'visible',
             'z-index': '10000000000',
-            'pointer-events': 'none'
+            'pointer-events': 'none',
+            'mix-blend-mode': enableMixBlendMode ? 'difference' : 'normal'
         });
 
         if (hasNewNormalStyle) {
