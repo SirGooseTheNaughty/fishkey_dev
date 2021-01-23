@@ -1654,6 +1654,7 @@ function cursorTrace_init(params) {
     const minWidth = params.minWidth || 1200,
         mt_numPoints = params.numPoints || 50,
         mt_overallOpacity = params.opacity || 0.2,
+        traceDelay = params.traceDelay || 5,
         mt_cursorStyle = params.cursorStyle,
         mt_trailStyle = params.trailStyle,
         trailCoords = {
@@ -1695,10 +1696,10 @@ function cursorTrace_init(params) {
         }
         
         document.addEventListener('mousemove', function(event) {
-            mouseX = event.pageX;
-            mouseY = event.pageY;
+            mouseX = event.clientX;
+            mouseY = event.clientY;
             if (!isRefreshing) {
-                mt_refreshInt = setInterval(trailCoordsRefresh, 1);
+                mt_refreshInt = setInterval(trailCoordsRefresh, traceDelay);
                 isRefreshing = true;
             }
         });
@@ -1728,7 +1729,7 @@ function cursorTail_init(params) {
         mt_radius = params.radius || 10,
         mt_numPoints = params.numPoints || 50,
         mt_overallOpacity = params.opacity || 0.5,
-        trailDelay = params.trailDelay || 5;
+        tailDelay = params.tailDelay || 5;
 
     let mt_circles = '',
         mouseX = 0,
@@ -1759,7 +1760,7 @@ function cursorTail_init(params) {
             fill: mt_color
         });
     
-        setInterval(trailCoordsRefresh, trailDelay);
+        setInterval(trailCoordsRefresh, tailDelay);
     
         document.addEventListener('mousemove', function(event) {
             mouseX = event.clientX;
