@@ -85,6 +85,24 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
     }
 }
 
+/* утилита для включения блоков от и до */
+function getBlockList(firstId, lastId) {
+    const blocks = [];
+    let isIncluding = false;
+    document.querySelectorAll('[id^="rec"]').forEach(page => {
+        if (page.id == firstBlockId) {
+            isIncluding = true;
+        } else if (page.id == lastBlockId) {
+            isIncluding = false;
+            blocks.push(page);
+        }
+        if (isIncluding) {
+            blocks.push(page);
+        }
+    });
+    return blocks;
+}
+
 /* вырисовка вектора */
 function vectorDraw_init(params) {
     let { selectors, svgs, trigger, hoverTriggers, offsets } = params;
