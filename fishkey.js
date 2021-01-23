@@ -90,9 +90,9 @@ function getBlockList(firstId, lastId) {
     const blocks = [];
     let isIncluding = false;
     document.querySelectorAll('[id^="rec"]').forEach(page => {
-        if (page.id == firstBlockId) {
+        if (page.id == firstId) {
             isIncluding = true;
-        } else if (page.id == lastBlockId) {
+        } else if (page.id == lastId) {
             isIncluding = false;
             blocks.push(page);
         }
