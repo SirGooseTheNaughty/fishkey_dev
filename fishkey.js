@@ -1727,7 +1727,8 @@ function cursorTail_init(params) {
     const mt_color = params.color || 'red',
         mt_radius = params.radius || 10,
         mt_numPoints = params.numPoints || 50,
-        mt_overallOpacity = params.opacity || 0.5;
+        mt_overallOpacity = params.opacity || 0.5,
+        trailDelay = params.trailDelay || 5;
 
     let mt_circles = '',
         mouseX = 0,
@@ -1758,11 +1759,11 @@ function cursorTail_init(params) {
             fill: mt_color
         });
     
-        setInterval(trailCoordsRefresh, 1);
+        setInterval(trailCoordsRefresh, trailDelay);
     
         document.addEventListener('mousemove', function(event) {
-            mouseX = event.pageX;
-            mouseY = event.pageY;
+            mouseX = event.clientX;
+            mouseY = event.clientY;
         });
     }
 
