@@ -176,7 +176,7 @@ function vectorWrite_init(params) {
     let desiredWidth = 0;
     let coeff = 0;
     let strokeWidth = params.strokeWidth || 0.5;
-    const offset = params.offset ? params.offset*$(window).height() : 0;
+    const offset = params.offset ? params.offset*$(window).height()/100 : 0;
     let animTime = params.animTime || 0.5;
     const minWidth = params.minWidth || 0;
 
