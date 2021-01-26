@@ -817,7 +817,7 @@ function lettersAppear_init(params) {
     const totalSpeed = parameters.totalSpeed || 3;
     const minWidth = parameters.minWidth || 0;
     const delay = parameters.delay || 0;
-    const isChaotic = parameters.isChaotic || false;
+    const isRandom = parameters.isRandom || false;
     let offset = parameters.offset || 0;
     const textElem = document.querySelector(`${params.selector} .tn-atom`),
         text = textElem.innerText.split(''),
@@ -829,7 +829,7 @@ function lettersAppear_init(params) {
     if ($(window).width() > minWidth) {
         textElem.innerHTML = '';
 
-        if (isChaotic) {
+        if (isRandom) {
             text.forEach(letter => {
                 $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</span>`);
             });
