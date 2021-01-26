@@ -2,11 +2,10 @@
 function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
     let isIntSet = false;
     let coordInt = '';
-    let oneCoordChange;
     const framerate = params.framerate || 20;
     const speed = params.delaySpeed || 1;
     const tolerance = params.tolerance || 1;
-    const law = params.law || "smooth";
+    const oneCoordChange = params.customFunction || smoothChange;
 
     if (hasX) {
         obj.setAttribute('data-current-x', 0);
@@ -15,12 +14,6 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
     if (hasY) {
         obj.setAttribute('data-current-y', 0);
         obj.setAttribute('data-target-y', 0);
-    }
-
-    if (law == "smooth") {
-        oneCoordChange = smoothChange;
-    } else {
-        oneCoordChange = speedChange;
     }
 
     document.addEventListener(trigger, (e) => {
@@ -90,10 +83,6 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
             return target;
         }
         return curr + rise;
-    }
-    
-    function speedChange(curr, target) {
-        return curr + (target - curr)*0.01
     }
 }
 
