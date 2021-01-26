@@ -817,9 +817,11 @@ function lettersAppear_init(params) {
     const totalSpeed = parameters.totalSpeed || 3;
     const minWidth = parameters.minWidth || 0;
     const delay = parameters.delay || 0;
+    const isChaotic = parameters.isChaotic || false;
     let offset = parameters.offset || 0;
     const textElem = document.querySelector(`${params.selector} .tn-atom`),
-        text = textElem.innerText.split('');
+        text = textElem.innerText.split(''),
+        numLetters = text.length;
     isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
 
     const maxDelay = totalSpeed - letterSpeed;
@@ -827,9 +829,15 @@ function lettersAppear_init(params) {
     if ($(window).width() > minWidth) {
         textElem.innerHTML = '';
 
-        text.forEach(letter => {
-            $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</span>`);
-        });
+        if (isChaotic) {
+            text.forEach(letter => {
+                $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</span>`);
+            });
+        } else {
+            text.forEach((letter, i) => {
+                $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*(i/numLetters)}s">${letter}</span>`);
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.addEventListener('scroll', appearOnScroll);
