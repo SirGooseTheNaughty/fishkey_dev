@@ -825,9 +825,9 @@ function lettersAppear_init(parameters) {
     isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
 
     const maxDelay = totalSpeed - letterSpeed;
+    let tag = 'span';
 
     if ($(window).width() > minWidth) {
-        let tag = 'span';
         if (textElem.querySelector('em')) {
             tag = 'em';
         }
@@ -850,7 +850,7 @@ function lettersAppear_init(parameters) {
     }
 
     function lettersAppear() {
-        $(textElem).children('span').css('opacity', '1');
+        $(textElem).children(tag).css('opacity', '1');
     }
     function appearOnScroll() {
         if ($(textElem).offset().top < $(window).scrollTop() + $(window).height() - offset ) {
