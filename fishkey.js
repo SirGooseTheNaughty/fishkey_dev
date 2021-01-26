@@ -826,11 +826,11 @@ function lettersAppear_init(parameters) {
 
     const maxDelay = totalSpeed - letterSpeed;
     let tag = 'span';
+    if (textElem.querySelector('em')) {
+        tag = 'em';
+    }
 
     if ($(window).width() > minWidth) {
-        if (textElem.querySelector('em')) {
-            tag = 'em';
-        }
         textElem.innerHTML = '';
 
         if (isRandom) {
