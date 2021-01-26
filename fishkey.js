@@ -812,14 +812,14 @@ function typeWriter_init(parameters) {
 
 
 /* появление текста по букве */
-function lettersAppear_init(params) {
+function lettersAppear_init(parameters) {
     const letterSpeed = parameters.letterSpeed || 2;
     const totalSpeed = parameters.totalSpeed || 3;
     const minWidth = parameters.minWidth || 0;
     const delay = parameters.delay || 0;
     const isRandom = parameters.isRandom || false;
     let offset = parameters.offset || 0;
-    const textElem = document.querySelector(`${params.selector} .tn-atom`),
+    const textElem = document.querySelector(`${parameters.selector} .tn-atom`),
         text = textElem.innerText.split(''),
         numLetters = text.length;
     isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
