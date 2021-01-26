@@ -827,15 +827,19 @@ function lettersAppear_init(parameters) {
     const maxDelay = totalSpeed - letterSpeed;
 
     if ($(window).width() > minWidth) {
+        let tag = 'span';
+        if (textElem.querySelector('em')) {
+            tag = 'em';
+        }
         textElem.innerHTML = '';
 
         if (isRandom) {
             text.forEach(letter => {
-                $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</span>`);
+                $(textElem).append(`<${tag} style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</${tag}>`);
             });
         } else {
             text.forEach((letter, i) => {
-                $(textElem).append(`<span style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*(i/numLetters)}s">${letter}</span>`);
+                $(textElem).append(`<${tag} style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*(i/numLetters)}s">${letter}</${tag}>`);
             });
         }
 
