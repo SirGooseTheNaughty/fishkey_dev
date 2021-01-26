@@ -392,7 +392,7 @@ function fullPageHorScroll_init(parameters) {
 /* горизонтальный скролл элементов одного блока */
 function horScrollBlock_init(parameters) {
     const horScrollBlock = document.querySelector(parameters.block),
-        header = document.querySelector(parameters.header),
+        header = parameters.header ? document.querySelector(parameters.header) : null,
         minWidth = parameters.minWidth || 1200,
         totalShift = parameters.totalShift,
         blockHeight = parameters.blockHeight,
@@ -400,21 +400,28 @@ function horScrollBlock_init(parameters) {
         delaySpeed = parameters.delaySpeed || 1;
 
     let headerTop = 0,
+        headerHeight = 0,
         horScrollContainer = {};
     
     if ($(window).width() > minWidth) {
-        headerTop = $(header).offset().top;
         const children = $(horScrollBlock.querySelector('.t396__artboard')).children();
 
         $(children).wrapAll('<div class="horScrollContainer"></div>');
         horScrollContainer = document.querySelector('.horScrollContainer');
+
+        if (header) {
+            headerTop = $(header).offset().top;
+            headerHeight = $(header).height();
+        } else {
+            headerTop = $(horScrollContainer).offset().top;
+        }
 
         if (hasDelay) {
             initCoordTracking(horScrollContainer, 'scroll', 'rel', true, true, {delaySpeed, framerate: 15});
         }
 
         $(horScrollContainer).css({top: '0', left: '0',});
-        $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'});
+        header ? $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'}) : false;
         horScrollBlock.style.height = totalShift + blockHeight + 'px';
         horScrollBlock.style.backgroundColor = window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor;
         horScrollContainer.parentElement.style.overflow = 'visible';
@@ -438,21 +445,21 @@ function horScrollBlock_init(parameters) {
                 'position': 'relative',
                 transform: 'translate(0)'
             });
-            $(header).css({'position': 'relative'});
+            header ? $(header).css({'position': 'relative'}) : false;
         } else if (horScrollShift < totalShift) {
             $(horScrollContainer).css({
                 'position': 'fixed',
-                transform: `translate(-${horScrollShift}px, ${$(header).height()}px)`
+                transform: `translate(-${horScrollShift}px, ${headerHeight}px)`
             });
-            $(header).css({position: 'fixed', transform: 'translate(0)'});
-            horScrollBlock.style.paddingBottom = `${$(header).height()}px`;
+            header ? $(header).css({position: 'fixed', transform: 'translate(0)'}) : false;
+            horScrollBlock.style.paddingBottom = `${headerHeight}px`;
         } else {
             $(horScrollContainer).css({
                 'position': 'relative',
                 'padding-bottom': '0',
                 transform: `translate(-${totalShift}px, ${totalShift}px)`
             });
-            $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
+            header ? $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`}) : false;
             horScrollBlock.style.paddingBottom = '0';
         }
     }
@@ -467,17 +474,17 @@ function horScrollBlock_init(parameters) {
             horScrollContainer.setAttribute('data-target-x', 0);
             horScrollContainer.setAttribute('data-target-y', 0);
             horScrollContainer.setAttribute('data-current-y', 0);
-            $(header).css({'position': 'relative'});
+            header ? $(header).css({'position': 'relative'}) : false;
         } else if (horScrollShift < totalShift) {
             $(horScrollContainer).css({
                 'position': 'fixed'
             });
             horScrollContainer.setAttribute('data-target-x', -horScrollShift);
-            horScrollContainer.setAttribute('data-target-y', $(header).height());
-            horScrollContainer.setAttribute('data-current-y', $(header).height());
+            horScrollContainer.setAttribute('data-target-y', headerHeight);
+            horScrollContainer.setAttribute('data-current-y', headerHeight);
 
-            $(header).css({position: 'fixed', transform: 'translate(0)'});
-            horScrollBlock.style.paddingBottom = `${$(header).height()}px`;
+            header ? $(header).css({position: 'fixed', transform: 'translate(0)'}) : false;
+            horScrollBlock.style.paddingBottom = `${headerHeight}px`;
         } else {
             $(horScrollContainer).css({
                 'position': 'relative',
@@ -487,7 +494,7 @@ function horScrollBlock_init(parameters) {
             horScrollContainer.setAttribute('data-target-y', totalShift);
             horScrollContainer.setAttribute('data-current-y', totalShift);
 
-            $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`});
+            header ? $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`}) : false;
             horScrollBlock.style.paddingBottom = '0';
         }
     }
