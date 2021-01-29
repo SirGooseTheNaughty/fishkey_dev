@@ -2148,15 +2148,15 @@ function bgChange_init(params) {
     const breakpoints = [],
         offsets = [];
     const body = document.querySelector('body');
-    breakpointBlocks.forEach((block, i) => {
-        breakpoints[i] = $(block).offset().top + offsets[i];
-        offsets[i] = $(window).height()*params.offsets[i]/100 || 0;
-    });
 
     if ($(window).width() > minWidth) {
         bgChange();
         setTimeout(() => {
             body.style.transition = `background-color ${animTime}s linear`;
+            breakpointBlocks.forEach((block, i) => {
+                offsets[i] = $(window).height()*params.offsets[i]/100 || 0;
+                breakpoints[i] = $(block).offset().top + offsets[i];
+            });
         }, 50);
         document.addEventListener('scroll', bgChange);
     }
