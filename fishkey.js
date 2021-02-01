@@ -212,15 +212,6 @@ function vectorWrite_init(params) {
         strokeWidth = strokeWidth ? strokeWidth + 'px' : '1px';
         const vd_forSVG = document.querySelector(selector);
         $(vd_forSVG).html(svg);
-        
-        desiredWidth = +vd_forSVG.getAttribute('data-field-width-value');
-        coeff = desiredWidth/(+vd_forSVG.querySelector('svg').getAttribute('width'));
-
-        $(vd_forSVG).css({
-            height: desiredWidth + 'px'
-        });
-        vd_forSVG.querySelector('svg').style.transformOrigin = `left`;
-        vd_forSVG.querySelector('svg').style.transform = `scale(${coeff})`;
 
         logoPaths = vd_forSVG.querySelectorAll('path');
         animTime = animTime/logoPaths.length;
@@ -240,6 +231,12 @@ function vectorWrite_init(params) {
                 transition: `fill-opacity ${animTime}s ease-in-out ${animTime*(i+0.5)}s`
             });
         });
+        
+        desiredWidth = getElemDim(vd_forSVG, "width");
+        coeff = desiredWidth/(+vd_forSVG.querySelector('svg').getAttribute('width'));
+
+        vd_forSVG.querySelector('svg').style.transformOrigin = `left`;
+        vd_forSVG.querySelector('svg').style.transform = `scale(${coeff})`;
 
         scrollInit();
         document.addEventListener('scroll', scrollInit);
