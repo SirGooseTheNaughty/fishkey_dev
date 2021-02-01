@@ -137,7 +137,7 @@ function vectorDraw_init(params) {
     const animFunction = params.animFunction || 'ease';
     const animTime = params.animTime || 0.5;
     const minWidth = params.minWidth || 0;
-    const logoLengths = [], logoPaths = [], desiredWidths = [], coeffs = [];
+    const logoLengths = [], logoPaths = [];
 
     if ($(window).width() > minWidth) {
         (trigger != 'hover' && trigger !='scroll') ? trigger = 'scroll' : null;
@@ -155,15 +155,15 @@ function vectorDraw_init(params) {
         vd_forSVG.forEach((space, i) => {
             logoPaths[i] = space.querySelector('path');
             logoLengths[i] = logoPaths[i].getTotalLength();
-            desiredWidths[i] = +space.getAttribute('data-field-width-value');
-            coeffs[i] = desiredWidths[i]/(+space.querySelector('svg').getAttribute('width'));
             $(logoPaths[i]).css({
                 'stroke-dasharray': logoLengths[i],
                 'stroke-dashoffset': logoLengths[i],
                 'animation-duration': animTime + 's',
                 'animation-timing-function': animFunction
             });
-            space.querySelector('svg').style.transform = `scale(${coeffs[i]})`;
+            const desiredWidth = getElemDim(space, "width");
+            const coeff = desiredWidth/(+space.querySelector('svg').getAttribute('width'));
+            space.querySelector('svg').style.transform = `scale(${coeff})`;
             space.querySelector('svg').style.transformOrigin = 'top left';
         });
         
