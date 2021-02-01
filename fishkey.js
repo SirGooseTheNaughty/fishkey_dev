@@ -1139,7 +1139,7 @@ function uniBurger_init(params) {
         height: '100vh',
         top: '0',
         left: '0',
-        'z-index': '100',
+        'z-index': '999999999',
         'pointer-events': 'none'
     });
     triggerElem.innerHTML = `
@@ -1382,7 +1382,7 @@ function pushingBurger_init(params) {
         height: '100vh',
         top: '0',
         left: '0',
-        'z-index': '100',
+        'z-index': '99999999',
         'pointer-events': 'none'
     });
     triggerElem.innerHTML = `
