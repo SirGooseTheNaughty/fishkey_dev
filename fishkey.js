@@ -448,8 +448,11 @@ function horScrollBlock_init(parameters) {
 
         $(horScrollContainer).css({top: '0', left: '0',});
         header ? $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'}) : false;
-        horScrollBlock.style.height = totalShift + blockHeight + 'px';
-        horScrollBlock.style.backgroundColor = window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor;
+        $(horScrollBlock).css({
+            height: totalShift + blockHeight + 'px',
+            backgroundColor: window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor,
+            overflow: hidden
+        });
         horScrollContainer.parentElement.style.overflow = 'visible';
 
         if (hasDelay) {
