@@ -1105,6 +1105,8 @@ function hoverText_init(params) {
 
         if (isCursorHidden) {
             hiddenCursor = 'none';
+        } else {
+            hiddenCursor = 'auto';
         }
     
         $(hoverTextCursor).css({
