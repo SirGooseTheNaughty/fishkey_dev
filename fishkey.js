@@ -1117,7 +1117,7 @@ function hoverText_init(params) {
             'pointer-events': 'none'
         });
 
-        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true);
+        initCoordTracking(hoverTextCursor, 'mousemove', 'abs', true, true, {});
         document.addEventListener('mousemove', (e) => {
             hoverTextCursor.setAttribute('data-target-x', e.clientX);
             hoverTextCursor.setAttribute('data-target-y', e.clientY);
