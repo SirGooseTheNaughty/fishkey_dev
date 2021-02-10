@@ -450,8 +450,8 @@ function horScrollBlock_init(parameters) {
         header ? $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'}) : false;
         $(horScrollBlock).css({
             height: totalShift + blockHeight + 'px',
-            backgroundColor: window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor,
-            overflow: hidden
+            backgroundColor: window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).style.backgroundColor,
+            overflow: 'hidden'
         });
         horScrollContainer.parentElement.style.overflow = 'visible';
 
