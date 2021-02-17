@@ -919,7 +919,7 @@ function parallax_init(params) {
         parallaxRectCenter = {x: 0, y: 0};
 
     if ($(window).width() > minWidth) {
-        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true));
+        parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, {}));
         $(parallaxTargets).addClass('parallax');
         $(parallaxTargets).on('mouseenter', function () {
             parallaxTarget = this;
