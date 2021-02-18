@@ -2031,92 +2031,99 @@ function horDrag_init(params) {
 /* Переключение страниц шторкой */
 function curtainChange_init(params) {
     let activePage = 0;
+    let touchStartPos = [0, 0];
+
     const pages = document.querySelectorAll(params.selectors),
-        pagesBGs = [],
-        wh = $(window).height(),
-        ww = $(window).width(),
         numPages = pages.length,
-        easeTime = params.easeTime || 0.8,
-        easeFunction = params.easeFunction || 'ease',
+        easeTime = params.easeTime || 1,
+        easeFunction = params.easeFunction || 'ease-in-out',
+        isBackgroundZoomable = params.isBackgroundZoomable || false,
         minWidth = params.minWidth || 0;
-
-
+    const curtainBGs = [];
+    
     if ($(window).width() > minWidth) {
-        pages.forEach((page, i) => pagesBGs[i] = page.querySelector('.t-bgimg'));
-        pagesBGs.forEach(page => page.style.transform = 'scale(1.2)');
-        pagesBGs[0].style.transform = 'scale(1)';
+        document.addEventListener('DOMContentLoaded', initPages);
     
-        document.addEventListener('DOMContentLoaded', () => {
-            $('body').append(`
-                    <svg style="width: 100%; height: 100%">
-                        <defs>
-                            <clipPath id="page-mask">
-                                <rect width="${ww + 17}" height="${wh}" style="transform: scaleY(1); transition: transform ${easeTime}s ${easeFunction}" fill="#FFFFFF"></rect>
-                            </clipPath>
-                        </defs>
-                    </svg>
-                `);
-            pageMask = document.querySelector('#page-mask rect');
-    
-            pages.forEach((page, i) => {
-                $(page).css({
-                    position: 'fixed',
-                    width: '100vw',
-                    height: '100vh',
-                    top: '0',
-                    left: '0',
-                    'z-index': '3',
-                })
-                if (i > 0) {
-                    $(page).css({
-                        'z-index': '1',
-                        'pointer-events': 'none',
-                    })
-                }
-            });
-            
-            document.addEventListener('wheel', pageChange); 
+        document.addEventListener('touchstart', (e) => {
+            touchStartPos = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
         });
     }
-    
 
-    function pageChange(event) {
-        const direction = Math.sign(event.deltaY)*1;
-        const nextPage = activePage + direction;
-        if(nextPage < numPages && nextPage >= 0) {
-            changePage(nextPage);
-        }
+    function initPages () {
+        document.querySelector('body').style.overflow = 'hidden';
+        pages.forEach((page, i) => {
+            page.classList.add('curtainPage');
+            page.style.zIndex = numPages - i;
+            page.style.transition = `height ${easeTime}s ${easeFunction}`;
+            page.style.height = '100vh';
+            page.querySelector('.t396__artboard').style.height = '100vh';
+            page.querySelector('.t-bgimg') ? curtainBGs.push(page.querySelector('.t-bgimg')) : curtainBGs.push(null);
+        });
+        document.addEventListener('wheel', desctopScroller);
+        document.addEventListener('touchend', mobileScroller);
+        scaleBGs(0);
+        curtainBGs.forEach(bg => bg.style.transition = `transform ${easeTime}s`);
     }
 
-    function changePage(nextPage, animate = true) {
-        document.removeEventListener('wheel', pageChange);
-        pages[nextPage].style.zIndex = '2';
-        pages[nextPage].style.pointerEvents = 'auto';
-
-        pages[activePage].style.clipPath = `url(#page-mask)`;
-    
-        pagesBGs[nextPage].style.transition = `transform ${easeTime}s ease`;
-        pagesBGs[nextPage].style.transform = 'scale(1)';
-    
-        pageMask.style.transition = `transform ${easeTime}s ease`;
-        pageMask.style.transform = 'scaleY(0)';
-
-        setTimeout(() => {
-            pages[activePage].style.zIndex = '1';
-            pages[activePage].style.pointerEvents = 'none';
-            pages[nextPage].style.zIndex = '3';
-
-            pages[activePage].style.clipPath = 'none';
-    
-            pageMask.style.transition = 'none';
-            pageMask.style.transform = 'scaleY(1)';
-    
-            pagesBGs[activePage].style.transition = 'none';
-            pagesBGs[activePage].style.transform = 'scale(1.2)';
-
-            activePage = nextPage;
-            document.addEventListener('wheel', pageChange);
+    function scaleBGs(ind) {
+        if (!isBackgroundZoomable) {
+            return;
+        }
+        if (curtainBGs[ind]) {
+            curtainBGs[ind].style.transition = `transform ${easeTime}s ${easeFunction}`;
+            curtainBGs[ind].style.transform = "scale(1)";
+        }
+        setTimeout(function() {
+            curtainBGs.forEach((bg, i) => {
+                if (i != ind && curtainBGs[i]) {
+                    bg.style.transition = `none`;
+                    bg.style.transform = "scale(1.1)";
+                }
+            });
         }, easeTime*1000);
+    };
+
+    function desctopScroller(event) {
+        const direction = Math.sign(event.deltaY);
+        const nextPage = activePage + direction;
+        pageChange(nextPage)
+    }
+
+    function mobileScroller(e) {
+        const touchEndPos = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
+        let direction = 0;
+        if ((touchStartPos[1] > touchEndPos[1] + 25) || (isPageWithVideos && (touchStartPos[0] > touchEndPos[0] + 25))) {
+            direction = 1;
+        } else if ((touchStartPos[1] < touchEndPos[1] - 25) || (isPageWithVideos && (touchStartPos[0] < touchEndPos[0] - 25))) {
+            direction = -1;
+        } else {
+            direction = 0;
+        }
+        const nextPage = activePage + direction;
+        if(direction !== 0) {
+            pageChange(nextPage);
+        }
+    }
+    
+    function pageChange(nextPage) {
+        if (nextPage < numPages && nextPage >= 0) {
+            document.removeEventListener('wheel', desctopScroller);  
+            document.removeEventListener('touchend', mobileScroller); 
+            pages.forEach((page, i) => {
+                if (i < nextPage) {
+                    page.style.height = '0';
+                } else {
+                    page.style.height = '100vh';
+                }
+            });
+            scaleBGs(nextPage);
+        
+            setTimeout(() => {
+                document.addEventListener('wheel', desctopScroller);
+                document.addEventListener('touchend', mobileScroller);
+                activePage = nextPage;
+            }, easeTime < 1.5 ? 1500 : easeTime*1000);
+        }
     }
 }
     

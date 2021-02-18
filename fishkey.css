@@ -124,5 +124,10 @@
     transition: opacity 0.3s ease;
 }
 
-
+/* смена экранов шторкой */
+.curtainPage {
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+}
 
