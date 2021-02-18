@@ -1466,7 +1466,7 @@ function videoCircle_init(params) {
             params.circleDiams[i] = Math.max(video.getAttribute('data-field-height-value'), video.getAttribute('data-field-width-value'));
         }
         video.style.clipPath = `circle(${params.circleDiams[i]/2}px at center)`;
-        video.style.pointerEvents = params.noClick ? 'none' : 'auto';
+        video.style.pointerEvents = params.hasClick ? 'auto' : 'none';
     });
 }
 

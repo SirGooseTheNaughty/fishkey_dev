@@ -258,7 +258,8 @@ dev
     videoCircle_init({
         videos: '[data-elem-id="1604157565601"], [data-elem-id="1604157998509"]',   // блоки с видео
         autoSize: false,                                                            // авторазмер кружков (true / false)
-        circleDiams: ['200', '100']                                                 // размеры кружков (если авторазмер отключен)
+        circleDiams: ['200', '100'],                                                // размеры кружков (если авторазмер отключен)
+        hasClick: false                                                             // реагирует ли на курсор (false - нет, true - да)
     });
 </script>
 
