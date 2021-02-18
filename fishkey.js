@@ -2155,8 +2155,8 @@ function photoZoom_init(params) {
 function cursorColorFilter_init(params) {
     const minWidth = params.minWidth || 1200,
         clipRadius = params.clipRadius || 100,
-        maskingPages = document.querySelectorAll(params.maskingPage),
-        originalPages = document.querySelectorAll(params.originalPage);
+        maskingPages = document.querySelectorAll(params.maskingPages),
+        originalPages = document.querySelectorAll(params.originalPages);
 
     if ($(window).width() > minWidth) {
         maskingPages.forEach((page, i) => {

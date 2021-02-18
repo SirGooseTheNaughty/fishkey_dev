@@ -177,7 +177,7 @@ dev
 односторонняя кнопка
 <script>
     oneSideButton_init({
-        selectors: '[data-elem-id="1599820091591"], [data-elem-id="1602152450564"]',    // кнопки (второй уровень)
+        selectors: '[data-elem-id="1599820091591"], [data-elem-id="1602152450564"]',    // кнопки
         firstColor: 'red',              // основной цвет фона
         secondColor: 'blue',            // второй цвет фона
         whereTo: 'left',                // направление смены цвета
@@ -191,7 +191,7 @@ dev
 
 двухсторонняя кнопка
 <script>
-    oneSideButton_init({
+    twoSideButton_init({
         selectors: '[data-elem-id="1599820096839"]',    // кнопки (второй уровень)
         firstColor: 'red',              // основной цвет фона
         secondColor: 'blue',            // второй цвет фона
