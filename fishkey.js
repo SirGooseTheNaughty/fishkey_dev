@@ -1942,7 +1942,7 @@ function horDrag_init(params) {
         horDragObj = horDragGallery.querySelector('div').firstElementChild;
     const hasDelay = params.hasDelay || false;
     const delaySpeed = params.delaySpeed || 1;
-    const minWidth = params.minWidth || 1200;
+    const minWidth = params.minWidth || 0;
 
     let dragStartX = 0,
         dragObjStartX = 0,
@@ -1988,7 +1988,6 @@ function horDrag_init(params) {
                 document.removeEventListener('mousemove', horDragDelay);
                 dragObjStartX = +horDragObj.getAttribute('data-target-x');
             });
-            mobileDragInit()
         } else {
             horDragObj.addEventListener('mousedown', function(event) {
                 dragStartX = event.clientX;
@@ -1996,18 +1995,6 @@ function horDrag_init(params) {
             });
             document.addEventListener('mouseup', function(event) {
                 document.removeEventListener('mousemove', horDrag);
-                dragObjStartX = +horDragObj.getAttribute('data-current-x');
-            });
-            mobileDragInit()
-        }
-
-        function mobileDragInit() {
-            horDragObj.addEventListener('touchstart', function(event) {
-                dragStartX = event.touches[0].clientX;
-                document.addEventListener('touchmove', horDrag);
-            });
-            document.addEventListener('touchend', function() {
-                document.removeEventListener('touchmove', horDrag);
                 dragObjStartX = +horDragObj.getAttribute('data-current-x');
             });
         }
