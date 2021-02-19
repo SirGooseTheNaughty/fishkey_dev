@@ -2003,7 +2003,7 @@ function horDrag_init(params) {
 
         function mobileDragInit() {
             horDragObj.addEventListener('touchstart', function(event) {
-                dragStartX = event.clientX;
+                dragStartX = event.touches[0].clientX;
                 document.addEventListener('touchmove', horDrag);
             });
             document.addEventListener('touchend', function() {
@@ -2014,7 +2014,8 @@ function horDrag_init(params) {
     }
 
     function horDrag(event) {
-        const horDragShift = event.clientX - dragStartX,
+        const start = event.clientX || event.touches[0].clientX;
+        const horDragShift = start - dragStartX,
             horDragNewPos = dragObjStartX + horDragShift;
         if (horDragNewPos < horDragMinLeft && horDragNewPos > horDragMaxLeft) {
             horDragObj.style.transform = `translate(${dragObjStartX + horDragShift}px, 0)`;
