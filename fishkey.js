@@ -131,6 +131,59 @@ function getBlockList(firstId, lastId) {
     return blocks;
 }
 
+/* утилита для настройки иконки бургера */
+function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFunction) {
+    $(triggerBlock).css({
+        position: 'fixed',
+        width: '100vw',
+        height: '100vh',
+        top: '0',
+        left: '0',
+        'z-index': '999999999',
+        'pointer-events': 'none'
+    });
+
+    if (isTriggerCustom) {
+        triggerElems.customOn.addEventListener("click", () => {
+            toggleFunction();
+            triggerElems.customOn.style.display = "none";
+            triggerElems.customOff.style.display = "flex";
+        });
+        triggerElems.customOff.addEventListener("click", () => {
+            toggleFunction();
+            triggerElems.customOn.style.display = "flex";
+            triggerElems.customOff.style.display = "none";
+        });
+        triggerElems.customOff.style.display = "none";
+        triggerElems.customOn.style.pointerEvents = "auto";
+        triggerElems.customOff.style.pointerEvents = "auto";
+        triggerElems.customOn.classList.add("burgerToggler", "burgerButton");
+        triggerElems.customOff.classList.add("burgerToggler", "burgerButton");
+    } else {
+        const triggerElem = triggerBlock.querySelector('.tn-elem');
+        triggerElem.innerHTML = `
+            <div id="nav-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+        const burgerButton = triggerBlock.querySelector('#nav-icon');
+        burgerButton.style.width = getElemDim(triggerElem, "width") + 'px';
+        burgerButton.style.height = getElemDim(triggerElem, "height") + 'px';
+        burgerButton.style.pointerEvents = 'auto';
+        $(burgerButton).children().css({
+            height: triggerElems.triggerLineHeight,
+            'background-color': triggerElems.triggerColor
+        });
+        burgerButton.addEventListener('click', () => {
+            toggleFunction();
+            burgerButton.classList.toggle('open');
+        });
+    }
+
+}
+
 /* вырисовка вектора */
 function vectorDraw_init(params) {
     let { selectors, svgs, trigger, hoverTriggers, offsets } = params;
@@ -273,7 +326,6 @@ function buttonToCircle_init(params) {
         };
 
     if ($(window).width() > minWidth) {
-        // const widthShift = 2*parseInt(buttonStyle.borderRadius, 10);
         const widthShift = buttonStyle.height;
         $(buttonToCircle).prepend(`<div class='moving_bg'></div>`);
         const movingBg = $('.moving_bg');
@@ -1145,7 +1197,15 @@ function hoverText_init(params) {
 function uniBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
         triggerBlock = document.querySelector(params.triggerBlock),
-        triggerElem = triggerBlock.querySelector('.tn-elem'),
+        isTriggerCustom = params.isTriggerCustom || false,
+        triggerElems = {
+            std: {},
+            customOn: {},
+            customOff: {},
+            triggerLineHeight: 1,
+            triggerColor: 'black'
+        },
+        // triggerElem = triggerBlock.querySelector('.tn-elem'),
         burgerTransTime = params.burgerTime || 1,
         burgerElemsTransTime = params.elementsTime || 0.4,
         startPos = [
@@ -1159,43 +1219,18 @@ function uniBurger_init(params) {
             'height': '0',
             'z-index': '0'
         },
-        triggerLineHeight = params.triggerLineHeight || 4,
-        triggerColor = params.triggerColor || 'white',
-        triggerScaleMobile = params.triggerScaleMobile || 1,
         burgerLinks = burgerBlock.querySelectorAll('a');
 
-    // инициализация триггера
-    $(triggerBlock).css({
-        position: 'fixed',
-        width: '100vw',
-        height: '100vh',
-        top: '0',
-        left: '0',
-        'z-index': '999999999',
-        'pointer-events': 'none'
-    });
-    triggerElem.innerHTML = `
-        <div id="nav-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    `;
-    const burgerButton = triggerBlock.querySelector('#nav-icon');
-    burgerButton.style.width = triggerElem.getAttribute('data-field-width-value') + 'px';
-    burgerButton.style.height = triggerElem.getAttribute('data-field-height-value') + 'px';
-    burgerButton.style.pointerEvents = 'auto';
-    $(burgerButton).children().css({
-        height: triggerLineHeight,
-        'background-color': triggerColor
-    });
-    if ($(window).width() < 900) {
-        burgerButton.style.transform = `scale(${triggerScaleMobile})`;
-        $(burgerButton).children().css({
-            height: triggerLineHeight/triggerScaleMobile
-        });
+    if (isTriggerCustom) {
+        triggerElems.customOn = document.querySelector(params.customOn);
+        triggerElems.customOff = document.querySelector(params.customOff);
+    } else {
+        triggerElems.triggerLineHeight = params.triggerLineHeight || 2;
+        triggerElems.triggerColor = params.triggerColor || 'black';
     }
-        
+
+    // инициализация триггера
+    setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger);
 
     $(burgerBlock).wrap('<div class="burgerWrapper"></div>');
     const burgerWrapper = document.querySelector('.burgerWrapper');
@@ -1297,8 +1332,6 @@ function uniBurger_init(params) {
     $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
 
     function toggleBurger() {
-        this.classList.toggle('open');
-
         if (burgerBlock.classList.contains('burgerHidden')) {
             document.documentElement.style.overflowY = 'burgerHidden';
             $(burgerWrapper).css(shownStyle);
@@ -1317,7 +1350,6 @@ function uniBurger_init(params) {
         }
     }
 
-    burgerButton.addEventListener('click', toggleBurger);
     burgerLinks.forEach(burgerLink => burgerLink.addEventListener('click', toggleBurger));
 
     window.onresize = burgerReshape;
