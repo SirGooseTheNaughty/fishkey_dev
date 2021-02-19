@@ -273,7 +273,8 @@ function buttonToCircle_init(params) {
         };
 
     if ($(window).width() > minWidth) {
-        const widthShift = 2*parseInt(buttonStyle.borderRadius, 10);
+        // const widthShift = 2*parseInt(buttonStyle.borderRadius, 10);
+        const widthShift = buttonStyle.height;
         $(buttonToCircle).prepend(`<div class='moving_bg'></div>`);
         const movingBg = $('.moving_bg');
         $(buttonTextHolder).html(`<p class='buttonToCircleTxt'>${$(buttonTextHolder).text()}</p>`);
