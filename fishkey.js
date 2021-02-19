@@ -1725,7 +1725,7 @@ function cursorTrace_init(params) {
         mt_overallOpacity = params.opacity || 0.2,
         traceDelay = params.traceDelay || 5,
         mt_cursorStyle = params.cursorStyle,
-        mt_trailStyle = params.trailStyle,
+        mt_trailStyle = params.traceStyle,
         trailCoords = {
             x: [],
             y: []
