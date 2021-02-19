@@ -1760,7 +1760,7 @@ function cursorTrace_init(params) {
         $(mt_circles[0]).attr(mt_cursorStyle);
 
         for (let i = 0; i < mt_numPoints; i++) {
-            trailCoords.x[i] = 0;
+            trailCoords.x[i] = -10000;
             trailCoords.y[i] = 0;
         }
         
