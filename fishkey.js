@@ -195,15 +195,13 @@ function vectorDraw_init(params) {
     if ($(window).width() > minWidth) {
         (trigger != 'hover' && trigger !='scroll') ? trigger = 'scroll' : null;
         const vd_forSVG = document.querySelectorAll(selectors);
-        offsets.forEach((offset, i) => {
-            if (isNaN(offset)) {
-                offsets[i] = 0;
-            } else {
-                offsets[i] = $(window).height()*offset/100;
-            }
-        });
         vd_forSVG.forEach((space, i) => {
             $(space).html(svgs[i]);
+            if (isNaN(offsets[i])) {
+                offsets[i] = 0;
+            } else {
+                offsets[i] = $(window).height()*offsets[i]/100;
+            }
         });
         vd_forSVG.forEach((space, i) => {
             logoPaths[i] = space.querySelector('path');
