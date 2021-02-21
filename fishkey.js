@@ -1362,7 +1362,7 @@ function uniBurger_init(params) {
     }
 
     function resetState() {
-        if (burgerBlock.classList.contains('burgerHidden')) {
+        if (!burgerBlock.classList.contains('burgerHidden')) {
             document.documentElement.style.overflowY = 'hidden';
             $(burgerWrapper).css(shownStyle);
             burgerBlock.classList.remove('burgerHidden');
