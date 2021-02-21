@@ -202,16 +202,12 @@ function vectorDraw_init(params) {
         const vd_forSVG = document.querySelectorAll(selectors);
         vd_forSVG.forEach((space, i) => {
             $(space).html(svgs[i]);
-            console.log(offsets[i]);
 
             if (isNaN(offsets[i])) {
-                console.log("NaN", i);
-                offsets[i] = offsets[0] ? $(window).height()*offsets[0]/100 : 0;
+                offsets[i] = offsets[0] || 0;
             } else {
-                console.log("ok", i);
                 offsets[i] = $(window).height()*offsets[i]/100;
             }
-            console.log(offsets[i]);
         });
         vd_forSVG.forEach((space, i) => {
             logoPaths[i] = space.querySelector('path');
@@ -750,13 +746,6 @@ function textApp_init(parameters) {
     const wordSpeed = parameters.wordSpeed || 50;
     const offsets = parameters.offsets || null;
     const txtAppWordConts = [];
-    offsets.forEach((offset, i) => {
-        if (isNaN(offsets[i])) {
-            offsets[i] = 0;
-        } else {
-            offsets[i] = $(window).height()*offset/100;
-        }
-    });
 
     function txtAppear(contNum) {
         let i = 0;
@@ -791,8 +780,8 @@ function textApp_init(parameters) {
 
     if ($(window).width() > minWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
-            if (isNaN(offsets[contNum])) {
-                offsets[contNum] = offsets[0] ? $(window).height()*offsets[0]/100 : 0;
+            if (isNaN(offsets[i])) {
+                offsets[contNum] = offsets[0] || 0;
             } else {
                 offsets[contNum] = $(window).height()*offsets[contNum]/100;
             }
@@ -2257,13 +2246,7 @@ function bgChange_init(params) {
         setTimeout(() => {
             body.style.transition = `background-color ${animTime}s linear`;
             breakpointBlocks.forEach((block, i) => {
-                if (offsets[i]) {
-                    offsets[i] = $(window).height()*params.offsets[i]/100;
-                } else if (offsets[0]) {
-                    offsets[i] = $(window).height()*params.offsets[0]/100;
-                } else {
-                    offsets[i] = 0;
-                }
+                offsets[i] = offsets[i] ? $(window).height()*params.offsets[i]/100 : offsets[0] || 0;
                 breakpoints[i] = $(block).offset().top + offsets[i];
             });
         }, 50);
