@@ -2003,7 +2003,6 @@ function horDrag_init(params) {
             initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {delaySpeed, framerate: 15});
         }
         horDragObj.style.overflow = 'visible';
-        horDragObj.style.cursor = 'pointer';
         document.body.style.overflowX = 'hidden';
 
         const elements = horDragObj.querySelectorAll('.tn-elem'),
@@ -2021,10 +2020,12 @@ function horDrag_init(params) {
             rightCorner = offsetLeft + maxRight + widths[lefts.indexOf(maxRight)];
 
         $(horDragObj).css({
+            overflow: 'visible',
             position: 'relative',
             top: '0',
             left: '0',
-            width: rightCorner + 'px'
+            width: rightCorner + 'px',
+            cursor: 'grab'
         });
 
         horDragMaxLeft = $(window).width() - $(horDragObj).width();
@@ -2048,6 +2049,8 @@ function horDrag_init(params) {
                 dragObjStartX = +horDragObj.getAttribute('data-current-x');
             });
         }
+        horDragObj.addEventListener('mousedown', () => horDragObj.style.cursor = 'grabbing');
+        document.addEventListener('mouseup', () => horDragObj.style.cursor = 'grab');
     }
 
     function horDrag(event) {
