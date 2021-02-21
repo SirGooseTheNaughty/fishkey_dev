@@ -1224,8 +1224,6 @@ function uniBurger_init(params) {
         },
         burgerLinks = burgerBlock.querySelectorAll('a');
 
-    let openCloseTimeout = null;
-
     if (isTriggerCustom) {
         triggerElems.customOn = document.querySelector(params.customOn);
         triggerElems.customOff = document.querySelector(params.customOff);
@@ -1338,38 +1336,23 @@ function uniBurger_init(params) {
     $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
 
     function toggleBurger() {
-        if (openCloseTimeout) {
-            clearTimeout(openCloseTimeout);
-            openCloseTimeout = null;
-            
-            if (burgerBlock.classList.contains('burgerHidden')) {
-                document.documentElement.style.overflowY = 'hidden';
-                $(burgerWrapper).css(shownStyle);
+        document.documentElement.style.pointerEvents = 'none';
+        if (burgerBlock.classList.contains('burgerHidden')) {
+            document.documentElement.style.overflowY = 'hidden';
+            $(burgerWrapper).css(shownStyle);
+            setTimeout(() => {
                 burgerBlock.classList.remove('burgerHidden');
                 burgerBlock.classList.add('burgerShown');
-            } else {
-                burgerBlock.classList.add('burgerHidden');
-                burgerBlock.classList.remove('burgerShown');
+                document.documentElement.style.pointerEvents = 'auto';
+            }, 1000*burgerTransTime);
+        } else {
+            burgerBlock.classList.add('burgerHidden');
+            burgerBlock.classList.remove('burgerShown');
+            setTimeout(() => {
                 document.documentElement.style.overflowY = 'auto';
                 $(burgerWrapper).css(hiddenStyle);
-            }
-        } else {
-            if (burgerBlock.classList.contains('burgerHidden')) {
-                document.documentElement.style.overflowY = 'hidden';
-                $(burgerWrapper).css(shownStyle);
-                openCloseTimeout = setTimeout(() => {
-                    burgerBlock.classList.remove('burgerHidden');
-                    burgerBlock.classList.add('burgerShown');
-                }, 1000*burgerTransTime);
-            } else {
-                burgerBlock.classList.add('burgerHidden');
-                burgerBlock.classList.remove('burgerShown');
-                openCloseTimeout = setTimeout(() => {
-                    document.documentElement.style.overflowY = 'auto';
-                    $(burgerWrapper).css(hiddenStyle);
-                }, 1000*burgerElemsTransTime);
-                
-            }
+                document.documentElement.style.pointerEvents = 'auto';
+            }, 1000*burgerElemsTransTime);
         }
     }
 
