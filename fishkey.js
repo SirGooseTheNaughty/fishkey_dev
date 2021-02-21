@@ -780,7 +780,7 @@ function textApp_init(parameters) {
 
     if ($(window).width() > minWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
-            if (isNaN(offsets[i])) {
+            if (isNaN(offsets[contNum])) {
                 offsets[contNum] = offsets[0] || 0;
             } else {
                 offsets[contNum] = $(window).height()*offsets[contNum]/100;
