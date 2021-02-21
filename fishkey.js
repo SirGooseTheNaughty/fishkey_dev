@@ -1336,7 +1336,6 @@ function uniBurger_init(params) {
     $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
 
     function toggleBurger() {
-        document.documentElement.style.pointerEvents = 'none';
         if (burgerBlock.classList.contains('burgerHidden')) {
             document.documentElement.style.overflowY = 'hidden';
             $(burgerWrapper).css(shownStyle);
@@ -1362,11 +1361,9 @@ function uniBurger_init(params) {
         if (burgerBlock.classList.contains('burgerHidden')) {
             burgerBlock.classList.remove('burgerHidden');
             burgerBlock.classList.add('burgerShown');
-            document.documentElement.style.pointerEvents = 'auto';
         } else {
             document.documentElement.style.overflowY = 'auto';
             $(burgerWrapper).css(hiddenStyle);
-            document.documentElement.style.pointerEvents = 'auto';
         }
     }
 
