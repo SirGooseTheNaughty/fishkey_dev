@@ -1350,6 +1350,7 @@ function uniBurger_init(params) {
             burgerTimeout = setTimeout(() => {
                 burgerBlock.classList.remove('burgerHidden');
                 burgerBlock.classList.add('burgerShown');
+                burgerTimeout = null;
             }, 1000*burgerTransTime);
         } else {
             burgerBlock.classList.add('burgerHidden');
@@ -1357,6 +1358,7 @@ function uniBurger_init(params) {
             burgerTimeout = setTimeout(() => {
                 document.documentElement.style.overflowY = 'auto';
                 $(burgerWrapper).css(hiddenStyle);
+                burgerTimeout = null;
             }, 1000*burgerElemsTransTime);
         }
     }
