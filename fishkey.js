@@ -174,7 +174,7 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         burgerButton.style.pointerEvents = 'auto';
         $(burgerButton).children().css({
             height: triggerElems.triggerLineHeight,
-            'background-color': triggerElems.triggerColor
+            'background-color': triggerElems.closedTriggerColor
         });
         burgerButton.addEventListener('click', () => {
             toggleFunction();
