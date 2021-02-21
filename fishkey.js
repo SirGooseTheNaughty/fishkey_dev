@@ -1341,22 +1341,35 @@ function uniBurger_init(params) {
         if (openCloseTimeout) {
             clearTimeout(openCloseTimeout);
             openCloseTimeout = null;
-        }
-        if (burgerBlock.classList.contains('burgerHidden')) {
-            document.documentElement.style.overflowY = 'burgerHidden';
-            $(burgerWrapper).css(shownStyle);
-            openCloseTimeout = setTimeout(() => {
+            
+            if (burgerBlock.classList.contains('burgerHidden')) {
+                document.documentElement.style.overflowY = 'hidden';
+                $(burgerWrapper).css(shownStyle);
                 burgerBlock.classList.remove('burgerHidden');
                 burgerBlock.classList.add('burgerShown');
-            }, 1000*burgerTransTime);
-        } else {
-            burgerBlock.classList.add('burgerHidden');
-            burgerBlock.classList.remove('burgerShown');
-            openCloseTimeout = setTimeout(() => {
+            } else {
+                burgerBlock.classList.add('burgerHidden');
+                burgerBlock.classList.remove('burgerShown');
                 document.documentElement.style.overflowY = 'auto';
                 $(burgerWrapper).css(hiddenStyle);
-            }, 1000*burgerElemsTransTime);
-            
+            }
+        } else {
+            if (burgerBlock.classList.contains('burgerHidden')) {
+                document.documentElement.style.overflowY = 'hidden';
+                $(burgerWrapper).css(shownStyle);
+                openCloseTimeout = setTimeout(() => {
+                    burgerBlock.classList.remove('burgerHidden');
+                    burgerBlock.classList.add('burgerShown');
+                }, 1000*burgerTransTime);
+            } else {
+                burgerBlock.classList.add('burgerHidden');
+                burgerBlock.classList.remove('burgerShown');
+                openCloseTimeout = setTimeout(() => {
+                    document.documentElement.style.overflowY = 'auto';
+                    $(burgerWrapper).css(hiddenStyle);
+                }, 1000*burgerElemsTransTime);
+                
+            }
         }
     }
 
