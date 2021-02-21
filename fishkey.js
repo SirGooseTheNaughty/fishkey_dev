@@ -1339,6 +1339,7 @@ function uniBurger_init(params) {
 
     function toggleBurger() {
         if (burgerTimeout) {
+            console.log("fuck me")
             clearTimeout(burgerTimeout);
             burgerTimeout = null;
             resetState();
@@ -1368,7 +1369,7 @@ function uniBurger_init(params) {
             document.documentElement.style.overflowY = 'hidden';
             $(burgerWrapper).css(shownStyle);
             burgerBlock.classList.remove('burgerHidden');
-                burgerBlock.classList.add('burgerShown');
+            burgerBlock.classList.add('burgerShown');
         } else {
             burgerBlock.classList.add('burgerHidden');
             burgerBlock.classList.remove('burgerShown');
