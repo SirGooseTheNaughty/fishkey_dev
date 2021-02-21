@@ -1341,18 +1341,32 @@ function uniBurger_init(params) {
             document.documentElement.style.overflowY = 'hidden';
             $(burgerWrapper).css(shownStyle);
             setTimeout(() => {
-                burgerBlock.classList.remove('burgerHidden');
-                burgerBlock.classList.add('burgerShown');
-                document.documentElement.style.pointerEvents = 'auto';
+                // burgerBlock.classList.remove('burgerHidden');
+                // burgerBlock.classList.add('burgerShown');
+                // document.documentElement.style.pointerEvents = 'auto';
+                afterTimeout();
             }, 1000*burgerTransTime);
         } else {
             burgerBlock.classList.add('burgerHidden');
             burgerBlock.classList.remove('burgerShown');
             setTimeout(() => {
-                document.documentElement.style.overflowY = 'auto';
-                $(burgerWrapper).css(hiddenStyle);
-                document.documentElement.style.pointerEvents = 'auto';
+                // document.documentElement.style.overflowY = 'auto';
+                // $(burgerWrapper).css(hiddenStyle);
+                // document.documentElement.style.pointerEvents = 'auto';
+                afterTimeout();
             }, 1000*burgerElemsTransTime);
+        }
+    }
+
+    function afterTimeout() {
+        if (burgerBlock.classList.contains('burgerHidden')) {
+            burgerBlock.classList.remove('burgerHidden');
+            burgerBlock.classList.add('burgerShown');
+            document.documentElement.style.pointerEvents = 'auto';
+        } else {
+            document.documentElement.style.overflowY = 'auto';
+            $(burgerWrapper).css(hiddenStyle);
+            document.documentElement.style.pointerEvents = 'auto';
         }
     }
 
