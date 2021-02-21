@@ -1224,6 +1224,8 @@ function uniBurger_init(params) {
         },
         burgerLinks = burgerBlock.querySelectorAll('a');
 
+    let openCloseTimeout = null;
+
     if (isTriggerCustom) {
         triggerElems.customOn = document.querySelector(params.customOn);
         triggerElems.customOff = document.querySelector(params.customOff);
@@ -1336,17 +1338,21 @@ function uniBurger_init(params) {
     $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
 
     function toggleBurger() {
+        if (openCloseTimeout) {
+            clearTimeout(openCloseTimeout);
+            openCloseTimeout = null;
+        }
         if (burgerBlock.classList.contains('burgerHidden')) {
             document.documentElement.style.overflowY = 'burgerHidden';
             $(burgerWrapper).css(shownStyle);
-            setTimeout(() => {
+            openCloseTimeout = setTimeout(() => {
                 burgerBlock.classList.remove('burgerHidden');
                 burgerBlock.classList.add('burgerShown');
             }, 1000*burgerTransTime);
         } else {
             burgerBlock.classList.add('burgerHidden');
             burgerBlock.classList.remove('burgerShown');
-            setTimeout(() => {
+            openCloseTimeout = setTimeout(() => {
                 document.documentElement.style.overflowY = 'auto';
                 $(burgerWrapper).css(hiddenStyle);
             }, 1000*burgerElemsTransTime);
