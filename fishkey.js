@@ -209,6 +209,7 @@ function vectorDraw_init(params) {
                 offsets[i] = $(window).height()*offsets[i]/100;
             }
         });
+        console.log(offsets);
         vd_forSVG.forEach((space, i) => {
             logoPaths[i] = space.querySelector('path');
             logoLengths[i] = logoPaths[i].getTotalLength();
