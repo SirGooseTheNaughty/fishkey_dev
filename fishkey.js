@@ -202,14 +202,15 @@ function vectorDraw_init(params) {
         const vd_forSVG = document.querySelectorAll(selectors);
         vd_forSVG.forEach((space, i) => {
             $(space).html(svgs[i]);
+            console.log(offsets[i]);
 
             if (isNaN(offsets[i])) {
                 offsets[i] = offsets[0] ? $(window).height()*offsets[0]/100 : 0;
             } else {
                 offsets[i] = $(window).height()*offsets[i]/100;
             }
+            console.log(offsets[i]);
         });
-        console.log(offsets);
         vd_forSVG.forEach((space, i) => {
             logoPaths[i] = space.querySelector('path');
             logoLengths[i] = logoPaths[i].getTotalLength();
