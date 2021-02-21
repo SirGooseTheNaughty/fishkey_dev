@@ -179,6 +179,11 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         burgerButton.addEventListener('click', () => {
             toggleFunction();
             burgerButton.classList.toggle('open');
+            if (burgerButton.classList.contains('open')) {
+                $(burgerButton).children('span').css('background-color', triggerElems.openTriggerColor);
+            } else {
+                $(burgerButton).children('span').css('background-color', triggerElems.closedTriggerColor);
+            }
         });
     }
 
@@ -1201,9 +1206,9 @@ function uniBurger_init(params) {
             customOn: {},
             customOff: {},
             triggerLineHeight: 1,
-            triggerColor: 'black'
+            openTriggerColor: 'black',
+            openTriggerColor: 'black'
         },
-        // triggerElem = triggerBlock.querySelector('.tn-elem'),
         burgerTransTime = params.burgerTime || 1,
         burgerElemsTransTime = params.elementsTime || 0.4,
         startPos = [
@@ -1224,7 +1229,8 @@ function uniBurger_init(params) {
         triggerElems.customOff = document.querySelector(params.customOff);
     } else {
         triggerElems.triggerLineHeight = params.triggerLineHeight || 2;
-        triggerElems.triggerColor = params.triggerColor || 'black';
+        triggerElems.openTriggerColor = params.openTriggerColor || 'black';
+        triggerElems.closedTriggerColor = params.closedTriggerColor || 'black';
     }
 
     // инициализация триггера
@@ -1364,7 +1370,8 @@ function pushingBurger_init(params) {
             customOn: {},
             customOff: {},
             triggerLineHeight: 1,
-            triggerColor: 'black'
+            openTriggerColor: 'black',
+            closedTriggerColor: 'black'
         },
         burgerPosition = params.burgerPosition,
         burgerWidth = params.burgerWidth || $(window).width(),
@@ -1383,7 +1390,8 @@ function pushingBurger_init(params) {
         triggerElems.customOff = document.querySelector(params.customOff);
     } else {
         triggerElems.triggerLineHeight = params.triggerLineHeight || 2;
-        triggerElems.triggerColor = params.triggerColor || 'black';
+        triggerElems.openTriggerColor = params.openTriggerColor || 'black';
+        triggerElems.closedTriggerColor = params.closedTriggerColor || 'black';
     }
     
     let pushingShiftX = 0,
