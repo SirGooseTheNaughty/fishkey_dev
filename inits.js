@@ -233,8 +233,8 @@ dev
         verticalPosition: 'center',                         // положение по вертикали (top / center / bottom)
         horizontalPosition: 'center',                       // положение по горизонтали (left / center / right)
         burgerShape: 'circle',                              // форма выплывания (circle / square / rect)
-        triggerLineHeight: 2,                               // толщина линий кнопки бургера
-        triggerColor: 'black'                               // цвет кнопки бургера
+        triggerLineHeight: 2,                               // толщина линий стандартной кнопки бургера
+        triggerColor: '#000000'                             // цвет линий стандартной кнопки бургера
     });
 </script>
 
@@ -242,15 +242,17 @@ dev
 вытесняющий бургер
 <script>
     pushingBurger_init({
-        burgerBlock: '#rec252049977',           // id блока с меню
-        triggerBlock: '#rec252376983',          // id блока с кнопкой открытия/закрытия бургера (должен быть с прозрачным фоном)
-        burgerPosition: 'left',                 // положение меню (top / left / bottom / right)
-        burgerWidth: 500,                       // ширина меню (для положения слева/справа)
-        triggerLineHeight: 4,                   // толщина линий кнопки бургера
-        triggerColor: 'black',                  // цвет кнопки бургера
-        triggerScaleMobile: 1,                  // коэффициент уменьшения кнопки бургера в мобильной версии
-        easeTime: 0.8,                          // время появления
-        easeFunction: ''                        // кривая безье анимации появления (можно оставить пустым)
+        burgerBlock: '#rec252049977',                   // id блока с меню
+        triggerBlock: '#rec252376983',                  // id блока с кнопкой открытия/закрытия бургера (должен быть с прозрачным фоном)
+        isTriggerCustom: true,                          // используется кастомный бургер (true) или стандартный (false)
+        customOn: '[data-elem-id="1613749412521"]',     // селектор для кастомного бургера в закрытом состоянии
+        customOff: '[data-elem-id="1613749404574"]',    // селектор для кастомного бургера в открытом состоянии
+        burgerPosition: 'left',                         // положение меню (top / left / bottom / right)
+        burgerWidth: 500,                               // ширина меню (для положения слева/справа)
+        triggerLineHeight: 2,                           // толщина линий стандартной кнопки бургера
+        triggerColor: '#000000',                        // цвет линий стандартной кнопки бургера
+        easeTime: 0.8,                                  // время появления
+        easeFunction: ''                                // кривая безье анимации появления (можно оставить пустым)
     })
 </script>
 

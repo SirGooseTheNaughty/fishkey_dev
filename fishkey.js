@@ -1358,13 +1358,18 @@ function uniBurger_init(params) {
 function pushingBurger_init(params) {
     const burgerBlock = document.querySelector(params.burgerBlock),
         triggerBlock = document.querySelector(params.triggerBlock),
+        isTriggerCustom = params.isTriggerCustom || false,
+        triggerElems = {
+            std: {},
+            customOn: {},
+            customOff: {},
+            triggerLineHeight: 1,
+            triggerColor: 'black'
+        },
         burgerPosition = params.burgerPosition,
         burgerWidth = params.burgerWidth || $(window).width(),
-        triggerLineHeight = params.triggerLineHeight || 4,
-        triggerColor = params.triggerColor || 'black',
         easeTime = params.easeTime || 0.8,
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)',
-        triggerElem = triggerBlock.querySelector('.tn-elem'),
         burgerLinks = burgerBlock.querySelectorAll('a'),
         burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
         burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
@@ -1373,6 +1378,14 @@ function pushingBurger_init(params) {
     const allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         allUsedBlocks = [...allBlocks].filter(block => !block.querySelector('.t-popup') && block != triggerBlock && block != burgerBlock);
 
+    if (isTriggerCustom) {
+        triggerElems.customOn = document.querySelector(params.customOn);
+        triggerElems.customOff = document.querySelector(params.customOff);
+    } else {
+        triggerElems.triggerLineHeight = params.triggerLineHeight || 2;
+        triggerElems.triggerColor = params.triggerColor || 'black';
+    }
+    
     let pushingShiftX = 0,
         pushingShiftY = 0;
     
@@ -1438,33 +1451,8 @@ function pushingBurger_init(params) {
     }
 
     // инициализация триггера
-    $(triggerBlock).css({
-        position: 'fixed',
-        width: '100vw',
-        height: '100vh',
-        top: '0',
-        left: '0',
-        'z-index': '99999999',
-        'pointer-events': 'none'
-    });
-    triggerElem.innerHTML = `
-        <div id="nav-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    `;
-    const burgerButton = triggerBlock.querySelector('#nav-icon');
-    burgerButton.style.width = triggerElem.getAttribute('data-field-width-value') + 'px';
-    burgerButton.style.height = triggerElem.getAttribute('data-field-height-value') + 'px';
-    burgerButton.style.pointerEvents = 'auto';
-    $(burgerButton).children().css({
-        height: triggerLineHeight + 'px',
-        'background-color': triggerColor
-    });
-    // !!! инициализация триггера
+    setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger);
 
-    burgerButton.addEventListener('click', toggleBurger);
     $(burgerLinks).on('click', toggleBurger);
     if (params.addTriggers) {   // если надо добавить триггеры
         const addTriggers = document.querySelectorAll(params.addTriggers);
@@ -1477,12 +1465,10 @@ function pushingBurger_init(params) {
             $(blocksWrapper).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
             $(burgerBlock).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
             $(burgerBlock).attr('data-burgeropened', 'true');
-            burgerButton.classList.add('open');
         } else {
             $(blocksWrapper).css('transform', 'translate(0)');
             $(burgerBlock).css('transform', 'translate(0)');
             $(burgerBlock).attr('data-burgeropened', 'false');
-            burgerButton.classList.remove('open');
         }
     }
 }
@@ -1642,7 +1628,7 @@ function cursorChange_init(params) {
 
 
 /* переход на страницы по картинкам */
-function photoLink(params) {
+function photoLink_init(params) {
     const { photos } = params;
     if ($(window).width() > params.minWidth) {
         photos.forEach((photoSelector, i) => {
@@ -2185,7 +2171,7 @@ function photoZoom_init(params) {
 
 
 // Маска курсором
-function cursorColorFilter_init(params) {
+function cursorMask_init(params) {
     const minWidth = params.minWidth || 1200,
         clipRadius = params.clipRadius || 100,
         maskingPages = document.querySelectorAll(params.maskingPages),
