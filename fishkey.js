@@ -2013,6 +2013,7 @@ function horDrag_init(params) {
         elements.forEach((el, i) => {
             lefts[i] = +el.getBoundingClientRect().x;
             widths[i] = +el.getAttribute('data-field-width-value');
+            el.style.pointerEvents = 'none';
         });
 
         const offsetLeft = Math.min.apply(Math, lefts),
