@@ -205,8 +205,10 @@ function vectorDraw_init(params) {
             console.log(offsets[i]);
 
             if (isNaN(offsets[i])) {
+                console.log("NaN", i);
                 offsets[i] = offsets[0] ? $(window).height()*offsets[0]/100 : 0;
             } else {
+                console.log("ok", i);
                 offsets[i] = $(window).height()*offsets[i]/100;
             }
             console.log(offsets[i]);
