@@ -2350,6 +2350,7 @@ function bgChange_init(params) {
 function moveAlongThePath_init (params) {
     const path = params.path;
     const elem = params.elem ? document.querySelector(params.elem + ' div') : (console.error("Не задан элемент"))();
+    const isRotating = params.isRotating || false;
     const isContinious = params.isContinious || false;
     const easeTime = params.easeTime || 0.5;
     const easeFunction = params.easeFunction || 'ease-in-out';
@@ -2372,6 +2373,7 @@ function moveAlongThePath_init (params) {
         });
     }
 
+    elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
     elem.style.offsetPath = `path("${path}")`;
     if (isContinious) {
         moveOnScroll();
