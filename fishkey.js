@@ -1,3 +1,25 @@
+/* утилита для определения браузера */
+function getBrowserName() {
+    const agent = window.navigator.userAgent;
+    if (sUsrAg.indexOf("Firefox") > -1) {
+        return "firefox";
+      } else if (sUsrAg.indexOf("SamsungBrowser") > -1) {
+        return "samsung";
+      } else if (sUsrAg.indexOf("Opera") > -1 || sUsrAg.indexOf("OPR") > -1) {
+        return "opera";
+      } else if (sUsrAg.indexOf("Trident") > -1) {
+        return "explorer";
+      } else if (sUsrAg.indexOf("Edge") > -1) {
+        return "edge";
+      } else if (sUsrAg.indexOf("Chrome") > -1) {
+        return "chrome";
+      } else if (sUsrAg.indexOf("Safari") > -1) {
+        return "safari";
+      }
+      return "unknown";
+}
+
+
 /* утилита для получения значений размеров на разной ширине экрана */
 function getElemDim (elem, dim) {
     const tildaBreakpoints = [1200, 980, 640, 480, 320];
@@ -78,7 +100,7 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
             if (positioning == 'abs') {
                 obj.style.left = newCoord.x + 'px';
             } else {
-                translation.x = newCoord.x + 'px';
+                translation.x = newCoord.x;
             }
             totalError += Math.abs(target.x - curr.x);
         }
@@ -90,12 +112,15 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
             if (positioning == 'abs') {
                 obj.style.top = newCoord.y + 'px';
             } else {
-                translation.y = newCoord.y + 'px';
+                translation.y = newCoord.y;
             }
             totalError += Math.abs(target.y - curr.y);
         }
         if (positioning == 'rel') {
-            obj.style.transform = `translate(${translation.x}, ${translation.y})`;
+            obj.style.transform = `translate(${translation.x}px, ${translation.y}px)`;
+        }
+        if (positioning == 'custom') {
+            obj.style[params.customProperty] = params.customChange(translation.x, translation.y);
         }
         if (totalError < tolerance) {
             clearInterval(coordInt);
@@ -745,38 +770,11 @@ function textApp_init(parameters) {
     const animSpeed = parameters.animSpeed || 400;
     const wordSpeed = parameters.wordSpeed || 50;
     const offsets = parameters.offsets || null;
+    const isHiddenByDefault = parameters.isHiddenByDefault || false;
+    const triggerBlocks = parameters.triggerBlocks ? document.querySelectorAll(parameters.triggerBlocks) : null;
     const txtAppWordConts = [];
 
-    function txtAppear(contNum) {
-        let i = 0;
-        const txtApp_interval = setInterval(() => {
-            if (!txtAppWordConts[contNum][i]) {
-                clearInterval(txtApp_interval);
-            }
-            else {
-                txtAppWordConts[contNum][i].style.transition = `${animSpeed/1000}s ease`;
-                txtAppWordConts[contNum][i].style.top = '0';
-            }
-            i++;
-        }, wordSpeed);
-    }
-
-    function txtReappear(contNum) {
-        txtAppWordConts[contNum].forEach(word => {
-            word.style.transition = `none`;
-            word.style.top = '2em';
-        });
-        txtAppear(contNum);
-    }
-    
-    function scrollTrigger() {
-        const appeared = txtAppWordConts.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
-        appeared.forEach((isVisible, i) => {
-            if (isVisible) {
-                txtAppear(i);
-            }
-        })
-    }
+    const timeCache = new Date().getTime();
 
     if ($(window).width() > minWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
@@ -794,7 +792,7 @@ function textApp_init(parameters) {
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
-                                                <span class='txtAppWordCont${contNum}'>${word} </span>
+                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
                                             </p>`;
                 });
             } else if (divider == 'p') {
@@ -803,11 +801,11 @@ function textApp_init(parameters) {
                 txtAppWords.forEach((word, i) => {
                     if (i == txtAppWords.length - 1) {
                         txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: ${spacing}'>
-                                                    <span class='txtAppWordCont${contNum}'>${word} </span>
+                                                    <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
                                                 </p>`;
                     } else {
                         txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
-                                                    <span class='txtAppWordCont${contNum}'>${word}.</span>
+                                                    <span class='txtAppWordCont${contNum}-${timeCache}'>${word}.</span>
                                                 </p>`;
                     }
                 });
@@ -816,7 +814,7 @@ function textApp_init(parameters) {
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
-                                                <span class='txtAppWordCont${contNum}'>${word} </span>
+                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
                                             </p>`;
                 });
             } else {
@@ -824,14 +822,14 @@ function textApp_init(parameters) {
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     if (word == ' ') {
-                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: ${spacing}'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: ${spacing}'><span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span></p>`;
                     } else {
-                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block;'><span class='txtAppWordCont${contNum}'>${word} </span></p>`;
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block;'><span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span></p>`;
                     }
                 });
             }
 
-            txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}`);
+            txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}-${timeCache}`);
 
             txtAppCont.style.paddingBottom = '0.15em';
             txtAppCont.style.overflow = 'hidden';
@@ -852,14 +850,73 @@ function textApp_init(parameters) {
                 document.addEventListener('scroll', scrollTrigger);
             })
         } else {
-            txtAppConts.forEach((cont, i) => {
-                const contNum = i;
-                function reapp() {
-                    txtReappear(contNum);
+            if (triggerBlocks) {
+                if (isHiddenByDefault) {
+                    triggerBlocks.forEach((trigger, i) => {
+                        function app() {
+                            txtAppear(i);
+                        }
+                        function disapp() {
+                            txtDisappear(i);
+                        }
+                        trigger.addEventListener('mouseenter', app);
+                        trigger.addEventListener('mouseleave', disapp);
+                    })
+                } else {
+                    triggerBlocks.forEach((trigger, i) => {
+                        function reapp() {
+                            txtReappear(i);
+                        }
+                        trigger.addEventListener('mouseenter', reapp);
+                    })
                 }
-                cont.addEventListener('mouseenter', reapp);
-            })
+            } else {
+                txtAppConts.forEach((cont, i) => {
+                    function reapp() {
+                        txtReappear(i);
+                    }
+                    cont.addEventListener('mouseenter', reapp);
+                })
+            }
         }
+    }
+
+    function txtAppear(contNum) {
+        let i = 0;
+        const txtApp_interval = setInterval(() => {
+            if (!txtAppWordConts[contNum][i]) {
+                clearInterval(txtApp_interval);
+            }
+            else {
+                txtAppWordConts[contNum][i].style.transition = `${animSpeed/1000}s ease`;
+                txtAppWordConts[contNum][i].style.top = '0';
+            }
+            i++;
+        }, wordSpeed);
+    }
+
+    function txtDisappear(contNum) {
+        txtAppWordConts[contNum].forEach(word => {
+            word.style.transition = `none`;
+            word.style.top = '2em';
+        });
+    }
+
+    function txtReappear(contNum) {
+        txtAppWordConts[contNum].forEach(word => {
+            word.style.transition = `none`;
+            word.style.top = '2em';
+        });
+        txtAppear(contNum);
+    }
+    
+    function scrollTrigger() {
+        const appeared = txtAppWordConts.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
+        appeared.forEach((isVisible, i) => {
+            if (isVisible) {
+                txtAppear(i);
+            }
+        })
     }
 }
 
@@ -2262,5 +2319,84 @@ function bgChange_init(params) {
             }
         });
         body.style.backgroundColor = colors[currentColor];
+    }
+}
+
+
+// движение элемента по пути
+function moveAlongThePath_init (params) {
+    const path = params.path;
+    const elem = params.elem ? document.querySelector(params.elem + ' div') : (console.error("Не задан элемент"))();
+    const isContinious = params.isContinious || false;
+    const easeTime = params.easeTime || 0.5;
+    const easeFunction = params.easeFunction || 'ease-in-out';
+    let offset = params.offset || 50;
+    const activeHeight = params.activeHeight || 0;
+    const isSmooth = params.isSmooth || false;
+    const delaySpeed = params.delaySpeed || 1;
+
+    let isAnimHappened = false;
+    const elemTop = $(elem).offset().top + $(elem).height()/2;
+    const wh = $(window).height();
+    offset = wh*offset/100;
+
+    if (isSmooth) {
+        initCoordTracking(elem, 'scroll', 'custom', true, false, {
+            customProperty: "offset-distance",
+            customChange: (x,y) => `${x}%`,
+            delaySpeed,
+            tolerance: 0.1
+        });
+    }
+
+    elem.style.offsetPath = `path("${path}")`;
+    if (isContinious) {
+        moveOnScroll();
+        if (isSmooth) {
+            document.addEventListener('scroll', moveSmoothOnScroll);
+        } else {
+            document.addEventListener('scroll', moveOnScroll);
+        }
+    } else {
+        showOnScroll();
+        document.addEventListener('scroll', showOnScroll);
+    }
+
+    function getProgress() {
+        const st = $(window).scrollTop();
+        return st + wh - elemTop - offset;
+    }
+
+    function showOnScroll() {
+        if (!isAnimHappened && getProgress() > 0) {
+            isAnimHappened = true;
+            elem.style.transition = `offset-distance ${easeTime}s ${easeFunction}`;
+            elem.style.offsetDistance = '100%';
+        }
+    }
+
+    function moveSmoothOnScroll() {
+        const progress = getProgress();
+        if (progress < 0) {
+            elem.setAttribute('data-target-x', 0);
+        } else if (progress < activeHeight) {
+            const percetage = 100*progress/activeHeight;
+            elem.setAttribute('data-target-x', percetage);
+        } else {
+            elem.style.offsetDistance = '100%';
+            elem.setAttribute('data-target-x', '100');
+        }
+    }
+
+    function moveOnScroll() {
+        const progress = getProgress();
+        if (progress < 0) {
+            elem.style.offsetDistance = '0';
+        } else if (progress < activeHeight) {
+            const percetage = 100*progress/activeHeight;
+            elem.style.offsetDistance = `${percetage}%`;
+        } else {
+            elem.style.offsetDistance = '100%';
+        }
     }
 }
