@@ -853,6 +853,7 @@ function textApp_init(parameters) {
             if (triggerBlocks) {
                 if (isHiddenByDefault) {
                     triggerBlocks.forEach((trigger, i) => {
+                        txtDisappear(i);
                         function app() {
                             txtAppear(i);
                         }
