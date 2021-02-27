@@ -1,24 +1,24 @@
 /* утилита для определения браузера */
+/* Названия браузеров: chrome, firefox, safari, explorer, edge, opera, samsung */
 function getBrowserName() {
     const agent = window.navigator.userAgent;
-    if (sUsrAg.indexOf("Firefox") > -1) {
+    if (agent.indexOf("Firefox") > -1) {
         return "firefox";
-      } else if (sUsrAg.indexOf("SamsungBrowser") > -1) {
+      } else if (agent.indexOf("SamsungBrowser") > -1) {
         return "samsung";
-      } else if (sUsrAg.indexOf("Opera") > -1 || sUsrAg.indexOf("OPR") > -1) {
+      } else if (agent.indexOf("Opera") > -1 || agent.indexOf("OPR") > -1) {
         return "opera";
-      } else if (sUsrAg.indexOf("Trident") > -1) {
+      } else if (agent.indexOf("Trident") > -1) {
         return "explorer";
-      } else if (sUsrAg.indexOf("Edge") > -1) {
+      } else if (agent.indexOf("Edge") > -1) {
         return "edge";
-      } else if (sUsrAg.indexOf("Chrome") > -1) {
+      } else if (agent.indexOf("Chrome") > -1) {
         return "chrome";
-      } else if (sUsrAg.indexOf("Safari") > -1) {
+      } else if (agent.indexOf("Safari") > -1) {
         return "safari";
       }
       return "unknown";
 }
-
 
 /* утилита для получения значений размеров на разной ширине экрана */
 function getElemDim (elem, dim) {
@@ -212,6 +212,28 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         });
     }
 
+}
+
+/* показ разных элементов для разных браузеров */
+function differOnBrowser_init(params) {
+    const blocksToHide = params.blocksToHide || null;
+    const blocksToShow = params.blocksToShow || null;
+    const browsers = params.browsers;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const isBrowserListed = browsers.includes(getBrowserName());
+        if (isBrowserListed) {
+            hideBlocks(blocksToHide);
+        } else {
+            hideBlocks(blocksToShow);
+        }
+    });
+
+    function hideBlocks(blocks) {
+        if (blocks) {
+            $(blocks).remove();
+        }
+    }
 }
 
 /* вырисовка вектора */

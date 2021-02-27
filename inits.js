@@ -500,6 +500,16 @@ dev
      });
 </script>
 
+
+показ разных элементов для разных браузеров
+<script>
+    differOnBrowser_init({
+        blocksToHide: '[data-elem-id="1470209944682"]',     // элементы или блоки, которые будут прятаться для указанных браузеров
+        blocksToShow: '[data-elem-id="1614425367367"]',     // элементы или блоки, которые будут показаны только для указанных браузеров
+        browsers: ['safari', 'explorer']                    // браузеры: chrome, safari, firefox, opera, explorer, edge, samsung
+    });
+</script>
+
 */
 
 
