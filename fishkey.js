@@ -819,6 +819,7 @@ function textApp_init(parameters) {
     const txtAppWordConts = [];
 
     const timeCache = new Date().getTime();
+    let txtApp_intervals = [];
 
     if ($(window).width() > minWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
@@ -928,9 +929,9 @@ function textApp_init(parameters) {
 
     function txtAppear(contNum) {
         let i = 0;
-        const txtApp_interval = setInterval(() => {
+        txtApp_intervals[contNum] = setInterval(() => {
             if (!txtAppWordConts[contNum][i]) {
-                clearInterval(txtApp_interval);
+                clearInterval(txtApp_intervals[contNum]);
             }
             else {
                 txtAppWordConts[contNum][i].style.transition = `${animSpeed/1000}s ease`;
@@ -941,6 +942,9 @@ function textApp_init(parameters) {
     }
 
     function txtDisappear(contNum) {
+        if (txtApp_intervals[contNum]) {
+            clearInterval(txtApp_intervals[contNum]);
+        }
         txtAppWordConts[contNum].forEach(word => {
             word.style.transition = `none`;
             word.style.top = '2em';
@@ -948,10 +952,7 @@ function textApp_init(parameters) {
     }
 
     function txtReappear(contNum) {
-        txtAppWordConts[contNum].forEach(word => {
-            word.style.transition = `none`;
-            word.style.top = '2em';
-        });
+        txtDisappear(contNum);
         txtAppear(contNum);
     }
     
