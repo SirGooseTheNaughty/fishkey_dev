@@ -1,4 +1,4 @@
-di/* утилита для определения браузера */
+/* утилита для определения браузера */
 /* Названия браузеров: chrome, firefox, safari, explorer, edge, opera, samsung */
 function getBrowserName() {
     const agent = window.navigator.userAgent;
