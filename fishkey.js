@@ -2358,33 +2358,36 @@ function moveAlongThePath_init (params) {
     const activeHeight = params.activeHeight || 0;
     const isSmooth = params.isSmooth || false;
     const delaySpeed = params.delaySpeed || 1;
+    const minWidth = params.minWidth || 0;
 
     let isAnimHappened = false;
     const elemTop = $(elem).offset().top + $(elem).height()/2;
     const wh = $(window).height();
     offset = wh*offset/100;
 
-    if (isSmooth) {
-        initCoordTracking(elem, 'scroll', 'custom', true, false, {
-            customProperty: "offset-distance",
-            customChange: (x,y) => `${x}%`,
-            delaySpeed,
-            tolerance: 0.1
-        });
-    }
-
-    elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
-    elem.style.offsetPath = `path("${path}")`;
-    if (isContinious) {
-        moveOnScroll();
+    if ($(window).width() > minWidth) {
         if (isSmooth) {
-            document.addEventListener('scroll', moveSmoothOnScroll);
-        } else {
-            document.addEventListener('scroll', moveOnScroll);
+            initCoordTracking(elem, 'scroll', 'custom', true, false, {
+                customProperty: "offset-distance",
+                customChange: (x,y) => `${x}%`,
+                delaySpeed,
+                tolerance: 0.1
+            });
         }
-    } else {
-        showOnScroll();
-        document.addEventListener('scroll', showOnScroll);
+    
+        elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
+        elem.style.offsetPath = `path("${path}")`;
+        if (isContinious) {
+            moveOnScroll();
+            if (isSmooth) {
+                document.addEventListener('scroll', moveSmoothOnScroll);
+            } else {
+                document.addEventListener('scroll', moveOnScroll);
+            }
+        } else {
+            showOnScroll();
+            document.addEventListener('scroll', showOnScroll);
+        }
     }
 
     function getProgress() {
