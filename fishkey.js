@@ -20,11 +20,20 @@ function getBrowserName() {
       return "unknown";
 }
 
-/* утилита для получения значений размеров на разной ширине экрана */
-function getElemDim (elem, dim) {
+/* утилита для получения текущего брейкпоинта */
+function getCurrentBreakpoint () {
     const tildaBreakpoints = [1200, 980, 640, 480, 320];
     const ww = $(window).width();
-    let currentBreakpoint;
+    for(let i = 0; i < tildaBreakpoints.length; i++) {
+        if (ww >= tildaBreakpoints[i]) {
+            return i;
+        }
+    }
+    return tildaBreakpoints[tildaBreakpoints.length - 1];
+}
+
+/* утилита для получения значений размеров на разной ширине экрана */
+function getElemDim (elem, dim) {
     let result = null;
     const queries = [
         `data-field-${dim}-value`,
@@ -33,12 +42,7 @@ function getElemDim (elem, dim) {
         `data-field-${dim}-res-480-value`,
         `data-field-${dim}-res-320-value`
     ];
-    for(let i = 0; i < tildaBreakpoints.length; i++) {
-        if (ww > tildaBreakpoints[i]) {
-            currentBreakpoint = i;
-            break;
-        }
-    }
+    const currentBreakpoint = getCurrentBreakpoint();
     for(let i = currentBreakpoint; i >= 0; i--) {
         result = elem.getAttribute(queries[i]);
         if (result) {
@@ -2371,7 +2375,7 @@ function bgChange_init(params) {
 
 // движение элемента по пути
 function moveAlongThePath_init (params) {
-    const path = params.path;
+    const paths = params.paths;
     const elem = params.elem ? document.querySelector(params.elem + ' div') : (console.error("Не задан элемент"))();
     const isRotating = params.isRotating || false;
     const isContinious = params.isContinious || false;
@@ -2389,6 +2393,10 @@ function moveAlongThePath_init (params) {
     offset = wh*offset/100;
 
     if ($(window).width() > minWidth) {
+        const currentBreakpoint = getCurrentBreakpoint();
+        const keys = paths.keys();
+        const currKey = keys[currentBreakpoint];
+
         if (isSmooth) {
             initCoordTracking(elem, 'scroll', 'custom', true, false, {
                 customProperty: "offset-distance",
@@ -2399,7 +2407,7 @@ function moveAlongThePath_init (params) {
         }
     
         elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
-        elem.style.offsetPath = `path("${path}")`;
+        elem.style.offsetPath = `path("${paths[currKey]}")`;
         if (isContinious) {
             moveOnScroll();
             if (isSmooth) {
