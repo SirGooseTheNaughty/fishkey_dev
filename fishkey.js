@@ -26,7 +26,7 @@ function getCurrentBreakpoint () {
     const ww = $(window).width();
     for(let i = 0; i < tildaBreakpoints.length; i++) {
         if (ww >= tildaBreakpoints[i]) {
-            return ш;
+            return i;
         }
     }
     return tildaBreakpoints.length - 1;
