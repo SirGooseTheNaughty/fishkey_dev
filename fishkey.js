@@ -26,10 +26,10 @@ function getCurrentBreakpoint () {
     const ww = $(window).width();
     for(let i = 0; i < tildaBreakpoints.length; i++) {
         if (ww >= tildaBreakpoints[i]) {
-            return tildaBreakpoints[i];
+            return ш;
         }
     }
-    return tildaBreakpoints[tildaBreakpoints.length - 1];
+    return tildaBreakpoints.length - 1;
 }
 
 /* утилита для получения значений размеров на разной ширине экрана */
@@ -2395,9 +2395,8 @@ function moveAlongThePath_init (params) {
     if ($(window).width() > minWidth) {
         const currentBreakpoint = getCurrentBreakpoint();
         const tildaBreakpoints = [1200, 980, 640, 480, 320];
-        const currBreakpointInd = tildaBreakpoints.indexOf(currentBreakpoint);
         let path;
-        for (let i = currBreakpointInd; i >= 0; i--) {
+        for (let i = currentBreakpoint; i >= 0; i--) {
             const ind = tildaBreakpoints[i];
             if (paths[ind]) {
                 path = paths[ind];
