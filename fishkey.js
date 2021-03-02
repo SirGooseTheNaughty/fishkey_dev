@@ -273,6 +273,7 @@ function vectorDraw_init(params) {
                 stroke: logoPaths[i].getAttribute("fill"),
                 'stroke-width': strokeWidth + 'px'
             });
+            logoPaths[i].removeAttribute("fill");
             const desiredWidth = getElemDim(space, "width");
             const coeff = desiredWidth/(+space.querySelector('svg').getAttribute('width'));
             space.querySelector('svg').style.transform = `scale(${coeff})`;
