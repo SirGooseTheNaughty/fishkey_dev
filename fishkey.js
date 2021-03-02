@@ -26,7 +26,7 @@ function getCurrentBreakpoint () {
     const ww = $(window).width();
     for(let i = 0; i < tildaBreakpoints.length; i++) {
         if (ww >= tildaBreakpoints[i]) {
-            return i;
+            return tildaBreakpoints[i];
         }
     }
     return tildaBreakpoints[tildaBreakpoints.length - 1];
@@ -2394,8 +2394,19 @@ function moveAlongThePath_init (params) {
 
     if ($(window).width() > minWidth) {
         const currentBreakpoint = getCurrentBreakpoint();
-        const keys = paths.keys();
-        const currKey = keys[currentBreakpoint];
+        const tildaBreakpoints = [1200, 980, 640, 480, 320];
+        const currBreakpointInd = tildaBreakpoints.indexOf(currentBreakpoint);
+        let path;
+        for (let i = currBreakpointInd; i >= 0; i--) {
+            const ind = tildaBreakpoints[i];
+            if (paths[ind]) {
+                path = paths[ind];
+                break;
+            }
+        }
+        if (!path) {
+            console.error("Неправильно заданы пути");
+        }
 
         if (isSmooth) {
             initCoordTracking(elem, 'scroll', 'custom', true, false, {
@@ -2407,7 +2418,7 @@ function moveAlongThePath_init (params) {
         }
     
         elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
-        elem.style.offsetPath = `path("${paths[currKey]}")`;
+        elem.style.offsetPath = `path("${path}")`;
         if (isContinious) {
             moveOnScroll();
             if (isSmooth) {
