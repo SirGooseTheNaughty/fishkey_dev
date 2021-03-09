@@ -309,7 +309,6 @@ function vectorDraw_init(params) {
     }
 }
 
-
 /* вырисовка надписи вектором */
 function vectorWrite_init(params) {
     let { selector, svg } = params;
@@ -370,7 +369,6 @@ function vectorWrite_init(params) {
         })
     }
 }
-
 
 /* кнопка вжух в кружок */
 function buttonToCircle_init(params) {
@@ -1840,10 +1838,6 @@ function bgPhotos_init(params) {
         elems.forEach((elem, i) => {
             $(elem).attr('assocWith', i);
             elem.parentElement.style.zIndex = 5;
-            const newPadding = (parseInt(window.getComputedStyle(elem).width, 10) - parseInt(window.getComputedStyle(elem).height, 10))/2 + 'px';
-            elem.style.padding = `${newPadding} 0 ${newPadding} 0`;
-            elem.style.marginTop = '-' + newPadding;
-            elem.style.borderRadius = '50%';
         });
         photos.forEach((photo, i) => {
             $(photo).attr('assocWith', i);
