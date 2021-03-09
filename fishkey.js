@@ -815,7 +815,7 @@ function screenChangeOnScroll_init(params) {
 function textApp_init(parameters) {
     const { divider, trigger } = parameters;
     const txtAppConts = document.querySelectorAll(parameters.selectors);   // появляющийся текст
-    const spacing = parameters.spacing ? parameters.spacing + 'px' : '5px';
+    const spacing = parameters.spacing ? parameters.spacing + 'px' : '0';
     const minWidth = parameters.minWidth || 0;
     const animSpeed = parameters.animSpeed || 400;
     const wordSpeed = parameters.wordSpeed || 50;
@@ -842,40 +842,36 @@ function textApp_init(parameters) {
                 txtAppWords = txtApp.split(' ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
-                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%;  padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
                                                 <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
-                                            </p>`;
+                                            </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else if (divider == 'p') {
                 txtAppWords = txtApp.split('. ');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
-                    if (i == txtAppWords.length - 1) {
-                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: ${spacing}'>
-                                                    <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
-                                                </p>`;
-                    } else {
-                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
-                                                    <span class='txtAppWordCont${contNum}-${timeCache}'>${word}.</span>
-                                                </p>`;
-                    }
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%; padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
+                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word}.</span>
+                                            </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else if (divider == 'l') {
                 txtAppWords = txtApp.split(';;');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
-                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding: 0 ${spacing} 1rem 0; margin-bottom: -1rem'>
-                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
-                                            </p>`;
+                    txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%; padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
+                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word}</span>
+                                            </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else {
                 txtAppWords = txtApp.split('');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     if (word == ' ') {
-                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; padding-right: ${spacing}'><span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span></p>`;
+                        txtAppCont.innerHTML += `<span> </span>`;
                     } else {
-                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block;'><span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span></p>`;
+                        txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%; padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
+                                                    <span class='txtAppWordCont${contNum}-${timeCache}'>${word}</span>
+                                                </p>`;
                     }
                 });
             }
