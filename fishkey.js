@@ -2377,7 +2377,6 @@ function bgChange_init(params) {
 // движение элемента по пути
 function moveAlongThePath_init (params) {
     const paths = params.paths;
-    const elemCont = params.elem ? document.querySelector(params.elem) : (console.error("Не задан элемент"))();
     const elem = params.elem ? document.querySelector(params.elem + ' div') : (console.error("Не задан элемент"))();
     const isRotating = params.isRotating || false;
     const isContinious = params.isContinious || false;
@@ -2408,16 +2407,6 @@ function moveAlongThePath_init (params) {
         if (!path) {
             console.error("Неправильно заданы пути");
         }
-
-        const elemCoords = {
-            x: elem.getBoundingClientRect().x,
-            y: elem.getBoundingClientRect().y
-        };
-        const elemContCoords = {
-            x: elemCont.getBoundingClientRect().x,
-            y: elemCont.getBoundingClientRect().y
-        };
-
         if (isSmooth) {
             initCoordTracking(elem, 'scroll', 'custom', true, false, {
                 customProperty: "offset-distance",
@@ -2427,10 +2416,8 @@ function moveAlongThePath_init (params) {
             });
         }
     
-        console.log(`translate(${elemCoords.x - elemContCoords.x}px, ${elemCoords.y - elemContCoords.y}px)`);
         elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
         elem.style.offsetPath = `path("${path}")`;
-        elem.style.transform = `translate(${elemCoords.x - elemContCoords.x}px, ${elemCoords.y - elemContCoords.y}px)`;
         if (isContinious) {
             moveOnScroll();
             if (isSmooth) {
