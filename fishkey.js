@@ -2427,10 +2427,10 @@ function moveAlongThePath_init (params) {
             });
         }
     
-        console.log(`translate(${elemCoords.x - elemContCoords.x}px, ${elemCoords.y - elemContCoords.y}px`);
+        console.log(`translate(${elemCoords.x - elemContCoords.x}px, ${elemCoords.y - elemContCoords.y}px)`);
         elem.style.offsetRotate = isRotating ? 'auto' : '0deg';
         elem.style.offsetPath = `path("${path}")`;
-        elem.style.transform = `translate(${elemCoords.x - elemContCoords.x}px, ${elemCoords.y - elemContCoords.y}px`;
+        elem.style.transform = `translate(${elemCoords.x - elemContCoords.x}px, ${elemCoords.y - elemContCoords.y}px)`;
         if (isContinious) {
             moveOnScroll();
             if (isSmooth) {
