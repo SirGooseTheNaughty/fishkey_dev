@@ -674,9 +674,9 @@ function horScroll_init(params) {
         horScrollww = $(window).width(),
         horScrollBlocksNum = $(horScrollBlocks).length,
         horScrollTotalHeight = (horScrollBlocksNum-1)*horScrollww/speedCoeff + horScrollwh,
-        horScrollBlockTop = $(horScrollBlocks[0]).offset().top,
         horScrollStop = (horScrollBlocksNum-1)*horScrollww/speedCoeff;
-    let horScrollContainer = '';
+    let horScrollContainer;
+    let horScrollStaticContainer;
 
     if ($(window).width() > horScrollMinWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
@@ -685,7 +685,8 @@ function horScroll_init(params) {
             initCoordTracking(horScrollContainer, 'scroll', 'rel', true, true, {framerate: 15, delaySpeed});
         }
         $(horScrollContainer).wrap('<div class="horScrollStaticContainer"></div>');
-        $('.horScrollStaticContainer').css({
+        horScrollStaticContainer = document.querySelector('.horScrollStaticContainer');
+        $(horScrollStaticContainer).css({
             'background-color': horScrollBlocks[0].querySelector('.t396__artboard').style.backgroundColor, 
             'position': 'relative', 
             'overflow': 'hidden', 
@@ -710,8 +711,7 @@ function horScroll_init(params) {
     }
 
     function horizontalScroll() {
-        const wt = $(window).scrollTop();
-        let horScrollShift = +wt - horScrollBlockTop;
+        const horScrollShift = $(window).scrollTop() - $(horScrollStaticContainer).offset().top;
         if (horScrollShift < 0) {
             $(horScrollContainer).css({
                 position: 'relative',
@@ -731,8 +731,7 @@ function horScroll_init(params) {
     }
 
     function horizontalScrollDelay() {
-        const wt = $(window).scrollTop();
-        let horScrollShift = +wt - horScrollBlockTop;
+        const horScrollShift = $(window).scrollTop() - $(horScrollStaticContainer).offset().top;
         if (horScrollShift < 0) {
             $(horScrollContainer).css({
                 position: 'relative'
