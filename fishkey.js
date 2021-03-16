@@ -2498,6 +2498,7 @@ function circleBg_init(params) {
     const textColor = params.textColor || "black";
     const easeTime = params.easeTime || 0.4;
     const easeFunction = params.easeFunction || "ease-out";
+    const minWidth = params.minWidth || 1200;
     
     const content = btn.firstElementChild;
     const entryPoint = {
@@ -2517,23 +2518,26 @@ function circleBg_init(params) {
         {x: btnDims.width, y: btnDims.height},
         {x: 0, y: btnDims.height}
     ];
+    let animContent;
 
-    $(content).css({
-        position: 'absolute',
-        height: '100%',
-        display: 'grid',
-        'place-items': 'center'
-    });
-    $(content).clone().appendTo(btn);
-    const animContent = btn.lastElementChild;
-    $(animContent).css({
-        'background-color': circleColor,
-        color: textColor,
-        'clip-path': 'circle(0 at left top)'
-    });
-
-    btn.addEventListener('mouseenter', popCircle);
-    btn.addEventListener('mouseleave', shrinkCircle);
+    if ($(window).width() > minWidth) {
+        $(content).css({
+            position: 'absolute',
+            height: '100%',
+            display: 'grid',
+            'place-items': 'center'
+        });
+        $(content).clone().appendTo(btn);
+        animContent = btn.lastElementChild;
+        $(animContent).css({
+            'background-color': circleColor,
+            color: textColor,
+            'clip-path': 'circle(0 at left top)'
+        });
+    
+        btn.addEventListener('mouseenter', popCircle);
+        btn.addEventListener('mouseleave', shrinkCircle);
+    }
 
     function getRadius(coords) {
         const distToCorners = corners.map(corner => 1.05*Math.sqrt((corner.x - coords.x)*(corner.x - coords.x) + (corner.y - coords.y)*(corner.y - coords.y)));

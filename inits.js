@@ -526,11 +526,12 @@ dev
 круглый фон для кнопки
 <script>
     circleBg_init({
-        button: '[data-elem-id="1615480829678"]',
-        circleColor: '#FFFFFF',
-        textColor: '#000000',
-        easeTime: 0.5,
-        easeFunction: ''
+        button: '[data-elem-id="1615480829678"]',   // селектор кнопки
+        circleColor: '#FFFFFF',                     // заполняющий цвет
+        textColor: '#000000',                       // цвет текста при заполнении
+        easeTime: 0.5,                              // время анимации
+        easeFunction: '',                           // кривая безье анимации
+        minWidth: 1200                              // минимальная ширина экрана
     })
 </script>
 
