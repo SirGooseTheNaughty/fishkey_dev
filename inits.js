@@ -522,6 +522,18 @@ dev
     });
 </script>
 
+
+круглый фон для кнопки
+<script>
+    circleBg_init({
+        button: '[data-elem-id="1615480829678"]',
+        circleColor: '#FFFFFF',
+        textColor: '#000000',
+        easeTime: 0.5,
+        easeFunction: ''
+    })
+</script>
+
 */
 
 
