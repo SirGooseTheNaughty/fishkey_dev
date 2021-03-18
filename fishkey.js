@@ -2585,7 +2585,6 @@ function circleBg_init(params) {
             '-webkit-clip-path': `circle(${radius}px at ${coords.x}px ${coords.y}px)`,
             'clip-path': `circle(${radius}px at ${coords.x}px ${coords.y}px)`
         });
-        animContent.style.clipPath = `circle(${getRadius(coords)}px at ${coords.x}px ${coords.y}px)`;
         animContent.style.transition = `clip-path ${easeTime}s ${easeFunction}, -webkit-clip-path ${easeTime}s ${easeFunction}`;
         $(animContent).css({
             '-webkit-clip-path': `circle(0 at ${coords.x}px ${coords.y}px)`,
