@@ -537,7 +537,7 @@ dev
 
 
 <script>
-    trakingTheMouse_init({
+    mouseTrack_init({
         trackElement: '[data-elem-id="1616681324909"]', // селектор элемента
         mode: "shift",                                  // режим: shift - сдвиг, rotate - поворот
         maxElementShift: 20,                            // (для режима сдвиг) максимальный сдвиг относительно начального положения

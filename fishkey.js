@@ -2595,7 +2595,7 @@ function circleBg_init(params) {
 
 
 // слежка за мышкой
-function trakingTheMouse_init(params) {
+function mouseTrack_init(params) {
     if (!document.querySelector(params.trackElement)) {
         console.error("Неправильно задан селектор элемента");
         return;
