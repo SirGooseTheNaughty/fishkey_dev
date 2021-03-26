@@ -2592,3 +2592,79 @@ function circleBg_init(params) {
         });
     }
 }
+
+
+// слежка за мышкой
+function trakingTheMouse_init(params) {
+    if (!document.querySelector(params.trackElement)) {
+        console.error("Неправильно задан селектор элемента");
+        return;
+    };
+    if (params.mode != "shift" && params.mode != "rotate") {
+        console.error("Неправильно задан параметр MODE, значение по умолчанию - 'shift'");
+    }
+
+    const trackElement = document.querySelector(params.trackElement),
+        maxElementShift = params.maxElementShift || 50,
+        mode = params.mode || "shift",
+        transformOrigin = params.transformOrigin || "center",
+        minWidth = params.minWidth || 1200;
+
+    const elementRectCenter = { x: 0, y: 0 };
+    const maxMouseShift = {
+        x: $(window).width(),
+        y: $(window).height()
+    };
+
+    if ($(window).width() > minWidth) {
+        refreshElementPosition();
+        if (mode == "rotate") {
+            trackElement.style.transformOrigin = transformOrigin;
+            document.addEventListener('mousemove', mouseRotater);
+        } else {
+            initCoordTracking(trackElement, 'mousemove', 'rel', true, true, {framerate: 10, speed: 0.05});
+            document.addEventListener('mousemove', mouseShifter);
+        }
+    }
+
+    function refreshElementPosition() {
+        const elementRect = trackElement.getBoundingClientRect();
+        elementRectCenter.x = elementRect.x + elementRect.width/2;
+        elementRectCenter.y = elementRect.y + elementRect.height/2;
+    }
+
+    function getCurrentMouseShift(e) {
+        refreshElementPosition();
+        return {
+            x: (e.clientX - elementRectCenter.x),
+            y: (e.clientY - elementRectCenter.y)
+        };
+    }
+
+    function mouseShifter(e) {
+        const currentShift = getCurrentMouseShift(e);
+        trackElement.setAttribute('data-target-x', maxElementShift*currentShift.x/maxMouseShift.x);
+        trackElement.setAttribute('data-target-y', maxElementShift*currentShift.y/maxMouseShift.y);
+    }
+
+    function getAtan(shift) {
+        const radToGrad = (rad) => rad * 180 / Math.PI;
+
+        const { x, y } = shift;
+        if (x == 0) {
+            if (y >= 0) {
+                return 90;
+            }
+            return -90;
+        }
+        if (x > 0) {
+            return radToGrad(Math.atan(y / x));
+        }
+        return 180 + radToGrad(Math.atan(y / x));
+    };
+
+    function mouseRotater(e) {
+        const currentShift = getCurrentMouseShift(e);
+        trackElement.style.transform = `rotate(${getAtan(currentShift)}deg)`;
+    }
+}
