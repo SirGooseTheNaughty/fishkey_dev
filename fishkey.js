@@ -2607,19 +2607,15 @@ function trakingTheMouse_init(params) {
     const trackElement = document.querySelector(params.trackElement),
         maxElementShift = params.maxElementShift || 50,
         mode = params.mode || "shift",
-        transformOrigin = params.transformOrigin || "center",
         minWidth = params.minWidth || 1200;
 
-    const elementRectCenter = { x: 0, y: 0 };
     const maxMouseShift = {
         x: $(window).width(),
         y: $(window).height()
     };
 
     if ($(window).width() > minWidth) {
-        refreshElementPosition();
         if (mode == "rotate") {
-            trackElement.style.transformOrigin = transformOrigin;
             document.addEventListener('mousemove', mouseRotater);
         } else {
             initCoordTracking(trackElement, 'mousemove', 'rel', true, true, {framerate: 10, speed: 0.05});
@@ -2627,22 +2623,24 @@ function trakingTheMouse_init(params) {
         }
     }
 
-    function refreshElementPosition() {
+    function getElementBasePoint() {
         const elementRect = trackElement.getBoundingClientRect();
-        elementRectCenter.x = elementRect.x + elementRect.width/2;
-        elementRectCenter.y = elementRect.y + elementRect.height/2;
-    }
+        return {
+            x: elementRect.x + elementRect.width/2,
+            y: elementRect.y + elementRect.height/2
+        };
+    };
 
     function getCurrentMouseShift(e) {
-        refreshElementPosition();
+        const elementBasePoint = getElementBasePoint();
         return {
-            x: (e.clientX - elementRectCenter.x),
-            y: (e.clientY - elementRectCenter.y)
+            x: (e.clientX - elementBasePoint.x),
+            y: (e.clientY - elementBasePoint.y)
         };
     }
 
     function mouseShifter(e) {
-        const currentShift = getCurrentMouseShift(e);
+        const currentShift =  getCurrentMouseShift(e);
         trackElement.setAttribute('data-target-x', maxElementShift*currentShift.x/maxMouseShift.x);
         trackElement.setAttribute('data-target-y', maxElementShift*currentShift.y/maxMouseShift.y);
     }

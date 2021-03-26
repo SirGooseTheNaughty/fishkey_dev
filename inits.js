@@ -541,7 +541,6 @@ dev
         trackElement: '[data-elem-id="1616681324909"]', // селектор элемента
         mode: "shift",                                  // режим: shift - сдвиг, rotate - поворот
         maxElementShift: 20,                            // (для режима сдвиг) максимальный сдвиг относительно начального положения
-        transformOrigin: "left",                        // (для режима поворот) точка вращения (left / center / right / top / bottom)
         minWidth: 1200                                  // минимальная ширина экрана
     });
 </script>
