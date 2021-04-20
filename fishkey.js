@@ -161,7 +161,7 @@ function getBlockList(firstId, lastId) {
 }
 
 /* утилита для настройки иконки бургера */
-function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFunction) {
+function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFunction, burgerBlock) {
     $(triggerBlock).css({
         position: 'fixed',
         width: '100vw',
@@ -171,18 +171,20 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         'z-index': '999999999',
         'pointer-events': 'none'
     });
+    const burgerLinks = burgerBlock.querySelectorAll('a');
 
     if (isTriggerCustom) {
-        triggerElems.customOn.addEventListener("click", () => {
+        let isOpened = false;
+        function customToggle() {
             toggleFunction();
-            triggerElems.customOn.style.display = "none";
-            triggerElems.customOff.style.display = "flex";
-        });
-        triggerElems.customOff.addEventListener("click", () => {
-            toggleFunction();
-            triggerElems.customOn.style.display = "flex";
-            triggerElems.customOff.style.display = "none";
-        });
+            triggerElems.customOn.style.display = isOpened ? "flex" : "none";
+            triggerElems.customOff.style.display = isOpened ? "none" : "flex";
+            isOpened = !isOpened;
+        }
+        triggerElems.customOn.addEventListener("click", customToggle);
+        triggerElems.customOff.addEventListener("click", customToggle);
+        burgerLinks.forEach(link => link.addEventListener("click", customToggle));
+
         triggerElems.customOff.style.display = "none";
         triggerElems.customOn.style.pointerEvents = "auto";
         triggerElems.customOff.style.pointerEvents = "auto";
@@ -205,7 +207,8 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
             height: triggerElems.triggerLineHeight,
             'background-color': triggerElems.closedTriggerColor
         });
-        burgerButton.addEventListener('click', () => {
+
+        function stdToggle() {
             toggleFunction();
             burgerButton.classList.toggle('open');
             if (burgerButton.classList.contains('open')) {
@@ -213,7 +216,9 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
             } else {
                 $(burgerButton).children('span').css('background-color', triggerElems.closedTriggerColor);
             }
-        });
+        }
+        burgerButton.addEventListener('click', stdToggle);
+        burgerLinks.forEach(link => link.addEventListener("click", stdToggle));
     }
 
 }
@@ -1340,7 +1345,7 @@ function uniBurger_init(params) {
     }
 
     // инициализация триггера
-    setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger);
+    setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger, burgerBlock);
 
     $(burgerBlock).wrap('<div class="burgerWrapper"></div>');
     const burgerWrapper = document.querySelector('.burgerWrapper');
@@ -1443,7 +1448,6 @@ function uniBurger_init(params) {
 
     function toggleBurger() {
         if (burgerTimeout) {
-            console.log("fuck me")
             clearTimeout(burgerTimeout);
             burgerTimeout = null;
             resetState();
@@ -1481,8 +1485,6 @@ function uniBurger_init(params) {
             $(burgerWrapper).css(hiddenStyle);
         }
     }
-
-    burgerLinks.forEach(burgerLink => burgerLink.addEventListener('click', toggleBurger));
 
     window.onresize = burgerReshape;
 }
@@ -1587,9 +1589,8 @@ function pushingBurger_init(params) {
     }
 
     // инициализация триггера
-    setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger);
+    setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger, burgerBlock);
 
-    $(burgerLinks).on('click', toggleBurger);
     if (params.addTriggers) {   // если надо добавить триггеры
         const addTriggers = document.querySelectorAll(params.addTriggers);
         $(addTriggers).on('click', toggleBurger);
