@@ -2667,3 +2667,73 @@ function mouseTrack_init(params) {
         trackElement.style.transform = `rotate(${getAtan(currentShift)}deg)`;
     }
 }
+
+
+// прелоудер
+function preloader_init(params) {
+    const startTime = Date.now();
+    const blockId = params.block;
+    const isWaiting = params.isWaiting !== undefined ? params.isWaiting : true;
+    const delay = params.delay || 0;
+    const animTime = params.animTime || 1;
+    const animFunction = params.animFunction || 'linear';
+    const howToClose = params.howToClose || 'fade';
+
+    const block = document.querySelector(blockId);
+    if (!block) return console.error("Неправильно указан id блока");
+
+    $(block).css({
+        position: 'fixed',
+        width: '100vw',
+        height: '100vh',
+        'z-index': '99999999',
+        top: '0',
+        left: '0',
+        transform: 'translate(0)',
+        transition: `${animTime}s ${animFunction}`
+    });
+    $('body').css('overflow', 'hidden');
+
+    if (isWaiting) {
+        window.onload = closePreloader;
+    } else {
+        setTimeout(() => {
+            animatePreloader();
+        }, delay*1000);
+    }
+
+    function closePreloader() {
+        const timeDiff = Date.now() - startTime;
+        if (timeDiff > delay*1000) {
+            animatePreloader();
+        } else {
+            setTimeout(() => {
+                animatePreloader();
+            }, delay*1000 - timeDiff);
+        }
+    }
+
+    function animatePreloader() {
+        switch (howToClose) {
+            case 'go-up':
+                block.style.transform = 'translate(0, -100vh)';
+                break;
+            case 'go-left':
+                block.style.transform = 'translate(-100vw, 0)';
+                break;
+            case 'go-down':
+                block.style.transform = 'translate(0, 100vh)';
+                break;
+            case 'go-right':
+                block.style.transform = 'translate(100vw, 0)';
+                break;
+            default:
+                block.style.opacity = '0';
+                break;
+        }
+        setTimeout(() => {
+            block.style.display = 'none';
+        }, animTime*1000);
+        $('body').css('overflow', 'auto');
+    }
+}
