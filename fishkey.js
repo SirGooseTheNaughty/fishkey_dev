@@ -2737,3 +2737,97 @@ function preloader_init(params) {
         $('body').css('overflow', 'auto');
     }
 }
+
+
+// обрезка текста
+function textWrap_init(params) {
+    const textBlock = document.querySelector(params.text + ' div');
+    if (!textBlock) return console.error('Неправильно задан селектор элемента');
+    const trigger = params.trigger ? document.querySelector(params.trigger) : textBlock;
+    if (!trigger) return console.error('Неправильно задан селектор триггера');
+    const isTriggerMoving = params.isTriggerMoving || false;
+    const isTriggerFlipping = params.isTriggerFlipping || false;
+    const numLinesArr = params.numLines;
+    let numLines = 3;
+    const animTime = params.animTime || 0.5;
+    const animFunction = params.animFunction || 'ease-in-out';
+    const minWidth = params.minWidth || 0;
+
+    const canTriggerMove = isTriggerMoving && trigger !== textBlock;
+
+    if (typeof numLinesArr === 'object') {
+        const currentBreakpoint = getCurrentBreakpoint();
+        const tildaBreakpoints = [1200, 980, 640, 480, 320];
+        for (let i = currentBreakpoint; i >= 0; i--) {
+            const ind = tildaBreakpoints[i];
+            if (numLinesArr[ind]) {
+                numLines = numLinesArr[ind];
+                break;
+            }
+        }
+    } else {
+        numLines = numLinesArr;
+    }
+
+    const lineHeight = parseInt(window.getComputedStyle(textBlock).lineHeight);
+    const totalLines = textBlock.offsetHeight / lineHeight;
+    const shift = lineHeight*numLines;
+    const triggerShift = $(textBlock).height() - shift;
+    let isClipped = true;
+    let clipTimeout;
+
+    if ($(window).width() > minWidth) {
+        if (totalLines <= numLines) {
+            if (trigger !== textBlock) {
+                trigger.style.display = 'none';
+            }
+            return;
+        }
+
+        $(textBlock).css({
+            'clip-path': `polygon(0 0, 100% 0, 100% ${shift}px, 0 ${shift}px`,
+            display: '-webkit-box',
+            '-webkit-line-clamp': `${numLines}`,
+            '-webkit-box-orient': 'vertical',
+            overflow: 'hidden',
+            transition: `clip-path ${animTime}s ${animFunction}`
+        });
+        trigger.style.cursor = 'pointer';
+        if (canTriggerMove) {
+            $(trigger).css('transform', `translateY(-${triggerShift}px)`);
+            setTimeout(() => $(trigger).css('transition', `transform ${animTime}s ${animFunction}`))
+        }
+    
+        trigger.addEventListener('click', toggleTextClip);
+    }
+
+    function toggleTextClip() {
+        if (isClipped) {
+            if (clipTimeout) {
+                clearTimeout(clipTimeout);
+            }
+            $(textBlock).css({
+                'clip-path': `polygon(0 0, 100% 0, 100% 100%, 0 100%)`,
+                '-webkit-line-clamp': 'initial'
+            });
+            if (canTriggerMove) {
+                $(trigger).css('transform', `translateY(0)`);
+            }
+            if (isTriggerFlipping) {
+                $(trigger).children().css('transform', 'rotate(0)');
+            }
+        } else {
+            $(textBlock).css('clip-path', `polygon(0 0, 100% 0, 100% ${shift}px, 0 ${shift}px`);
+            clipTimeout = setTimeout(() => {
+                $(textBlock).css('-webkit-line-clamp', `${numLines}`);
+            }, 1000*animTime);
+            if (canTriggerMove) {
+                $(trigger).css('transform', `translateY(-${triggerShift}px)`);
+            }
+            if (isTriggerFlipping) {
+                $(trigger).children().css('transform', 'rotate(180deg)');
+            }
+        }
+        isClipped = !isClipped;
+    }
+}
