@@ -1465,7 +1465,7 @@ function uniBurger_init(params) {
             burgerBlock.classList.add('burgerHidden');
             burgerBlock.classList.remove('burgerShown');
             burgerTimeout = setTimeout(() => {
-                document.documentElement.style.overflowY = 'auto';
+                document.documentElement.style.overflowY = 'initial';
                 $(burgerWrapper).css(hiddenStyle);
                 burgerTimeout = null;
             }, 1000*burgerElemsTransTime);
@@ -1481,7 +1481,7 @@ function uniBurger_init(params) {
         } else {
             burgerBlock.classList.add('burgerHidden');
             burgerBlock.classList.remove('burgerShown');
-            document.documentElement.style.overflowY = 'auto';
+            document.documentElement.style.overflowY = 'initial';
             $(burgerWrapper).css(hiddenStyle);
         }
     }
