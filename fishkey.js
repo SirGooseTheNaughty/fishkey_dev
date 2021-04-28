@@ -2323,11 +2323,11 @@ function cursorMask_init(params) {
     if ($(window).width() > minWidth) {
         maskingPages.forEach((page, i) => {
             const originalPage = originalPages[i];
-            page.style.position = 'absolute';
             page.style.width = window.getComputedStyle(originalPage).width;
             page.style.height = window.getComputedStyle(originalPage).height;
+            page.style.position = 'absolute';
             page.style.top = $(originalPage).offset().top + 'px';
-            page.style.clipPath = `circle(${clipRadius} at -100px -100px)`;
+            page.style.clipPath = `circle(${clipRadius}px at -100px -100px)`;
             page.style.zIndex = '50';
         });
 
