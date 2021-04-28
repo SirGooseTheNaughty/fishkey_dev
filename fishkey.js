@@ -168,7 +168,7 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         height: '100vh',
         top: '0',
         left: '0',
-        'z-index': '999999999',
+        'z-index': '9999',
         'pointer-events': 'none'
     });
     const burgerLinks = burgerBlock.querySelectorAll('a');
