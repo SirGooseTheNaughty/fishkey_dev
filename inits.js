@@ -580,6 +580,17 @@ dev
     })
 </script>
 
+объединение элементов
+<script>
+    joinElements({
+        wrapperSelectors: [         // селекторы объединяющих элементов
+            '[data-elem-id="1620057598399"]',
+            '[data-elem-id="1621274020845"]'
+        ],
+        areBordersHidden: false     // прятать ли рамки объединяющих элементов (true - прятать, false - нет) [true]
+    });
+</script>
+
 */
 
 

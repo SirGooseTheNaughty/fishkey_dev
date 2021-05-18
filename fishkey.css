@@ -132,3 +132,9 @@
     overflow: hidden;
     position: fixed;
 }
+
+/* объенинение элементов */
+.leftTop {
+    left: 0 !important;
+    top: 0 !important;
+}

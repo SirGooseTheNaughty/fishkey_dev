@@ -51,6 +51,22 @@ function getElemDim (elem, dim) {
     }
 }
 
+/* утилита для получения позиций элементов по настройкам Тильды для разных экранов */
+function getElementRect (elem) {
+    const x = parseInt(getElemDim(elem, 'left'));
+    const top = parseInt(getElemDim(elem, 'top'));
+    const width = parseInt(getElemDim(elem, 'width'));
+    const height = parseInt(getElemDim(elem, 'height')) || parseInt(elem.getBoundingClientRect().height);
+    return {
+        x,
+        top,
+        width,
+        height,
+        right: x + width,
+        bottom: top + height
+    };
+}
+
 /* утилита для плавного расчета координат */
 function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
     let isIntSet = false;
@@ -2732,7 +2748,6 @@ function preloader_init(params) {
                 break;
         }
         setTimeout(() => {
-            // block.style.display = 'none';
             $(block).remove();
         }, animTime*1000);
         $('body').css('overflow', 'auto');
@@ -2830,5 +2845,79 @@ function textWrap_init(params) {
             }
         }
         isClipped = !isClipped;
+    }
+}
+
+// объединение элементов
+function joinElements(params) {
+    if (!params.wrapperSelectors) {
+        console.error('Не заданы селекторы');
+        return;
+    }
+    const areBordersHidden = params.areBordersHidden !== undefined ? params.areBordersHidden : true;
+
+    const docRecs = Array.prototype.slice.call(document.querySelectorAll('*[id^="rec"]'));
+    const data = {
+        wrappers: [],
+        wrapperContents: [],
+        joiningElements: []
+    };
+    params.wrapperSelectors.forEach((sel, i) => {
+        const wrapper = document.querySelector(sel);
+        if (!wrapper) {
+            console.error(`Неправильно задан ${i+1}-й селектор ${sel}`);
+            return;
+        }
+        data.wrappers.push(wrapper);
+        data.wrapperContents.push(data.wrappers[i].querySelector('.tn-atom'));
+        if (areBordersHidden) {
+            data.wrapperContents[i].style.border = 'none';
+        }
+        const wrapperRec = docRecs.find(rec => Boolean(rec.querySelector(sel)));
+        const recElements = Array.prototype.slice.call(wrapperRec.querySelectorAll('*[data-elem-id]'));
+        data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, data.wrappers[i])));
+    });
+    let currentBreakpoint = getCurrentBreakpoint();
+
+    setTimeout(() => {
+        data.joiningElements.forEach((JE, i) => {
+            JE.forEach(elem => {
+                data.wrapperContents[i].style.verticalAlign = 'inherit';
+                $(elem).appendTo(data.wrapperContents[i]);
+                elem.classList.add('leftTop');
+                JE.forEach(elem => repositionElement(elem, i));
+            })
+        });
+    }, 5);
+
+    window.onresize = reposOnResize;
+
+    function reposOnResize () {
+        if (currentBreakpoint != getCurrentBreakpoint()) {
+            data.joiningElements.forEach((JE, i) => {
+                JE.forEach(elem => repositionElement(elem, i));
+                currentBreakpoint = getCurrentBreakpoint();
+            });
+        }
+    }
+
+    function repositionElement (elem, i) {
+        const rect = getElementRect(elem);
+        const wrapRect = getElementRect(data.wrappers[i]);
+        elem.style.transform = `translate(${rect.x - wrapRect.x}px, ${rect.top - wrapRect.top}px)`;
+    }
+
+    function filterJoinedElements (elem, wrapper) {
+        if (elem == wrapper) {
+            return false;
+        }
+        const rect = getElementRect(elem);
+        const wrapRect = getElementRect(wrapper);
+        return (
+            rect.x > wrapRect.x
+            && rect.top > wrapRect.top
+            && rect.right < wrapRect.right
+            && rect.bottom < wrapRect.bottom
+        );
     }
 }
