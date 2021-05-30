@@ -2924,6 +2924,10 @@ function joinElements(params) {
 
 // бегущая строка в кнопке
 function runningLineBtn_init (params) {
+    const minWidth = params.minWidth || 0;
+    if ($(window).width() < minWidth) {
+        return;
+    }
     const btn = document.querySelector(params.btn);
     if (!btn) {
         console.error('Неверно задан селектор кнопки');

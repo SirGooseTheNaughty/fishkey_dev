@@ -594,16 +594,17 @@ dev
 бегущая строка в кнопке
 <script>
     runningLineBtn_init({
-        btn: '[data-elem-id="1622379786844"]',
-        runningText: 'ОБОРМОТКА',
-        textMargin: 15,
-        animTime: 1,
-        rotation: -10,
-        runningTextStyle: {
+        btn: '[data-elem-id="1622379786844"]',  // селектор кнопки
+        runningText: 'ОБОРМОТКА',               // бегущий текст (если не совпадает с текстом кнопки)
+        textMargin: 15,                         // ширина промежутка между текстами в пикселях
+        animTime: 1,                            // время анимации (больше время - медленнее движение)
+        minWidth: 1200,                         // минимальная ширина экрана
+        rotation: -10,                          // наклон бегущей строки в градусах
+        runningTextStyle: {                     // дополнительные стили бегущего текста
             color: 'white',
             'font-style': 'italic',
         }
-    })
+    });
 </script>
 
 */
