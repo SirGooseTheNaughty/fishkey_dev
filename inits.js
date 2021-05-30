@@ -591,6 +591,21 @@ dev
     });
 </script>
 
+бегущая строка в кнопке
+<script>
+    runningLineBtn_init({
+        btn: '[data-elem-id="1622379786844"]',
+        runningText: 'ОБОРМОТКА',
+        textMargin: 15,
+        animTime: 1,
+        rotation: -10,
+        runningTextStyle: {
+            color: 'white',
+            'font-style': 'italic',
+        }
+    })
+</script>
+
 */
 
 

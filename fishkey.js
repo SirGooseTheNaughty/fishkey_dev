@@ -2921,3 +2921,45 @@ function joinElements(params) {
         );
     }
 }
+
+// бегущая строка в кнопке
+function runningLineBtn_init (params) {
+    const btn = document.querySelector(params.btn);
+    if (!btn) {
+        console.error('Неверно задан селектор кнопки');
+    }
+    const btnCont = btn.querySelector('.tn-atom');
+    const btnTxt = btnCont.textContent;
+    const runningText = params.runningText || btnTxt;
+    const offset = params.textMargin || 10;
+    const animTime = params.animTime || 0.5;
+    const runningTextStyle = params.runningTextStyle || {};
+    const rotation = params.rotation || null;
+
+    const getRunningLine = (txt) => {
+        return (
+            `
+                <div class="runningLine" aria-hidden="true">
+                    <div class="runningLine__inner" style="animation-duration: ${animTime}s">
+                        <span>${txt}</span>
+                        <span>${txt}</span>
+                        <span>${txt}</span>
+                        <span>${txt}</span>
+                    </div>
+                </div>
+            `
+        )
+    };
+
+    btnCont.classList.add('runningLineBtn');
+    btnCont.innerHTML = `<span class="runningLineInitialTxt">${btnTxt}</span>${getRunningLine(runningText)}`;
+    const txtWidth = $('.runningLine__inner > span').width();
+    btnCont.style = `--move-final: ${- txtWidth - offset}px;`;
+    $('.runningLine span').css({
+        ...runningTextStyle,
+        'padding': `0 ${offset / 2}px`
+    });
+    if (rotation) {
+        $('.runningLine').css('transform', `rotate(${rotation}deg)`);
+    }
+}
