@@ -2924,10 +2924,6 @@ function joinElements(params) {
 
 // бегущая строка в кнопке
 function runningLineBtn_init (params) {
-    const minWidth = params.minWidth || 0;
-    if ($(window).width() < minWidth) {
-        return;
-    }
     const btn = document.querySelector(params.btn);
     if (!btn) {
         console.error('Неверно задан селектор кнопки');
@@ -2939,12 +2935,15 @@ function runningLineBtn_init (params) {
     const animTime = params.animTime || 0.5;
     const runningTextStyle = params.runningTextStyle || {};
     const rotation = params.rotation || null;
+    const isSafari = getBrowserName() === 'safari';
 
     const getRunningLine = (txt) => {
         return (
             `
                 <div class="runningLine" aria-hidden="true">
                     <div class="runningLine__inner" style="animation-duration: ${animTime}s">
+                        <span>${txt}</span>
+                        <span>${txt}</span>
                         <span>${txt}</span>
                         <span>${txt}</span>
                         <span>${txt}</span>
@@ -2967,5 +2966,24 @@ function runningLineBtn_init (params) {
     });
     if (rotation) {
         $('.runningLine').css('transform', `rotate(${rotation}deg)`);
+    }
+
+    if (isSafari) {
+        const maxShift = txtWidth + offset;
+        const coordInc = maxShift / (animTime * 100);
+        const lineElem = document.querySelector('.runningLine__inner');
+        lineElem.style.transition = 'none';
+        lineElem.style.animation = 'none';
+        let currShift = 0;
+        function moveLine() {
+            currShift += coordInc;
+            if (currShift <= maxShift) {
+                lineElem.style.transform = `translateX(-${currShift}px)`;
+            } else {
+                currShift = 0;
+                lineElem.style.transform = `translateX(0px)`;
+            }
+        }
+        setInterval(moveLine, 10);
     }
 }

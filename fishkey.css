@@ -181,6 +181,12 @@
     place-items: center;
 }
 
+.runningLineInitialTxt {
+    height: 100%;
+    display: grid;
+    place-items: center;
+}
+
 @keyframes run-the-line {
     0% {
         -webkit-transform: translateX(0);
