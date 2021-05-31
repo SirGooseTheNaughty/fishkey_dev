@@ -183,7 +183,7 @@
 
 .runningLineInitialTxt {
     height: 100%;
-    display: grid;
+    display: grid !important;
     place-items: center;
 }
 
