@@ -2949,6 +2949,8 @@ function runningLineBtn_init (params) {
                         <span>${txt}</span>
                         <span>${txt}</span>
                         <span>${txt}</span>
+                        <span>${txt}</span>
+                        <span>${txt}</span>
                     </div>
                 </div>
             `
