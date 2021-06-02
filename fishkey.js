@@ -1307,6 +1307,7 @@ function hoverText_init(params) {
         });
     
         $(".textHover").mouseenter(function(event) {
+            console.log(event.target.getAttribute('data-text'));
                 hoverTextCursor.firstElementChild.innerText = event.target.getAttribute('data-text');
                 hoverTextCursor.style.transition = 'opacity 0.25s ease';
                 hoverTextCursor.style.opacity = '1';
