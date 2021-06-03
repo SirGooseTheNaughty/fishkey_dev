@@ -1829,6 +1829,7 @@ function bgPhotos_init(params) {
     const elemSelectors = params.elements,
         photoSelectors = params.photos,
         delaySpeed = params.delaySpeed || 0.1,
+        isStandartLayerOrder = params.isStandartLayerOrder || false,
         elems = [],
         photos = [];
 
@@ -1854,10 +1855,12 @@ function bgPhotos_init(params) {
         photos.forEach((photo, i) => {
             $(photo).attr('assocWith', i);
             $(photo).css({
-                'z-index': '1',
                 'opacity': '0',
                 'transition': 'opacity 0.25s ease, transform 0.1s linear'
             });
+            if (!isStandartLayerOrder) {
+                photo.style.zIndex = '1';
+            }
         });
     
         $(elems).on('mouseenter', function (e) {
