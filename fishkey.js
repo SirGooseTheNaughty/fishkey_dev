@@ -1752,7 +1752,9 @@ function cursorChange_init(params) {
 
 
         for (let i = 0; i < numStates; i++) {
-            $(triggers[i]).css('cursor', 'none');
+            if (isCursorHidden) {
+                $(triggers[i]).css('cursor', 'none');
+            }
             $(triggers[i]).attr('data-makes-cursor-state', i);
             $(triggers[i]).mouseenter(turnCursorStateOn).mouseleave(turnCursorStateOff);
         }
