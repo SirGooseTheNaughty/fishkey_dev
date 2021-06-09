@@ -20,6 +20,11 @@ function getBrowserName() {
       return "unknown";
 }
 
+/* утилита для определения мобильных устройств */
+function isMobile() {
+    return /Mobi/i.test(window.navigator.userAgent);
+}
+
 /* утилита для получения текущего брейкпоинта */
 function getCurrentBreakpoint () {
     const tildaBreakpoints = [1200, 980, 640, 480, 320];
@@ -236,7 +241,6 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         burgerButton.addEventListener('click', stdToggle);
         burgerLinks.forEach(link => link.addEventListener("click", stdToggle));
     }
-
 }
 
 /* показ разных элементов для разных браузеров */
@@ -1367,8 +1371,8 @@ function uniBurger_init(params) {
     const burgerWrapper = document.querySelector('.burgerWrapper');
 
     function burgerReshape() {
-        const ww = $(window).width() + 17,
-            wh = $(window).height(),
+        const ww = isMobile() ? window.screen.width : $(window).width() + 17,
+            wh = isMobile() ? window.screen.height : $(window).height(),
             maxDim = Math.max(ww, wh);
 
         switch (burgerShape) {
