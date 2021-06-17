@@ -56,6 +56,25 @@ function getElemDim (elem, dim) {
     }
 }
 
+/* утилита для получения любях параметров элемента на разной ширине экрана */
+function getElemParam (elem, dim) {
+    let result = null;
+    const queries = [
+        `data-${dim}-value`,
+        `data-${dim}-res-960-value`,
+        `data-${dim}-res-640-value`,
+        `data-${dim}-res-480-value`,
+        `data-${dim}-res-320-value`
+    ];
+    const currentBreakpoint = getCurrentBreakpoint();
+    for(let i = currentBreakpoint; i >= 0; i--) {
+        result = elem.getAttribute(queries[i]);
+        if (result) {
+            return result;
+        }
+    }
+}
+
 /* утилита для получения позиций элементов по настройкам Тильды для разных экранов */
 function getElementRect (elem) {
     const x = parseInt(getElemDim(elem, 'left'));
@@ -1527,10 +1546,9 @@ function pushingBurger_init(params) {
         burgerWidth = params.burgerWidth || $(window).width(),
         easeTime = params.easeTime || 0.8,
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)',
-        burgerLinks = burgerBlock.querySelectorAll('a'),
         burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
         burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
-        burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : burgerArtboard.getAttribute('data-artboard-height');
+        burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height');
     
     const allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         allUsedBlocks = [...allBlocks].filter(block => !block.querySelector('.t-popup') && block != triggerBlock && block != burgerBlock);
