@@ -60,11 +60,11 @@ function getElemDim (elem, dim) {
 function getElemParam (elem, dim) {
     let result = null;
     const queries = [
-        `data-${dim}-value`,
-        `data-${dim}-res-960-value`,
-        `data-${dim}-res-640-value`,
-        `data-${dim}-res-480-value`,
-        `data-${dim}-res-320-value`
+        `data-${dim}`,
+        `data-${dim}-res-960`,
+        `data-${dim}-res-640`,
+        `data-${dim}-res-480`,
+        `data-${dim}-res-320`
     ];
     const currentBreakpoint = getCurrentBreakpoint();
     for(let i = currentBreakpoint; i >= 0; i--) {
