@@ -1549,6 +1549,7 @@ function pushingBurger_init(params) {
         burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
         burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
         burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height');
+        console.log(burgerHeight, burgerVh, getElemParam(burgerArtboard, 'artboard-height'));
     
     const allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         allUsedBlocks = [...allBlocks].filter(block => !block.querySelector('.t-popup') && block != triggerBlock && block != burgerBlock);
