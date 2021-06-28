@@ -3041,7 +3041,7 @@ function textColoring_init(params) {
 
     if ($(window).width() > minWidth) {
         if (getBrowserName() === 'safari') {
-            textElement.style.transform = `color ${animTime}s`;
+            textElement.style.transition = `color ${animTime}s`;
             textElement.addEventListener('mouseenter', () => textElement.style.color = fillingColor);
             textElement.addEventListener('mouseleave', () =>  textElement.style.color = standartColor);
             return;
