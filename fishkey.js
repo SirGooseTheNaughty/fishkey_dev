@@ -3067,7 +3067,11 @@ function textColoring_init(params) {
     }
 
     function changeGradPosition (start = -colorsDiff, end = 0) {
-        textElement.style.background = `linear-gradient(${gradientDirection}, ${fillingColor} ${start}%, ${standartColor} ${end}%) text`
+        $(textElement).css({
+            background: `linear-gradient(${gradientDirection}, ${fillingColor} ${start}%, ${standartColor} ${end}%)`,
+            '-webkit-background-clip': 'text',
+            backgroundClip: 'text'
+        });
     }
     function incrementGradPos () {
         gradPos.end = gradPos.end + iterGradPosChange;
