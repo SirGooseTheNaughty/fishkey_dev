@@ -47,10 +47,17 @@ function getElemDim (elem, dim) {
         `data-field-${dim}-res-480-value`,
         `data-field-${dim}-res-320-value`
     ];
+    const units = elem.getAttribute(`data-field-${dim}units-value`);
     const currentBreakpoint = getCurrentBreakpoint();
     for(let i = currentBreakpoint; i >= 0; i--) {
         result = elem.getAttribute(queries[i]);
         if (result) {
+            if (units === '%') {
+                if(dim === 'width' || dim === 'left' || dim === 'right') {
+                    return $(window).width() * result / 100;
+                }
+                return $(window).height() * result / 100;
+            }
             return result;
         }
     }
