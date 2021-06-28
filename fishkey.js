@@ -3023,8 +3023,8 @@ function textColoring_init(params) {
     if (!textElement) {
         return console.error('Неправильно задан селектор элемента');
     }
-    const gradientDirection = params.direction || 'to right';
-    const fillingColor = params.color || 'red';
+    const gradientDirection = params.gradientDirection || 'to right';
+    const fillingColor = params.fillingColor || 'red';
     const animTime = params.animTime || 0.5;
     const colorsDiff = params.colorsDiff || 50;
     const snapBackwards = params.snapBackwards || false;

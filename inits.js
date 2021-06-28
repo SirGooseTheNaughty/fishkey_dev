@@ -614,9 +614,9 @@ dev
         selector: '[data-elem-id="1470209944682"]', // селектор элемента с текстом
         gradientDirection: 'to right',              // направление заполнения
         fillingColor: 'red',                        // заполняющий цвет
-        animTime: 1,                                // время анимации
-        colorsDiff: 60,                             // длина градиента в процентах
-        snapBackwards: true,                        // будет ли двигаться назад
+        animTime: 0.5,                              // время анимации
+        colorsDiff: 20,                             // длина градиента в процентах
+        snapBackwards: false,                       // будет ли двигаться назад
         minWidth: 1200                              // минимальная ширина экрана
     });
 </script>
