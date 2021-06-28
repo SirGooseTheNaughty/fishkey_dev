@@ -3040,6 +3040,13 @@ function textColoring_init(params) {
     const iterGradPosChange = (100 + 2 * colorsDiff) / ((animTime * 1000) / iterTime);
 
     if ($(window).width() > minWidth) {
+        if (getBrowserName() === 'safari') {
+            textElement.style.transform = `color ${animTime}s`;
+            textElement.addEventListener('mouseenter', () => textElement.style.color = fillingColor);
+            textElement.addEventListener('mouseleave', () =>  textElement.style.color = standartColor);
+            return;
+        }
+
         textElement.style.color = 'transparent';
         changeGradPosition();
 
