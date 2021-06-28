@@ -3017,3 +3017,71 @@ function runningLineBtn_init (params) {
         setInterval(moveLine, 10);
     }
 }
+
+function textColoring_init(params) {
+    const textElement = document.querySelector(params.selector).firstElementChild;
+    if (!textElement) {
+        return console.error('Неправильно задан селектор элемента');
+    }
+    const gradientDirection = params.direction || 'to right';
+    const fillingColor = params.color || 'red';
+    const animTime = params.animTime || 0.5;
+    const colorsDiff = params.colorsDiff || 50;
+    const snapBackwards = params.snapBackwards || false;
+    const minWidth = isNaN(params.minWidth) ? 1200 : params.minWidth;
+
+    const standartColor = getComputedStyle(textElement).color;
+    const gradPos = {
+        start: -colorsDiff,
+        end: 0
+    };
+    let interval;
+    const iterTime = 15;
+    const iterGradPosChange = (100 + 2 * colorsDiff) / ((animTime * 1000) / iterTime);
+
+    if ($(window).width() > minWidth) {
+        textElement.style.color = 'transparent';
+        changeGradPosition();
+
+        textElement.addEventListener('mouseenter', () => {
+            clearInterval(interval);
+            interval = setInterval(incrementGradPos, iterTime);
+        });
+        textElement.addEventListener('mouseleave', () => {
+            clearInterval(interval);
+            if (snapBackwards) {
+                changeGradPosition();
+                gradPos.start = -colorsDiff;
+                gradPos.end = 0;
+            } else {
+                interval = setInterval(decrementGradPos, iterTime);
+            }
+        });
+    }
+
+    function changeGradPosition (start = -colorsDiff, end = 0) {
+        textElement.style.background = `linear-gradient(${gradientDirection}, ${fillingColor} ${start}%, ${standartColor} ${end}%) text`
+    }
+    function incrementGradPos () {
+        gradPos.end = gradPos.end + iterGradPosChange;
+        gradPos.start = gradPos.end < 100 ? gradPos.end - colorsDiff : gradPos.start + iterGradPosChange;
+        if (gradPos.start < 0) {
+            gradPos.start = 0;
+        }
+        if (gradPos.start >= 100) {
+            clearInterval(interval);
+        }
+        changeGradPosition(gradPos.start, gradPos.end);
+    }
+    function decrementGradPos () {
+        gradPos.start = gradPos.start - iterGradPosChange;
+        gradPos.end = gradPos.start > 0 ? gradPos.start + colorsDiff : gradPos.end - iterGradPosChange;
+        if (gradPos.end > 100) {
+            gradPos.end = 100;
+        }
+        if (gradPos.end <= 0) {
+            clearInterval(interval);
+        }
+        changeGradPosition(gradPos.start, gradPos.end);
+    }
+}
