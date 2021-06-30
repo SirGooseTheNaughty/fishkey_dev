@@ -2951,10 +2951,10 @@ function joinElements(params) {
         const rect = getElementRect(elem);
         const wrapRect = getElementRect(wrapper);
         return (
-            rect.x > wrapRect.x
-            && rect.top > wrapRect.top
-            && rect.right < wrapRect.right
-            && rect.bottom < wrapRect.bottom
+            rect.x >= wrapRect.x
+            && rect.top >= wrapRect.top
+            && rect.right <= wrapRect.right
+            && rect.bottom <= wrapRect.bottom
         );
     }
 }
