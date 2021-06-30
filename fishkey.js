@@ -2915,7 +2915,7 @@ function joinElements(params) {
         data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, data.wrappers[i])));
     });
     let currentBreakpoint = getCurrentBreakpoint();
-
+    $('[data-elem-type="text"] .tn-atom').css('background', 'none');
     setTimeout(() => {
         data.joiningElements.forEach((JE, i) => {
             JE.forEach(elem => {
