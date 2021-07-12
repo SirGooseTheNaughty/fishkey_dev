@@ -886,7 +886,7 @@ function textApp_init(parameters) {
             }
 
             txtAppCont = txtAppCont.firstElementChild;
-            const txtApp = txtAppCont.textContent;
+            const txtApp = txtAppCont.innerHTML;
             let txtAppWords = [];
             if (divider == 'w') {
                 txtAppWords = txtApp.split(' ');
