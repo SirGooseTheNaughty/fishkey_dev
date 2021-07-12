@@ -917,6 +917,7 @@ function textApp_init(parameters) {
                 txtAppWords = txtApp.split('');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
+                    console.log(word);
                     if (word === '<') {
                         htmlElement = '<';
                         return;
@@ -924,6 +925,7 @@ function textApp_init(parameters) {
                     if (word === '>') {
                         htmlElement += '>';
                         txtAppCont.innerHTML += htmlElement;
+                        console.log(htmlElement);
                         htmlElement = '';
                         return;
                     }
