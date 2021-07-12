@@ -913,9 +913,24 @@ function textApp_init(parameters) {
                                             </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else {
+                let htmlElement = '';
                 txtAppWords = txtApp.split('');
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
+                    if (word === '<') {
+                        htmlElement = '<';
+                        return;
+                    }
+                    if (word === '>') {
+                        htmlElement += '>';
+                        txtAppCont.innerHTML += htmlElement;
+                        htmlElement = '';
+                        return;
+                    }
+                    if (htmlElement) {
+                        htmlElement += word;
+                        return;
+                    }
                     if (word == ' ') {
                         txtAppCont.innerHTML += `<span> </span>`;
                     } else {
