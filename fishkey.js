@@ -2144,6 +2144,7 @@ function cornerPhotos_init(params) {
         });
     
         document.addEventListener('scroll', showOnScroll);
+        showOnScroll();
     }
     
     function showOnScroll() {
