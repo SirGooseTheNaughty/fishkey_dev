@@ -294,7 +294,7 @@ function differOnBrowser_init(params) {
 /* вырисовка вектора */
 function vectorDraw_init(params) {
     let { selectors, svgs, trigger, hoverTriggers, offsets } = params;
-    const strokeWidth = params.strokeWidth || 0.5;
+    const strokeWidth = isNaN(params.strokeWidth) ? 0.5 : params.strokeWidth;
     const animFunction = params.animFunction || 'ease';
     const animTime = params.animTime || 0.5;
     const minWidth = params.minWidth || 0;
@@ -870,6 +870,7 @@ function textApp_init(parameters) {
     const animSpeed = parameters.animSpeed || 400;
     const wordSpeed = parameters.wordSpeed || 50;
     const offsets = parameters.offsets || null;
+    const delayFirst = parameters.delayFirst || 0;
     const isHiddenByDefault = parameters.isHiddenByDefault || false;
     const triggerBlocks = parameters.triggerBlocks ? document.querySelectorAll(parameters.triggerBlocks) : null;
     const txtAppWordConts = [];
@@ -1027,9 +1028,15 @@ function textApp_init(parameters) {
         const appeared = txtAppWordConts.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
         appeared.forEach((isVisible, i) => {
             if (isVisible) {
-                txtAppear(i);
+                if (i === 0 && delayFirst) {
+                    setTimeout(() => {
+                        txtAppear(i);
+                    }, delayFirst * 1000);
+                } else {
+                    txtAppear(i);
+                }
             }
-        })
+        });
     }
 }
 
@@ -2956,7 +2963,8 @@ function joinElements(params) {
     function repositionElement (elem, i) {
         const rect = getElementRect(elem);
         const wrapRect = getElementRect(data.wrappers[i]);
-        elem.style.transform = `translate(${rect.x - wrapRect.x}px, ${rect.top - wrapRect.top}px)`;
+        elem.setAttribute('data-original-transform', `translateX(${rect.x - wrapRect.x}px) translateY(${rect.top - wrapRect.top}px)`);
+        elem.style.transform = `translateX(${rect.x - wrapRect.x}px) translateY(${rect.top - wrapRect.top}px)`;
     }
 
     function filterJoinedElements (elem, wrapper) {
