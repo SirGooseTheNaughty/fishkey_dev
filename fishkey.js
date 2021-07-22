@@ -2082,6 +2082,7 @@ function cornerPhotos_init(params) {
         transitionTime = params.transitionTime || 0.5,
         isHorScroll = params.isHorScroll || false,
         minWidth = params.minWidth || 0,
+        delayFirst = params.delayFirst || 0,
         offsets = [];
     let showingRule;
     const ww = $(window).width(),
@@ -2150,8 +2151,13 @@ function cornerPhotos_init(params) {
     function showOnScroll() {
         cornerPhotos.forEach((photo, i) => {
             if(showingRule(photo, i) && (photo.getAttribute('data-clipped') == 'true')) {
-                $(photo).css('clip-path', 'polygon(0 0, 100% 0, 100% 100%, 0 100%)');
                 photo.setAttribute('data-clipped', 'false');
+                if (delayFirst && i ===0) {
+                    return setTimeout(() => {
+                        $(photo).css('clip-path', 'polygon(0 0, 100% 0, 100% 100%, 0 100%)');
+                    }, delayFirst * 1000);
+                }
+                $(photo).css('clip-path', 'polygon(0 0, 100% 0, 100% 100%, 0 100%)');
             }
         });
     }
