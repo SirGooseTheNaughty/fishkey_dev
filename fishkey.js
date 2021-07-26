@@ -3056,6 +3056,8 @@ function runningLineBtn_init (params) {
     }
 }
 
+
+// закрашивание текста
 function textColoring_init(params) {
     const textElement = document.querySelector(params.selector).firstElementChild;
     if (!textElement) {
@@ -3132,5 +3134,76 @@ function textColoring_init(params) {
             clearInterval(interval);
         }
         changeGradPosition(gradPos.start, gradPos.end);
+    }
+}
+
+
+// 3D-карточки
+function poppingCards__init(params) {
+    const cardsSelector = params.cardsSelector;
+    if (!cardsSelector) {
+        console.error('Не задан селектор карточек');
+    }
+    const itemsSelectors = params.itemsSelectors;
+    if (!itemsSelectors) {
+        console.error('Не заданы селекторы элементов карточек');
+    }
+    const zPositions = params.zPositions;
+    if (zPositions.length !== itemsSelectors.length) {
+        console.error('Количество значений zPozitions не совпадает с количеством элементов itemsSelectors');
+    }
+    const coeff = params.coeff || 10;
+    const perspective = params.perspective || 1000;
+    const animTime = params.animTime || 0.4;
+    const easeFunction = params.easeFunction || 'ease';
+    const minWidth = isNaN(params.minWidth) ? 1200 : params.minWidth;
+    const isCustom = params.isCustom || false;
+
+    if ($(window).width() > minWidth) {
+        if (isCustom) {
+            return setTimeout(go, 50);
+        }
+        go();
+    }
+
+    function go () {
+        let cards = Array.from(document.querySelectorAll(cardsSelector));
+        cards = cards.map(card => {
+            const inner = card.querySelector('.tn-atom');
+            return inner || card;
+        });
+        if (!cards.length) {
+            console.error('Неправильно задан селектор карточек');
+        }
+        const cardsData = cards.map(card => {
+            const items = itemsSelectors.map(sel => card.querySelector(sel)).filter(item => item);
+            card.style.transformStyle = 'preserve-3d';
+            const originalTransforms = [];
+            items.forEach((item, i) => {
+                const transform = getComputedStyle(item).transform;
+                originalTransforms[i] = transform === 'none' ? '' : transform;
+                item.style.transition = `all ${animTime}s ${easeFunction}`;
+            });
+            return { card, items, originalTransforms };
+        });
+
+        document.querySelector('body').style.perspective = `${perspective}px`;
+
+        cardsData.forEach((cardData, i) => {
+            cardData.card.addEventListener('mousemove', function (e) {
+                const xAxis = ($(this).offset().left + $(this).width() / 2 - e.pageX) / coeff;
+                const yAxis = ($(this).offset().top + $(this).height() / 2 - e.pageY) / coeff;
+                cardData.card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+            cardData.card.addEventListener('mouseenter', () => {
+                cardData.card.style.transition = 'none';
+                cardData.items.forEach((item, i) => item.style.transform = `${cardData.originalTransforms[i]} translateZ(${zPositions[i]}px)`);
+            });
+            cardData.card.addEventListener('mouseleave', () => {
+                cardData.card.style.transition = `all ${animTime}s ${easeFunction}`;
+                cardData.card.style.transform = `rotateY(0deg)`;
+                cardData.items.forEach((item, i) => item.style.transform = `${cardData.originalTransforms[i]} translateZ(0)`);
+            });
+        });
     }
 }
