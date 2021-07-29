@@ -202,3 +202,12 @@
 body.ddd-cards-body:not(.t-body_popupshowed) {
     perspective: 5000px;
 }
+
+/* градиент вокруг курсора */
+
+.cursor-halo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}

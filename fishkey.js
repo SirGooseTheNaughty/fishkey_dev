@@ -3218,3 +3218,57 @@ function poppingCards__init(params) {
         });
     }
 }
+
+
+// градиент вокруг курсора
+function cursorHalo_init(params) {
+    const color = params.color || 'white';
+    const radius = !isNaN(params.radius) ? params.radius : 100;
+    const flatRadius = !isNaN(params.flatRadius) ? params.flatRadius : 0;
+    const startOpacity = !isNaN(params.startOpacity) ? params.startOpacity / 100 : 1;
+    const blur = !isNaN(params.blur) ? params.blur : 50;
+    const delaySpeed = !isNaN(params.delaySpeed) ? params.delaySpeed : 1;
+    const forBlocks = params.forBlocks || '';
+    let maskBlocks = null
+    if (forBlocks) {
+        maskBlocks = document.querySelectorAll(forBlocks);
+        if (!maskBlocks.length) {
+            console.error('Неверно заданы слекторы блоков');
+            maskBlocks = null;
+        }
+    }
+    $('body').append(`
+        <svg class="cursor-halo" viewBox="0 0 ${$(window).width()} ${$(window).height()}" xmlns="http://www.w3.org/2000/svg" style="filter: blur(${blur}px)">
+            <radialGradient id="cursor-halo__gradient">
+                <stop offset="${flatRadius}%" stop-color="${color}" stop-opacity="${startOpacity}"/>
+                <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+            </radialGradient>
+
+            <circle class="cursor-halo__circle" cx="${radius}" cy="${radius}" r="${radius}" stroke-width="0" fill="url(#cursor-halo__gradient)" />
+        </svg>
+    `);
+
+    const circle = document.querySelector('.cursor-halo__circle');
+
+    if (delaySpeed) {
+        initCoordTracking(circle, 'mousemove', 'custom', true, true, {
+            customProperty: ['cx', 'cy'],
+            customChange: [
+                (x, y) => x,
+                (x, y) => y,
+            ],
+            isAttr: [true, true],
+            delaySpeed,
+            tolerance: 0.1
+        });
+        document.addEventListener('mousemove', (e) => {
+            circle.setAttribute('data-target-y', e.clientY);
+            circle.setAttribute('data-target-x', e.clientX);
+        });
+    } else {
+        document.addEventListener('mousemove', (e) => {
+            circle.setAttribute('cx', e.clientY);
+            circle.setAttribute('cy', e.clientX);
+        });
+    }
+}
