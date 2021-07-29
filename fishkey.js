@@ -2941,13 +2941,15 @@ function joinElements(params) {
         joiningElements: []
     };
     params.wrapperSelectors.forEach((sel, i) => {
-        const wrapper = document.querySelector(sel);
-        if (!wrapper) {
+        const wrappers = document.querySelectorAll(sel);
+        if (!wrappers.length) {
             console.error(`Неправильно задан ${i+1}-й селектор ${sel}`);
             return;
         }
-        data.wrappers.push(wrapper);
-        data.wrapperContents.push(data.wrappers[i].querySelector('.tn-atom'));
+        wrappers.forEach((wrapper, i) => {
+            data.wrappers.push(wrapper);
+            data.wrapperContents.push(wrapper.querySelector('.tn-atom'));
+        });
         const wrapperRec = docRecs.find(rec => Boolean(rec.querySelector(sel)));
         const recElements = Array.prototype.slice.call(wrapperRec.querySelectorAll('*[data-elem-id]'));
         data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, data.wrappers[i])));
@@ -2960,7 +2962,7 @@ function joinElements(params) {
                 data.wrapperContents[i].style.verticalAlign = 'inherit';
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
-                elem.querySelector('.tn-atom').classList.add('inherited-properties');
+                data.wrapperContents[i].classList.add('inherited-properties');
                 JE.forEach(elem => repositionElement(elem, i));
             })
         });

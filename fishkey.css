@@ -200,8 +200,8 @@
 
 /* обхединение элементов */
 .inherited-properties {
-    background-color: initial;
-    border-color: initial;
+    background-color: initial !important;
+    border-color: initial !important;
 }
 
 /* 3d карточки */
