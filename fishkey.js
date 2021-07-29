@@ -2933,7 +2933,6 @@ function joinElements(params) {
         console.error('Не заданы селекторы');
         return;
     }
-    const areBordersHidden = params.areBordersHidden !== undefined ? params.areBordersHidden : true;
 
     const docRecs = Array.prototype.slice.call(document.querySelectorAll('*[id^="rec"]'));
     const data = {
@@ -2949,9 +2948,6 @@ function joinElements(params) {
         }
         data.wrappers.push(wrapper);
         data.wrapperContents.push(data.wrappers[i].querySelector('.tn-atom'));
-        if (areBordersHidden) {
-            data.wrapperContents[i].style.border = 'none';
-        }
         const wrapperRec = docRecs.find(rec => Boolean(rec.querySelector(sel)));
         const recElements = Array.prototype.slice.call(wrapperRec.querySelectorAll('*[data-elem-id]'));
         data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, data.wrappers[i])));
