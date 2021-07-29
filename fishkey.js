@@ -171,7 +171,17 @@ function initCoordTracking(obj, trigger, positioning, hasX, hasY, params) {
             obj.style.transform = `translate(${translation.x}px, ${translation.y}px)`;
         }
         if (positioning == 'custom') {
-            obj.style[params.customProperty] = params.customChange(translation.x, translation.y);
+            if (typeof params.customProperty === 'string') {
+                obj.style[params.customProperty] = params.customChange(translation.x, translation.y);
+            } else {
+                params.customProperty.forEach((property, i) => {
+                    if (params.isAttr[i]) {
+                        obj.setAttribute(property, params.customChange[i](translation.x, translation.y));
+                    } else {
+                        obj.style[property] = params.customChange[i](translation.x, translation.y);
+                    }
+                });
+            }
         }
         if (totalError < tolerance) {
             clearInterval(coordInt);
