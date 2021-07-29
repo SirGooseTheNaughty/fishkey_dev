@@ -2963,10 +2963,11 @@ function joinElements(params) {
                 const style = getComputedStyle(elem);
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
-                $(elem).css({
-                    'background-color': style.backgroundColor,
-                    'border-color': style.borderColor,
-                });
+                $(elem).children('.tn-atom').css({...style});
+                // $(elem).children('.tn-atom').css({
+                //     'background-color': style.backgroundColor,
+                //     'border-color': style.borderColor,
+                // });
                 // elem.querySelector('.tn-atom').classList.add('inherited-properties');
                 JE.forEach(elem => repositionElement(elem, i));
             })
