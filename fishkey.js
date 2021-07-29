@@ -3153,7 +3153,6 @@ function poppingCards__init(params) {
         console.error('Количество значений zPozitions не совпадает с количеством элементов itemsSelectors');
     }
     const coeff = params.coeff || 10;
-    const perspective = params.perspective || 1000;
     const animTime = params.animTime || 0.4;
     const easeFunction = params.easeFunction || 'ease';
     const minWidth = isNaN(params.minWidth) ? 1200 : params.minWidth;
@@ -3187,7 +3186,7 @@ function poppingCards__init(params) {
             return { card, items, originalTransforms };
         });
 
-        document.querySelector('body').style.perspective = `${perspective}px`;
+        document.querySelector('body').classList.add('ddd-cards-body');
 
         cardsData.forEach((cardData, i) => {
             cardData.card.addEventListener('mousemove', function (e) {

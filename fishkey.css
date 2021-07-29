@@ -197,3 +197,8 @@
         transform: translateX(var(--move-final));
     }
 }
+
+/* 3d карточки */
+body.ddd-cards-body:not(.t-body_popupshowed) {
+    perspective: 5000px;
+}
