@@ -3265,7 +3265,7 @@ function cursorHalo_init(params) {
     }
 
     function removeFirstOpacity() {
-        $(cursor-halo).css('opacity', '1');
+        $('.cursor-halo').css('opacity', '1');
         document.removeEventListener('mousemove', removeFirstOpacity);
     }
     document.addEventListener('mousemove', removeFirstOpacity);
