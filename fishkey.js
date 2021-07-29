@@ -3262,8 +3262,8 @@ function cursorHalo_init(params) {
         });
     } else {
         document.addEventListener('mousemove', (e) => {
-            circle.setAttribute('cx', e.clientY);
-            circle.setAttribute('cy', e.clientX);
+            circle.setAttribute('cy', e.clientY);
+            circle.setAttribute('cx', e.clientX);
         });
     }
 
