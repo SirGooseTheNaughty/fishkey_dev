@@ -2195,8 +2195,8 @@ function horDrag_init(params) {
             el.style.pointerEvents = 'none';
         });
 
-        const offsetLeft = Math.min(lefts),
-            maxRight = Math.max(lefts),
+        const offsetLeft = Math.min.apply(Math, lefts),
+            maxRight = Math.max.apply(Math, lefts),
             rightCorner = offsetLeft + maxRight + widths[lefts.indexOf(maxRight)];
 
         $(horDragObj).css({
