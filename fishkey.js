@@ -2960,9 +2960,11 @@ function joinElements(params) {
         data.joiningElements.forEach((JE, i) => {
             JE.forEach(elem => {
                 data.wrapperContents[i].style.verticalAlign = 'inherit';
+                const style = getComputedStyle(elem);
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
-                elem.querySelector('.tn-atom').classList.add('inherited-properties');
+                $(elem).css(style);
+                // elem.querySelector('.tn-atom').classList.add('inherited-properties');
                 JE.forEach(elem => repositionElement(elem, i));
             })
         });
