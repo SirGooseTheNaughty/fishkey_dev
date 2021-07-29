@@ -3230,7 +3230,7 @@ function cursorHalo_init(params) {
     const delaySpeed = !isNaN(params.delaySpeed) ? params.delaySpeed : 0.5;
 
     $('body').append(`
-        <svg class="cursor-halo" viewBox="0 0 ${$(window).width()} ${$(window).height()}" xmlns="http://www.w3.org/2000/svg" style="opacity: 0; filter: blur(${blur}px)">
+        <svg class="cursor-halo" viewBox="0 0 ${$(window).width()} ${$(window).height()}" xmlns="http://www.w3.org/2000/svg" style="filter: blur(${blur}px)">
             <radialGradient id="cursor-halo__gradient">
                 <stop offset="${flatRadius}%" stop-color="${color}" stop-opacity="${startOpacity}"/>
                 <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
@@ -3265,7 +3265,7 @@ function cursorHalo_init(params) {
     }
 
     function removeFirstOpacity() {
-        circle.style.opacity = '1';
+        $(cursor-halo).css('opacity', '1');
         document.removeEventListener('mousemove', removeFirstOpacity);
     }
     document.addEventListener('mousemove', removeFirstOpacity);

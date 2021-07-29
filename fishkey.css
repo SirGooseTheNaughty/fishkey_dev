@@ -210,4 +210,6 @@ body.ddd-cards-body:not(.t-body_popupshowed) {
     top: 0;
     left: 0;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s;
 }
