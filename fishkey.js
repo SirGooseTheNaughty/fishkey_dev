@@ -2963,7 +2963,8 @@ function joinElements(params) {
                 const style = getComputedStyle(elem);
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
-                $(elem).css(style);
+                console.log(style);
+                $(elem).css({...style});
                 // elem.querySelector('.tn-atom').classList.add('inherited-properties');
                 JE.forEach(elem => repositionElement(elem, i));
             })
