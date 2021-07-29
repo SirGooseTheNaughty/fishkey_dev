@@ -198,6 +198,12 @@
     }
 }
 
+/* обхединение элементов */
+.inherited-properties {
+    background-color: initial;
+    border-color: initial;
+}
+
 /* 3d карточки */
 body.ddd-cards-body:not(.t-body_popupshowed) {
     perspective: 5000px;

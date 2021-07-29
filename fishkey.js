@@ -2960,6 +2960,7 @@ function joinElements(params) {
                 data.wrapperContents[i].style.verticalAlign = 'inherit';
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
+                elem.querySelector('.tn-atom').classList.add('inherited-properties');
                 JE.forEach(elem => repositionElement(elem, i));
             })
         });
