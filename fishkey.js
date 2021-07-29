@@ -3222,13 +3222,13 @@ function poppingCards__init(params) {
 
 // градиент вокруг курсора
 function cursorHalo_init(params) {
-    const color = params.color || 'white';
+    const color = params.color || 'FFFF00';
     const radius = !isNaN(params.radius) ? params.radius : 100;
     const flatRadius = !isNaN(params.flatRadius) ? params.flatRadius : 0;
-    const startOpacity = !isNaN(params.startOpacity) ? params.startOpacity / 100 : 1;
-    const blur = !isNaN(params.blur) ? params.blur : 50;
-    const delaySpeed = !isNaN(params.delaySpeed) ? params.delaySpeed : 1;
-    
+    const startOpacity = !isNaN(params.startOpacity) ? params.startOpacity / 100 : 0.5;
+    const blur = !isNaN(params.blur) ? params.blur : 100;
+    const delaySpeed = !isNaN(params.delaySpeed) ? params.delaySpeed : 0.5;
+
     $('body').append(`
         <svg class="cursor-halo" viewBox="0 0 ${$(window).width()} ${$(window).height()}" xmlns="http://www.w3.org/2000/svg" style="filter: blur(${blur}px)">
             <radialGradient id="cursor-halo__gradient">
