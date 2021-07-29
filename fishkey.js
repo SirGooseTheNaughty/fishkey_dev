@@ -3228,15 +3228,7 @@ function cursorHalo_init(params) {
     const startOpacity = !isNaN(params.startOpacity) ? params.startOpacity / 100 : 1;
     const blur = !isNaN(params.blur) ? params.blur : 50;
     const delaySpeed = !isNaN(params.delaySpeed) ? params.delaySpeed : 1;
-    const forBlocks = params.forBlocks || '';
-    let maskBlocks = null
-    if (forBlocks) {
-        maskBlocks = document.querySelectorAll(forBlocks);
-        if (!maskBlocks.length) {
-            console.error('Неверно заданы слекторы блоков');
-            maskBlocks = null;
-        }
-    }
+    
     $('body').append(`
         <svg class="cursor-halo" viewBox="0 0 ${$(window).width()} ${$(window).height()}" xmlns="http://www.w3.org/2000/svg" style="filter: blur(${blur}px)">
             <radialGradient id="cursor-halo__gradient">
