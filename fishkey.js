@@ -2187,17 +2187,19 @@ function horDrag_init(params) {
 
         const elements = horDragObj.querySelectorAll('.tn-elem'),
             lefts = [],
-            widths = [];
+            widths = [],
+            rights = [];
 
         elements.forEach((el, i) => {
             lefts[i] = +el.getBoundingClientRect().x;
             widths[i] = +getElemDim(el, 'width');
+            rights[i] = lefts[i] + widths[i];
             el.style.pointerEvents = 'none';
         });
 
         const offsetLeft = Math.min.apply(Math, lefts),
-            maxRight = Math.max.apply(Math, lefts),
-            rightCorner = offsetLeft + maxRight + widths[lefts.indexOf(maxRight)];
+            maxRight = Math.max.apply(Math, rights),
+            rightCorner = offsetLeft + maxRight;
 
         $(horDragObj).css({
             overflow: 'visible',
