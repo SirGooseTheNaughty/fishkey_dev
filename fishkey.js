@@ -3203,7 +3203,7 @@ function poppingCards__init(params) {
             return { card, items, originalTransforms };
         });
 
-        document.querySelector('body').classList.add('ddd-cards-body');
+        document.querySelector('#allrecords').classList.add('ddd-cards-body');
 
         cardsData.forEach((cardData, i) => {
             cardData.card.addEventListener('mousemove', function (e) {

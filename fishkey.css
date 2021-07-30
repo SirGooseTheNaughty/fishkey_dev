@@ -199,7 +199,7 @@
 }
 
 /* 3d карточки */
-body.ddd-cards-body:not(.t-body_popupshowed) {
+body:not(.t-body_popupshowed) .ddd-cards-body {
     perspective: 5000px;
 }
 
