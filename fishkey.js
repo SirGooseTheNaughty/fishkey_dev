@@ -2959,13 +2959,15 @@ function joinElements(params) {
         data.joiningElements.forEach((JE, i) => {
             JE.forEach(elem => {
                 const innerElem = elem.querySelector('.tn-atom');
-                const style = {...getComputedStyle(innerElem)};
+                const style = getComputedStyle(innerElem);
+                const {backgroundColor} = style;
+                const borderColor = style.borderColor || style.borderInlineStartColor;
                 data.wrapperContents[i].style.verticalAlign = 'inherit';
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
                 $(innerElem).css({
-                    'background': style.background,
-                    'border-color': style.borderColor,
+                    'background-color': backgroundColor || 'transparent',
+                    'border-color': borderColor || 'transparent',
                 });
                 JE.forEach(elem => repositionElement(elem, i));
             })
