@@ -337,8 +337,12 @@ function vectorDraw_init(params) {
             logoPaths[i].removeAttribute("fill");
             const desiredWidth = getElemDim(space, "width");
             const coeff = desiredWidth/(+space.querySelector('svg').getAttribute('width'));
-            space.querySelector('svg').style.transform = `scale(${coeff})`;
-            space.querySelector('svg').style.transformOrigin = 'top left';
+            $(space).children('svg').css({
+                transform: `scale(${coeff})`,
+                transformOrigin: 'top left',
+                position: 'absolute',
+                top: '0'
+            });
         });
         
         if (trigger == 'hover') {
