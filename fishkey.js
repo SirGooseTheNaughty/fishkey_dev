@@ -1817,8 +1817,8 @@ function cursorChange_init(params) {
                 $(triggers[i]).css('cursor', 'none');
             }
             $(triggers[i]).attr('data-makes-cursor-state', i);
-            triggers[i].addEventListener('mouseenter', turnCursorStateOn);
-            triggers[i].addEventListener('mouseleave', turnCursorStateOff);
+            $(triggers[i]).on('mouseenter', turnCursorStateOn);
+            $(triggers[i]).on('mouseleave', turnCursorStateOff);
         }
 
         function turnCursorStateOn () {
