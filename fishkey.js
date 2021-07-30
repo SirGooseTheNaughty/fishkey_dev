@@ -2955,16 +2955,16 @@ function joinElements(params) {
         data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, data.wrappers[i])));
     });
     let currentBreakpoint = getCurrentBreakpoint();
-    $('[data-elem-type="text"] .tn-atom').css('background', 'none');
     setTimeout(() => {
         data.joiningElements.forEach((JE, i) => {
             JE.forEach(elem => {
+                const innerElem = elem.querySelector('.tn-atom');
+                const style = {...getComputedStyle(innerElem)};
                 data.wrapperContents[i].style.verticalAlign = 'inherit';
-                const style = getComputedStyle(elem);
                 $(elem).appendTo(data.wrapperContents[i]);
                 elem.classList.add('leftTop');
-                $(elem).children('.tn-atom').css({
-                    'background-color': style.backgroundColor,
+                $(innerElem).css({
+                    'background': style.background,
                     'border-color': style.borderColor,
                 });
                 JE.forEach(elem => repositionElement(elem, i));
