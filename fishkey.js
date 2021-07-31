@@ -2944,19 +2944,14 @@ function joinElements(params) {
         wrapperContents: [],
         joiningElements: []
     };
-    params.wrapperSelectors.forEach((sel, i) => {
-        const wrappers = document.querySelectorAll(sel);
-        if (!wrappers.length) {
-            console.error(`Неправильно задан ${i+1}-й селектор ${sel}`);
-            return;
-        }
-        wrappers.forEach((wrapper, i) => {
-            data.wrappers.push(wrapper);
-            data.wrapperContents.push(wrapper.querySelector('.tn-atom'));
-        });
-        const wrapperRec = docRecs.find(rec => Boolean(rec.querySelector(sel)));
+    const totalWrappers = params.wrapperSelectors.join(', ');
+    const wrappers = Array.from(document.querySelectorAll(totalWrappers));
+    wrappers.forEach((wrapper, i) => {
+        data.wrappers.push(wrapper);
+        data.wrapperContents.push(wrapper.querySelector('.tn-atom'));
+        const wrapperRec = docRecs.find(rec => Boolean(rec.querySelector(`.${Array.from(wrapper.classList).join('.')}`)));
         const recElements = Array.prototype.slice.call(wrapperRec.querySelectorAll('*[data-elem-id]'));
-        data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, data.wrappers[i])));
+        data.joiningElements.push(recElements.filter(elem => filterJoinedElements(elem, wrapper)));
     });
     let currentBreakpoint = getCurrentBreakpoint();
     setTimeout(() => {
