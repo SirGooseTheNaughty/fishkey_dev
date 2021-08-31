@@ -312,6 +312,7 @@ class Cursor {
         window.addEventListener('resize', () => this.resizeCanvas());
         window.addEventListener('mousemove', (e) => this.changeTargetPos(e.clientX, e.clientY));
         try {
+            const that = this;
             document.querySelectorAll(params.activators).forEach(elem => {
                 elem.addEventListener('mouseenter', that.activateCursor);
                 elem.addEventListener('mouseleave', that.deactivateCursor);
