@@ -409,6 +409,7 @@ class Cursor {
             this.context.fillStyle = params.fill;
         }
         this.context.globalAlpha = currentOpacity / 100;
+        this.context.lineWidth = params.strokeWidth;
         switch (params.type) {
             case 'circle':
                 figure = new Path2D();
