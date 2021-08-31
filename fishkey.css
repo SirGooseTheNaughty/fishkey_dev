@@ -204,7 +204,6 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 }
 
 /* градиент вокруг курсора */
-
 .cursor-halo {
     position: fixed;
     top: 0;
@@ -212,4 +211,15 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
     pointer-events: none;
     opacity: 0;
     transition: opacity .25s;
+}
+
+/* курсор на canvas */
+.easy-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+.hideCursor * {
+    cursor: none !important;
 }

@@ -331,18 +331,21 @@ class Cursor {
     }
 
     preformItem(item) {
+        let { size, rotation, opacity } = item;
+        rotation = isNaN(+rotation) ? 0 : +rotation;
+        opacity = isNaN(+opacity) ? 100 : +opacity;
         const appearence = {
             size: {
-                current: item.size,
-                target: (item.isAnimated && item.activeStyle && !isNaN(+item.activeStyle.size)) ? item.size : null,
+                current: +size,
+                target: (item.isAnimated && item.activeStyle && !isNaN(+item.activeStyle.size)) ? +size : null,
             },
             rotation: {
-                current: item.rotation || 0,
-                target: (item.isAnimated && item.activeStyle && !isNaN(+item.activeStyle.rotation)) ? item.rotation || 0 : null,
+                current: rotation,
+                target: (item.isAnimated && item.activeStyle && !isNaN(+item.activeStyle.rotation)) ? rotation : null,
             },
             opacity: {
-                current: item.opacity || 100,
-                target: (item.isAnimated && item.activeStyle && !isNaN(+item.activeStyle.opacity)) ? item.opacity || 100 : null,
+                current: opacity,
+                target: (item.isAnimated && item.activeStyle && !isNaN(+item.activeStyle.opacity)) ? opacity : null,
             }
         };
         return {
@@ -400,9 +403,6 @@ class Cursor {
         }
         if (params.stroke) {
             this.context.strokeStyle = params.stroke;
-        }
-        if (params.fill) {
-            this.context.fillStyle = params.fill;
         }
         if (params.fill) {
             this.context.fillStyle = params.fill;
