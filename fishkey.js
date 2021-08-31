@@ -404,6 +404,10 @@ class Cursor {
         if (params.fill) {
             this.context.fillStyle = params.fill;
         }
+        if (params.fill) {
+            this.context.fillStyle = params.fill;
+        }
+        this.context.globalAlpha = currentOpacity / 100;
         switch (params.type) {
             case 'circle':
                 figure = new Path2D();
@@ -445,10 +449,6 @@ class Cursor {
                 this.context.lineTo(x0, y0);
                 break;
         }
-        if (currentOpacity) {
-            this.context.globalAlpha = currentOpacity / 100;
-        }
-        this.context.lineWidth = params.strokeWidth;
         this.context.restore();
     }
 
