@@ -611,10 +611,11 @@ function vectorWrite_init(params) {
     let logoPaths = [];
     let desiredWidth = 0;
     let coeff = 0;
-    const strokeWidth = params.strokeWidth || 0.5;
-    const offset = params.offset ? params.offset*$(window).height()/100 : 0;
-    let animTime = params.animTime || 0.5;
-    const minWidth = params.minWidth || 0;
+    const strokeWidth = !isNaN(params.strokeWidth) ? params.strokeWidth : 0.5;
+    const offset = !isNaN(params.offset) ? params.offset*$(window).height()/100 : 0;
+    let animTime = !isNaN(params.animTime) ? params.animTime : 0.5;
+    const minWidth = !isNaN(params.minWidth) ? params.minWidth : 0;
+    const delay = !isNaN(params.delay) ? params.delay : 0;
 
     if ($(window).width() > minWidth) {
         const vd_forSVG = document.querySelector(selector);
@@ -653,7 +654,7 @@ function vectorWrite_init(params) {
         const isVisible = $(window).scrollTop() + $(window).height() > $(logoPaths[0]).offset().top + offset;
         if (isVisible) {
             document.removeEventListener('scroll', scrollInit);
-            scrollDraw();
+            window.setTimeout(scrollDraw, delay * 1000);
         }
     }
     function scrollDraw() {
