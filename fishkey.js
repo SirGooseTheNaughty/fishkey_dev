@@ -1937,20 +1937,29 @@ function pushingBurger_init(params) {
         switch (burgerPosition) {
             case 'top':
                 burgerDims.shiftY = burgerDims.burgerHeight;
+                $(burgerBlock).css({top: `${-burgerDims.burgerHeight}px`});
                 break;
             case 'bottom':
                 burgerDims.shiftY = -burgerDims.burgerHeight;
+                $(burgerBlock).css({bottom: `${-burgerDims.burgerHeight}px`});
                 break;
             case 'left':
                 burgerDims.shiftX = burgerDims.burgerWidth;
-                $('body').css('overflowX', 'hidden');
+                $(burgerBlock).css({
+                    width: `${burgerDims.burgerWidth}px`,
+                    left: `${-burgerDims.burgerWidth}px`,
+                });
                 break;
             case 'right':
                 burgerDims.shiftX = -burgerDims.burgerWidth;
-                $('body').css('overflowX', 'hidden');
+                $(burgerBlock).css({
+                    width: `${burgerDims.burgerWidth}px`,
+                    right: `${-burgerDims.burgerWidth}px`,
+                });
                 break;
             default:
                 burgerDims.shiftY = burgerDims.burgerHeight;
+                $(burgerBlock).css({top: `${-burgerDims.burgerHeight}px`});
                 break;
         }
         if ($(burgerBlock).attr('data-burgeropened') == 'true') {
