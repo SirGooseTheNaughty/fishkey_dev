@@ -229,3 +229,11 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 .text-flipped span {
     transform: translateY(-100%);
 }
+
+/* фоновое аудио */
+.audio-trigger {
+    cursor: pointer;
+}
+.audio-trigger.hidden {
+    display: none;
+}

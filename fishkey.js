@@ -3657,3 +3657,78 @@ function flippingText_init(params) {
         }, (transitionTime + transitionDelay) * 1000);
     }
 }
+
+// фоновое аудио
+function backAudio_init(params) {
+    const { link, volume, autoplay, loop, switchOption } = params;
+    let playLink = 'https://docs.google.com/uc?export=download&id=';
+    let togglerOn, togglerOff, isOneTrigger;
+
+    try {
+        const audioId = link.split('d/')[1].split('/')[0];
+        playLink += audioId;
+    } catch(e) {
+        return console.error('Не получилось выделить ссылку на файл');
+    }
+
+    try {
+        togglerOn = document.querySelector('.audio-on');
+        togglerOn.addEventListener('click', toggleAudio);
+    } catch(e) {
+        if (!autoplay) {
+            return console.error('Триггер не задан, а автовоспроизведение не включено - аудио не может быть включено!');
+        }
+    }
+    try {
+        togglerOff = document.querySelector('.audio-off');
+        togglerOff.addEventListener('click', toggleAudio);
+        isOneTrigger = false;
+    } catch(e) {
+        isOneTrigger = Boolean(togglerOn);
+    }
+    if (!isOneTrigger) {
+        if (autoplay) {
+            togglerOn.classList.add('hidden');
+        } else {
+            togglerOff.classList.add('hidden');
+        }
+    }
+
+    const audioTag = `<audio class="fish-audio"><source src="${playLink}" type="audio/mpeg"></audio>`;
+    $('body').append(audioTag);
+    const audio = document.querySelector('.fish-audio');
+    audio.volume = volume || 1;
+    audio.autoplay = autoplay || false;
+    audio.loop = loop || false;
+
+    function toggleAudio() {
+        switchOption === 'volume' ? toggleAudioByVolume() : toggleAudioByPause();
+        if (!isOneTrigger) {
+            toggleTriggers();
+        }
+    }
+    function toggleAudioByPause() {
+        if (audio.paused) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    }
+    function toggleAudioByVolume() {
+        if (audio.volume) {
+            audio.volume = 0;
+        } else {
+            audio.volume = volume;
+        }
+    }
+    function toggleTriggers() {
+        const isPaused = switchOption === 'volume' ? !Boolean(audio.volume) : audio.paused;
+        if (isPaused) {
+            togglerOn.classList.remove('hidden');
+            togglerOff.classList.add('hidden');
+        } else {
+            togglerOn.classList.add('hidden');
+            togglerOff.classList.remove('hidden');
+        }
+    }
+}
