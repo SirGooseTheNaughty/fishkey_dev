@@ -3662,7 +3662,7 @@ function flippingText_init(params) {
 function backAudio_init(params) {
     const { link, volume, autoplay, loop, switchOption } = params;
     let playLink = 'https://docs.google.com/uc?export=download&id=';
-    let togglerOn, togglerOff, isOneTrigger = true;
+    let togglerOn, togglerOff, hasTriggers = false, isOneTrigger = true;
 
     try {
         const audioId = link.split('d/')[1].split('/')[0];
@@ -3674,6 +3674,7 @@ function backAudio_init(params) {
     try {
         togglerOn = document.querySelector('.audio-on');
         togglerOn.addEventListener('click', toggleAudio);
+        hasTriggers = true;
     } catch(e) {
         if (!autoplay) {
             return console.error('Триггер не задан, а автовоспроизведение не включено - аудио не может быть включено!');
@@ -3686,7 +3687,7 @@ function backAudio_init(params) {
     } catch(e) {
         isOneTrigger = Boolean(togglerOn);
     }
-    if (!isOneTrigger) {
+    if (hasTriggers && !isOneTrigger) {
         if (autoplay) {
             togglerOn.classList.add('hidden');
         } else {
