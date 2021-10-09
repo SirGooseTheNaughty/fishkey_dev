@@ -1933,6 +1933,7 @@ function pushingBurger_init(params) {
 
     function handleResize() {
         burgerDims.burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height');
+        burgerDims.burgerWidth = params.burgerWidth || $(window).width();
         switch (burgerPosition) {
             case 'top':
                 burgerDims.shiftY = burgerDims.burgerHeight;
