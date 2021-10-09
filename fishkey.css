@@ -224,3 +224,8 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 .hideCursor * {
     cursor: none !important;
 }
+
+/* переворачивающийся текст */
+.text-flipped span {
+    transform: translateY(-100%);
+}

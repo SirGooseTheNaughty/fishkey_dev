@@ -1823,7 +1823,11 @@ function pushingBurger_init(params) {
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)',
         burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
         burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
-        burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height');
+        burgerDims = {
+            burgerHeight: burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height'),
+            shiftX: 0,
+            shiftY: 0
+        };
     
     const allBlocks = document.querySelectorAll('[id ^= "rec"]'),
         allUsedBlocks = [...allBlocks].filter(block => !block.querySelector('.t-popup') && block != triggerBlock && block != burgerBlock);
@@ -1837,9 +1841,6 @@ function pushingBurger_init(params) {
         triggerElems.closedTriggerColor = params.closedTriggerColor || 'black';
     }
     
-    let pushingShiftX = 0,
-        pushingShiftY = 0;
-    
     $(allUsedBlocks).wrapAll('<div class="pushingBurger_blocksWrapper"></div>');
     const blocksWrapper = document.querySelector('.pushingBurger_blocksWrapper');
     $(blocksWrapper).css('transition', `transform ${easeTime}s ${easeFunction}`);
@@ -1848,7 +1849,7 @@ function pushingBurger_init(params) {
         position: 'fixed',
         'z-index': '99',
         width: '100vw',
-        height: burgerHeight + 'px',
+        height: burgerDims.burgerHeight + 'px',
         transition: `transform ${easeTime}s ${easeFunction}`,
         'background-color': window.getComputedStyle(burgerBlock.querySelector('.t396__artboard')).backgroundColor
     });
@@ -1858,46 +1859,46 @@ function pushingBurger_init(params) {
         case 'top':
             $(burgerBlock).css({
                 width: '100vw',
-                top: `-${burgerHeight}px`,
+                top: `${-burgerDims.burgerHeight}px`,
                 left: '0',
             });
-            pushingShiftY = burgerHeight;
+            burgerDims.shiftY = burgerDims.burgerHeight;
             break;
         case 'bottom':
             $(burgerBlock).css({
                 width: '100vw',
-                bottom: `${-burgerHeight}px`,
+                bottom: `${-burgerDims.burgerHeight}px`,
                 left: '0',
             });
-            pushingShiftY = -burgerHeight;
+            burgerDims.shiftY = -burgerDims.burgerHeight;
             break;
         case 'left':
             $(burgerBlock).css({
                 width: burgerWidth + 'px',
                 height: '100vh',
                 top: '0',
-                left: `${-burgerWidth}px`,
+                left: `${-burgerDims.burgerWidth}px`,
             });
-            pushingShiftX = burgerWidth;
+            burgerDims.shiftX = burgerDims.burgerWidth;
             $('body').css('overflowX', 'hidden');
             break;
         case 'right':
             $(burgerBlock).css({
-                width: burgerWidth + 'px',
+                width: burgerDims.burgerWidth + 'px',
                 height: '100vh',
                 top: '0',
-                right: `${-burgerWidth}px`,
+                right: `${-burgerDims.burgerWidth}px`,
             });
-            pushingShiftX = -burgerWidth;
+            burgerDims.shiftX = -burgerDims.burgerWidth;
             $('body').css('overflowX', 'hidden');
             break;
         default:
             $(burgerBlock).css({
                 width: '100vw',
-                top: `-${burgerHeight}px`,
+                top: `${-burgerDims.burgerHeight}px`,
                 left: '0',
             });
-            pushingShiftY = burgerHeight;
+            burgerDims.shiftY = burgerDims.burgerHeight;
             break;
     }
 
@@ -1910,15 +1911,48 @@ function pushingBurger_init(params) {
         $(addTriggers).css('cursor', 'pointer');
     }
 
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(handleResize, 100);
+    });
+
     function toggleBurger() {
         if ($(burgerBlock).attr('data-burgeropened') == 'false') {
-            $(blocksWrapper).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
-            $(burgerBlock).css('transform', `translate(${pushingShiftX}px, ${pushingShiftY}px)`);
+            $(blocksWrapper).css('transform', `translate(${burgerDims.shiftX}px, ${burgerDims.shiftY}px)`);
+            $(burgerBlock).css('transform', `translate(${burgerDims.shiftX}px, ${burgerDims.shiftY}px)`);
             $(burgerBlock).attr('data-burgeropened', 'true');
         } else {
             $(blocksWrapper).css('transform', 'translate(0)');
             $(burgerBlock).css('transform', 'translate(0)');
             $(burgerBlock).attr('data-burgeropened', 'false');
+        }
+    }
+
+    function handleResize() {
+        burgerDims.burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height');
+        switch (burgerPosition) {
+            case 'top':
+                burgerDims.shiftY = burgerDims.burgerHeight;
+                break;
+            case 'bottom':
+                burgerDims.shiftY = -burgerDims.burgerHeight;
+                break;
+            case 'left':
+                burgerDims.shiftX = burgerDims.burgerWidth;
+                $('body').css('overflowX', 'hidden');
+                break;
+            case 'right':
+                burgerDims.shiftX = -burgerDims.burgerWidth;
+                $('body').css('overflowX', 'hidden');
+                break;
+            default:
+                burgerDims.shiftY = burgerDims.burgerHeight;
+                break;
+        }
+        if ($(burgerBlock).attr('data-burgeropened') == 'true') {
+            $(blocksWrapper).css('transform', `translate(${burgerDims.shiftX}px, ${burgerDims.shiftY}px)`);
+            $(burgerBlock).css('transform', `translate(${burgerDims.shiftX}px, ${burgerDims.shiftY}px)`);
         }
     }
 }
@@ -2430,6 +2464,10 @@ function horDrag_init(params) {
         }
         horDragObj.style.overflow = 'visible';
         document.body.style.overflowX = 'hidden';
+        const allRecords = document.querySelector('#allrecords');
+        if (allRecords) {
+            allRecords.style.overflowX = 'hidden';
+        }
 
         const elements = horDragObj.querySelectorAll('.tn-elem'),
             lefts = [],
@@ -3549,5 +3587,57 @@ function simpleCursor_init(params) {
             },
             params.items
         );
+    }
+}
+
+
+// переворачивающийся текст
+function flippingText_init(params) {
+    const selectors = params.selectors || '.flip-text';
+    const els = document.querySelectorAll(selectors);
+    if (!els.length) {
+        return console.error('Неправильно заданы селекторы: ', selectors);
+    }
+    const transitionTime = params.transitionTime || 0.4;
+    const transitionDelay = params.transitionDelay || 0.1;
+
+    els.forEach(el => {
+        const inner = el.firstElementChild;
+        const text = inner.textContent;
+        const height = window.getComputedStyle(inner).fontSize;
+
+        inner.innerHTML = `
+            <span style="display: block;">${text}</span>
+            <span style="display: block;">${text}</span>
+        `;
+        const spans = inner.querySelectorAll('span');
+
+        $(inner).css({
+            height,
+            display: 'block',
+            lineHeight: '1',
+            overflow: 'hidden'
+        });
+
+        el.addEventListener('mouseenter', () => animate(inner));
+    });
+
+    function animate(text) {
+        const spans = text.querySelectorAll('span');
+        if (text.dataset.timeout === 'set') {
+            return;
+        }
+        text.dataset.timeout = 'set';
+        spans[0].style.transition = `transform ${transitionTime}s ease`;
+        spans[1].style.transition = `transform ${transitionTime}s ease ${transitionDelay}s`;
+        setTimeout(() => {
+            text.classList.add('text-flipped');
+        });
+        setTimeout(() => {
+            spans[0].style.transition = 'none';
+            spans[1].style.transition = 'none';
+            text.classList.remove('text-flipped');
+            text.dataset.timeout = 'unset';
+        }, (transitionTime + transitionDelay) * 1000);
     }
 }
