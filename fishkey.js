@@ -3606,9 +3606,13 @@ function simpleCursor_init(params) {
 // переворачивающийся текст
 function flippingText_init(params) {
     const selectors = params.selectors || '.flip-text';
-    const els = document.querySelectorAll(selectors);
+    let els = document.querySelectorAll(selectors);
     if (!els.length) {
-        return console.error('Неправильно заданы селекторы: ', selectors);
+        console.error('Неправильно заданы селекторы: ', selectors);
+        els = document.querySelectorAll('.flip-text');
+    }
+    if (!els.length) {
+        return console.error('A элементов с классом "flip-text" не нашлось :(');
     }
     const transitionTime = params.transitionTime || 0.4;
     const transitionDelay = params.transitionDelay || 0.1;
