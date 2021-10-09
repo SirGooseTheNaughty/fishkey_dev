@@ -1818,13 +1818,13 @@ function pushingBurger_init(params) {
             closedTriggerColor: 'black'
         },
         burgerPosition = params.burgerPosition,
-        burgerWidth = params.burgerWidth || $(window).width(),
         easeTime = params.easeTime || 0.8,
         easeFunction = params.easeFunction || 'cubic-bezier(.8,0,.2,1)',
         burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
         burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
         burgerDims = {
             burgerHeight: burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height'),
+            burgerWidth: params.burgerWidth || $(window).width(),
             shiftX: 0,
             shiftY: 0
         };
@@ -1874,7 +1874,7 @@ function pushingBurger_init(params) {
             break;
         case 'left':
             $(burgerBlock).css({
-                width: burgerWidth + 'px',
+                width: burgerDims.burgerWidth + 'px',
                 height: '100vh',
                 top: '0',
                 left: `${-burgerDims.burgerWidth}px`,
@@ -1901,6 +1901,8 @@ function pushingBurger_init(params) {
             burgerDims.shiftY = burgerDims.burgerHeight;
             break;
     }
+
+    console.log(burgerDims);
 
     // инициализация триггера
     setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleBurger, burgerBlock);
