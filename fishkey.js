@@ -3675,17 +3675,20 @@ function backAudio_init(params) {
         togglerOn = document.querySelector('.audio-on');
         togglerOn.addEventListener('click', toggleAudio);
         hasTriggers = true;
-    } catch(e) {
-        if (!autoplay) {
-            return console.error('Триггер не задан, а автовоспроизведение не включено - аудио не может быть включено!');
-        }
-    }
+    } catch(e) {}
     try {
         togglerOff = document.querySelector('.audio-off');
         togglerOff.addEventListener('click', toggleAudio);
         isOneTrigger = false;
+        if (!togglerOn) {
+            togglerOn = togglerOff;
+            hasTriggers = true;
+            isOneTrigger = true;
+        }
     } catch(e) {
-        isOneTrigger = Boolean(togglerOn);
+        if (!togglerOn && !autoplay) {
+            return console.error('Триггер не задан, а автовоспроизведение не включено - аудио не может быть включено!');
+        }
     }
     if (hasTriggers && !isOneTrigger) {
         if (autoplay) {
