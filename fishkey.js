@@ -3662,7 +3662,7 @@ function flippingText_init(params) {
 function backAudio_init(params) {
     const { link, volume, autoplay, loop, switchOption } = params;
     let playLink = 'https://docs.google.com/uc?export=download&id=';
-    let togglerOn, togglerOff, isOneTrigger;
+    let togglerOn, togglerOff, isOneTrigger = true;
 
     try {
         const audioId = link.split('d/')[1].split('/')[0];
