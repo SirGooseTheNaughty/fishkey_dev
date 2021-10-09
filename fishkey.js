@@ -3704,6 +3704,9 @@ function backAudio_init(params) {
     audio.volume = volume || 1;
     audio.autoplay = autoplay || false;
     audio.loop = loop || false;
+    if (autoplay) {
+        audio.play();
+    }
 
     function toggleAudio() {
         switchOption === 'volume' ? toggleAudioByVolume() : toggleAudioByPause();
