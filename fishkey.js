@@ -3618,18 +3618,19 @@ function flippingText_init(params) {
     els.forEach(el => {
         const inner = el.firstElementChild;
         const text = inner.textContent;
-        const height = window.getComputedStyle(inner).fontSize;
+        const innerStyles = window.getComputedStyle(inner);
+        const height = parseInt(innerStyles.lineHeight, 10);
+        const margin = height / 5;
+        const totalHeight = height + margin;
 
         inner.innerHTML = `
-            <span style="display: block;">${text}</span>
+            <span style="display: block; margin-bottom: ${margin}px">${text}</span>
             <span style="display: block;">${text}</span>
         `;
-        const spans = inner.querySelectorAll('span');
 
         $(inner).css({
-            height,
+            height: totalHeight + 'px',
             display: 'block',
-            lineHeight: '1',
             overflow: 'hidden'
         });
 

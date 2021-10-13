@@ -227,7 +227,7 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 
 /* переворачивающийся текст */
 .text-flipped span {
-    transform: translateY(-100%);
+    transform: translateY(-120%);
 }
 
 /* фоновое аудио */
