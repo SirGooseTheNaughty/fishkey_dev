@@ -1642,8 +1642,14 @@ function uniBurger_init(params) {
             'width': '0',
             'height': '0',
             'z-index': '0'
-        },
-        burgerLinks = burgerBlock.querySelectorAll('a');
+        };
+
+    if (!burgerBlock) {
+        return console.error('Неправильно задан селектор блока бургера', params.burgerBlock);
+    }
+    if (!triggerBlock) {
+        return console.error('Неправильно задан селектор блока триггера бургера', params.triggerBlock);
+    }
 
     let burgerTimeout = null;
 
