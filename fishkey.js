@@ -3659,7 +3659,7 @@ function flippingText_init(params) {
 
 // фоновое аудио
 function backAudio_init(params) {
-    const { link, volume, autoplay, loop, switchOption, waitForInteraction } = params;
+    const { link, volume, autoplay, loop, switchOption, waitForInteraction = true } = params;
     let playLink = 'https://docs.google.com/uc?export=download&id=';
     let togglerOn, togglerOff, hasTriggers = false, isOneTrigger = true, paused = true, softenTimeout;
 
