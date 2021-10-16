@@ -3659,9 +3659,9 @@ function flippingText_init(params) {
 
 // фоновое аудио
 function backAudio_init(params) {
-    const { link, volume, autoplay, loop, switchOption } = params;
+    const { link, volume, autoplay, loop, switchOption, waitForInteraction } = params;
     let playLink = 'https://docs.google.com/uc?export=download&id=';
-    let togglerOn, togglerOff, hasTriggers = false, isOneTrigger = true;
+    let togglerOn, togglerOff, hasTriggers = false, isOneTrigger = true, paused = true, softenTimeout;
 
     try {
         const audioId = link.split('d/')[1].split('/')[0];
@@ -3701,40 +3701,65 @@ function backAudio_init(params) {
     $('body').append(audioTag);
     const audio = document.querySelector('.fish-audio');
     audio.volume = volume || 1;
-    audio.autoplay = autoplay || false;
     audio.loop = loop || false;
     if (autoplay) {
-        audio.play();
+        paused = false;
+        audio.play().catch(() => {
+            if (waitForInteraction) {
+                document.addEventListener('click', getPermittedAutoplay);
+            }
+            toggleAudio();
+            paused = true;
+        });
     }
 
     function toggleAudio() {
-        switchOption === 'volume' ? toggleAudioByVolume() : toggleAudioByPause();
+        paused = !paused;
+        softenVolume();
         if (!isOneTrigger) {
             toggleTriggers();
         }
     }
-    function toggleAudioByPause() {
-        if (audio.paused) {
-            audio.play();
-        } else {
-            audio.pause();
+    function getPermittedAutoplay(e) {
+        if (e.target !== togglerOn.firstElementChild) {
+            toggleAudio();
         }
-    }
-    function toggleAudioByVolume() {
-        if (audio.volume) {
-            audio.volume = 0;
-        } else {
-            audio.volume = volume;
-        }
+        document.removeEventListener('click', getPermittedAutoplay);
     }
     function toggleTriggers() {
-        const isPaused = switchOption === 'volume' ? !Boolean(audio.volume) : audio.paused;
-        if (isPaused) {
+        if (paused) {
             togglerOn.classList.remove('hidden');
             togglerOff.classList.add('hidden');
         } else {
             togglerOn.classList.add('hidden');
             togglerOff.classList.remove('hidden');
         }
+    }
+    function isEqual(a, b) {
+        return Math.abs(a - b) < 0.001;
+    }
+    function softenVolume() {
+        audio.volume += paused ? -0.01 : 0.01;
+        if (audio.volume >= volume) {
+            audio.volume = volume;
+        } else if (audio.volume <= 0) {
+            audio.volume = 0;
+        }
+        if (switchOption === 'volume') {
+            if (!paused && audio.paused) {
+                audio.play().catch(() => {});
+            }
+        } else {
+            if (!paused) {
+                audio.play();
+            } else if (isEqual(audio.volume, 0)) {
+                audio.pause();
+            }
+        }
+        if (isEqual(audio.volume, volume) || isEqual(audio.volume, 0)) {
+            return;
+        }
+
+        softenTimeout = setTimeout(softenVolume, 50);
     }
 }
