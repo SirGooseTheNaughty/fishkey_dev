@@ -3721,7 +3721,7 @@ function backAudio_init(params) {
         }
     }
     function getPermittedAutoplay(e) {
-        if (togglerOn && e.target !== togglerOn.firstElementChild) {
+        if (!togglerOn || e.target !== togglerOn.firstElementChild) {
             toggleAudio();
         }
         document.removeEventListener('click', getPermittedAutoplay);
