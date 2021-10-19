@@ -3775,19 +3775,22 @@ function bgBlock_init(params) {
     }
 
     let offset = 0;
+    let resizeTimeout;
     const allRecords = document.querySelector('#allrecords');
-    const blockHeight = block.offsetHeight;
-    const blockTop = block.offsetTop;
-    const blockBottom = blockHeight + blockTop;
+    const blockParams = {
+        blockHeight: block.offsetHeight,
+        blockTop: block.offsetTop,
+        blockBottom: block.offsetHeight + block.offsetTop
+    };
 
     allRecords.classList.add('has-bg-block');
     block.classList.add('bg-block');
     if (isTypeTop()) {
         block.classList.add('fix-top');
-        allRecords.style.paddingTop = blockHeight + 'px';
+        allRecords.style.paddingTop = blockParams.blockHeight + 'px';
     } else {
         block.classList.add('fix-bottom');
-        allRecords.style.paddingBottom = blockHeight + 'px';
+        allRecords.style.paddingBottom = blockParams.blockHeight + 'px';
     }
 
     if (filters.blur && filters.blur.coeff && filters.blur.gap) {
@@ -3796,6 +3799,24 @@ function bgBlock_init(params) {
     }
 
     document.addEventListener('scroll', recalcOffset);
+    // TODO: add resize
+    // window.addEventListener('resize', () => {
+    //     clearTimeout(resizeTimeout);
+    //     resizeTimeout = window.setTimeout(handleResize, 250);
+    // });
+    recalcOffset();
+
+    function handleResize() {
+        blockParams.blockHeight = block.offsetHeight;
+        blockParams.blockTop = block.offsetTop;
+        blockParams.blockBottom = blockParams.blockHeight + blockParams.blockTop;
+        if (isTypeTop()) {
+            allRecords.style.paddingTop = blockParams.blockHeight + 'px';
+        } else {
+            allRecords.style.paddingBottom = blockParams.blockHeight + 'px';
+        }
+        recalcOffset();
+    }
 
     function applyShadow() {
         if (filters && filters.shadow && filters.shadow.coeff) {
@@ -3859,9 +3880,9 @@ function bgBlock_init(params) {
         const st = $(window).scrollTop();
         const wh = $(window).height();
         if (isTypeTop()) {
-            offset = Math.abs(blockTop - st) / wh;
+            offset = Math.abs(blockParams.blockTop - st) / wh;
         } else {
-            offset = Math.abs(blockBottom - st - wh) / wh;
+            offset = Math.abs(blockParams.blockBottom - st - wh) / wh;
         }
         translate();
         window.requestAnimationFrame(applyEffects);
