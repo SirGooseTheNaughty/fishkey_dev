@@ -219,15 +219,7 @@ function getBlockList(firstId, lastId) {
 
 /* утилита для настройки иконки бургера */
 function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFunction, burgerBlock) {
-    $(triggerBlock).css({
-        position: 'fixed',
-        width: '100vw',
-        height: '100vh',
-        top: '0',
-        left: '0',
-        'z-index': '9999',
-        'pointer-events': 'none'
-    });
+    triggerBlock.classList.add('triggerBlock');
     const burgerLinks = burgerBlock.querySelectorAll('a');
 
     if (isTriggerCustom) {
@@ -3767,5 +3759,115 @@ function backAudio_init(params) {
         }
 
         softenTimeout = setTimeout(softenVolume, 50);
+    }
+}
+
+/* верхний и нижний блок шторкой */
+function bgBlock_init(params) {
+    const block = document.querySelector(params.selector);
+    const { type, translationCoeff = 0, filters } = params;
+
+    if (!block) {
+        return console.error('Неправильно задан селектор блока', params.selector);
+    }
+    if (type !== 'top' && type !== 'bottom') {
+        return console.error('Неправильно задан тип блока', type);
+    }
+
+    let offset = 0;
+    const allRecords = document.querySelector('#allrecords');
+    const blockHeight = block.offsetHeight;
+    const blockTop = block.offsetTop;
+    const blockBottom = blockHeight + blockTop;
+
+    allRecords.classList.add('has-bg-block');
+    block.classList.add('bg-block');
+    if (isTypeTop()) {
+        block.classList.add('fix-top');
+        allRecords.style.paddingTop = blockHeight + 'px';
+    } else {
+        block.classList.add('fix-bottom');
+        allRecords.style.paddingBottom = blockHeight + 'px';
+    }
+
+    if (filters.blur && filters.blur.coeff && filters.blur.gap) {
+        block.style.width = `calc(100% + ${2 * gap}px)`;
+        block.style.left = `-${gap}px`;
+    }
+
+    document.addEventListener('scroll', recalcOffset);
+
+    function applyShadow() {
+        if (filters && filters.shadow && filters.shadow.coeff) {
+            const shadowOffset = offset * filters.shadow.coeff;
+            const shadowSpread = Math.sqrt(offset) * filters.shadow.coeff * filters.shadow.spreadCoeff;
+            if (isTypeTop()) {
+                block.nextElementSibling.style.boxShadow = `0px ${-1 * shadowOffset}px ${shadowSpread}px 0px ${filters.shadow.color}`;
+            } else {
+                block.previousElementSibling.style.boxShadow = `0px ${shadowOffset}px ${shadowSpread}px 0px ${filters.shadow.color}`;
+            }
+        }
+    }
+
+    function getFilter() {
+        let filter = '';
+        if (!filters) {
+            return filter;
+        }
+        if (filters.brightness && filters.brightness.coeff) {
+            const multiplier = Math.abs(filters.brightness.coeff);
+            if (filters.brightness.coeff > 0) {
+                filter += `brightness(${multiplier * offset + 1})`;
+            } else {
+                filter += `brightness(${1 / (multiplier * offset + 1)})`;
+            }
+        }
+        if (filters.blur && filters.blur.coeff) {
+            if (filter) {
+                filter += ' ';
+            }
+            filter += `blur(${filters.blur.coeff * offset}px)`;
+        }
+        return filter;
+    }
+
+    function applyFilters() {
+        const filter = getFilter();
+        if (filter) {
+            block.style.filter = filter;
+        }
+    }
+
+    function applyZoom() {
+        if (filters.zoom && filters.zoom.coeff) {
+            block.style.transform += ` scale(${1 + filters.zoom.coeff * offset})`;
+        }
+    }
+
+    function translate() {
+        const sign = isTypeTop() ? -1 : 1;
+        block.style.transform = `translateY(${sign * translationCoeff * offset * 100}%)`;
+    }
+
+    function applyEffects() {
+        applyFilters();
+        applyShadow();
+        applyZoom();
+    }
+
+    function recalcOffset() {
+        const st = $(window).scrollTop();
+        const wh = $(window).height();
+        if (isTypeTop()) {
+            offset = Math.abs(blockTop - st) / wh;
+        } else {
+            offset = Math.abs(blockBottom - st - wh) / wh;
+        }
+        translate();
+        window.requestAnimationFrame(applyEffects);
+    }
+
+    function isTypeTop() {
+        return type === 'top';
     }
 }

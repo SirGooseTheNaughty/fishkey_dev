@@ -31,6 +31,18 @@
     top: 0;
     right: 0;
 }
+.triggerBlock {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    pointer-events: none;
+}
+.triggerBlock a {
+    pointer-events: auto;
+}
 .burgerToggler,
 .burgerBlock {
     position: fixed;
@@ -238,4 +250,21 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 .audio-on.hidden,
 .audio-off.hidden {
     display: none;
+}
+
+/* верхний и нижний блок шторкой */
+#allrecords.has-bg-block > div {
+    z-index: 2;
+    position: relative;
+}
+.bg-block {
+    position: fixed !important;
+    width: 100%;
+    z-index: 1 !important;
+}
+.bg-block.fix-top {
+    top: 0;
+}
+.bg-block.fix-bottom {
+    bottom: 0;
 }
