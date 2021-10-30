@@ -1,3 +1,5 @@
+const tildaBreakpoints = [1200, 980, 640, 480, 320];
+
 /* утилита для определения браузера */
 /* Названия браузеров: chrome, firefox, safari, explorer, edge, opera, samsung */
 function getBrowserName() {
@@ -27,7 +29,6 @@ function isMobile() {
 
 /* утилита для получения текущего брейкпоинта */
 function getCurrentBreakpoint () {
-    const tildaBreakpoints = [1200, 980, 640, 480, 320];
     const ww = $(window).width();
     for(let i = 0; i < tildaBreakpoints.length; i++) {
         if (ww >= tildaBreakpoints[i]) {
@@ -2772,7 +2773,6 @@ function moveAlongThePath_init (params) {
 
     if ($(window).width() > minWidth) {
         const currentBreakpoint = getCurrentBreakpoint();
-        const tildaBreakpoints = [1200, 980, 640, 480, 320];
         let path;
         for (let i = currentBreakpoint; i >= 0; i--) {
             const ind = tildaBreakpoints[i];
@@ -3133,7 +3133,6 @@ function textWrap_init(params) {
 
     if (typeof numLinesArr === 'object') {
         const currentBreakpoint = getCurrentBreakpoint();
-        const tildaBreakpoints = [1200, 980, 640, 480, 320];
         for (let i = currentBreakpoint; i >= 0; i--) {
             const ind = tildaBreakpoints[i];
             if (typeof numLinesArr[ind] == 'number') {
@@ -3892,3 +3891,68 @@ function bgBlock_init(params) {
         return type === 'top';
     }
 }
+
+
+// МАСКА ВЕКТОРНЫМ ЧЕМ-НИБУДЬ
+function clipBySvg_init(params) {
+    const possibleSvgElements = 'path, circle, rect, text, line';
+    const { maskSelector, videoSelector } = params;
+    const videoElement = document.querySelector(videoSelector);
+    if (!videoElement) {
+        return console.error('Неправильно задан селектор элемента с видео: ' + videoSelector);
+    }
+    const maskElement = document.querySelector(maskSelector);
+    if (!maskElement) {
+        return console.error('Неправильно задан селектор элемента с маской: ' + maskSelector);
+    }
+    const maskSvg = maskElement.querySelector('svg');
+    if (!maskSvg) {
+        return console.error('Неправильно задан код SVG');
+    }
+    $(maskSvg).html(`<defs><clipPath id="fish-video-clip">${$(maskSvg).html()}</clipPath></defs>`);
+    const svgElements = maskSvg.querySelectorAll(possibleSvgElements);
+    const scales = preformScales();
+    let resizeTimeout = null;
+
+    replaceElements();
+
+    $(videoElement).css({
+        'clip-path': 'url(#fish-video-clip)'
+    });
+
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(replaceElements, 1000);
+    });
+
+    function preformScales() {
+        const queries = [
+            `data-field-width-value`,
+            `data-field-width-res-960-value`,
+            `data-field-width-res-640-value`,
+            `data-field-width-res-480-value`,
+            `data-field-width-res-320-value`
+        ];
+        const widths = queries.map(q => Number(maskElement.getAttribute(q)));
+        const scales = widths.map(w => {
+            if (w) {
+                return w / widths[0];
+            }
+            return null;
+        });
+        scales.forEach((scale, i) => {
+            if (scale === null) {
+                scale = scales[i - 1];
+            }
+        });
+        return scales;
+    }
+
+    function replaceElements() {
+        const maskRect = maskElement.getBoundingClientRect();
+        const scale = scales[getCurrentBreakpoint()];
+        svgElements.forEach(el => {
+            el.style.transform = `translate(${maskRect.left}px, ${maskRect.top}px) scale(${scale})`;
+        });
+    }
+};
