@@ -3794,8 +3794,8 @@ function bgBlock_init(params) {
     }
 
     if (filters.blur && filters.blur.coeff && filters.blur.gap) {
-        block.style.width = `calc(100% + ${2 * gap}px)`;
-        block.style.left = `-${gap}px`;
+        block.style.width = `calc(100% + ${2 * filters.blur.gap}px)`;
+        block.style.left = `-${filters.blur.gap}px`;
     }
 
     document.addEventListener('scroll', recalcOffset);
