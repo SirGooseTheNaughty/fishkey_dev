@@ -3980,78 +3980,88 @@ function textAlongThePath_init(params) {
     const maxWidth = isNaN(params.maxWidth) ? 999999 : params.maxWidth;
 
     const textStyleProperties = ['fontSize', 'fontFamily', 'fontWeight', 'textDecoration', 'fontStyle'];
-    const screenWidth = $(window).width();
+    let screenWidth = $(window).width();
     let resizeTimeout = null;
 
+    const text = separate ? reference.textContent + ' ' : reference.textContent;
+    const styles = getComputedStyle(reference.firstElementChild);
+    const targetWidth = renderTo.getBoundingClientRect().width;
+    $(renderTo).html(params.svg);
+    const svgElem = renderTo.querySelector('svg');
+    svgElem.setAttribute('width', targetWidth);
+    svgElem.removeAttribute('height');
+    svgElem.style.overflow = 'visible';
+    const pathElement = document.querySelector('path');
+    let pathId = 'fishkey-curve';
+    try {
+        pathId += `-${globalCounter}`;
+        globalCounter++;
+    } catch (e) {
+        pathId += `-${Math.floor((new Date()) / 1000)}`;
+    }
+    pathElement.setAttribute('id', pathId);
+    pathElement.style.stroke = 'transparent';
+    pathElement.style.fill = 'transparent';
+
+    const textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    svgElem.appendChild(textElem);
+
+    textElem.style.fill = styles.color;
+    textStyleProperties.forEach(property => {
+        if (styles[property]) {
+            textElem.style[property] = styles[property];
+        }
+    });
+    reference.remove();
+
+    const textpath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+    textpath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + pathId);
+    textpath.textContent = text;
+
+    textElem.appendChild(textpath);
+    const pathLength = pathElement.getTotalLength();
+    let oneWordLength = textpath.getComputedTextLength();
+    if (separate) {
+        textpath.textContent += text;
+        const spaceLength = textpath.getComputedTextLength() - 2 * oneWordLength;
+        oneWordLength += spaceLength;
+    }
+
+    for(let i = 0; i < pathLength / oneWordLength + 2; i++) {
+        textpath.textContent += text;
+    }
+
     if (screenWidth > minWidth && screenWidth < maxWidth) {
-        const text = separate ? reference.textContent + ' ' : reference.textContent;
-        const styles = getComputedStyle(reference.firstElementChild);
-        const targetWidth = renderTo.getBoundingClientRect().width;
-        $(renderTo).html(params.svg);
-        const svgElem = renderTo.querySelector('svg');
-        svgElem.setAttribute('width', targetWidth);
-        svgElem.removeAttribute('height');
-        svgElem.style.overflow = 'visible';
-        const pathElement = document.querySelector('path');
-        let pathId = 'fishkey-curve';
-        try {
-            pathId += `-${globalCounter}`;
-            globalCounter++;
-        } catch (e) {
-            pathId += `-${Math.floor((new Date()) / 1000)}`;
-        }
-        pathElement.setAttribute('id', pathId);
-        pathElement.style.stroke = 'transparent';
-        pathElement.style.fill = 'transparent';
-    
-        const textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        svgElem.appendChild(textElem);
-    
-        textElem.style.fill = styles.color;
-        textStyleProperties.forEach(property => {
-            if (styles[property]) {
-                textElem.style[property] = styles[property];
-            }
-        });
-        reference.remove();
-    
-        const textpath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
-        textpath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + pathId);
-        textpath.textContent = text;
-    
-        textElem.appendChild(textpath);
-        const pathLength = pathElement.getTotalLength();
-        let oneWordLength = textpath.getComputedTextLength();
-        if (separate) {
-            textpath.textContent += text;
-            const spaceLength = textpath.getComputedTextLength() - 2 * oneWordLength;
-            oneWordLength += spaceLength;
-        }
-    
-        for(let i = 0; i < pathLength / oneWordLength + 2; i++) {
-            textpath.textContent += text;
-        }
-    
-        const startPos = -Math.floor(oneWordLength);
-        let currentOffset = startPos;
+        renderTo.style.display = 'initial';
+    } else {
+        renderTo.style.display = 'none';
+    }
 
-        window.addEventListener('resize', handleResize);
-    
-        (function moveText() {
-            currentOffset += speedCoeff;
-            if (currentOffset > 0) {
-                currentOffset = startPos;
-            }
-            textpath.setAttribute('startOffset', currentOffset);
-            requestAnimationFrame(moveText);
-        })();
+    const startPos = -Math.floor(oneWordLength);
+    let currentOffset = startPos;
 
-        function handleResize() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                const targetWidth = renderTo.style.width;
-                svgElem.setAttribute('width', targetWidth);
-            }, 800);
+    window.addEventListener('resize', handleResize);
+
+    (function moveText() {
+        currentOffset += speedCoeff;
+        if (currentOffset > 0) {
+            currentOffset = startPos;
         }
+        textpath.setAttribute('startOffset', currentOffset);
+        requestAnimationFrame(moveText);
+    })();
+
+    function handleResize() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const targetWidth = renderTo.style.width;
+            svgElem.setAttribute('width', targetWidth);
+            screenWidth = $(window).width();
+            if (screenWidth > minWidth && screenWidth < maxWidth) {
+                renderTo.style.display = 'initial';
+            } else {
+                renderTo.style.display = 'none';
+            }
+        }, 800);
     }
 }
