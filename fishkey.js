@@ -674,9 +674,8 @@ function buttonToCircle_init(params) {
 
     if ($(window).width() > minWidth) {
         const widthShift = buttonStyle.height;
-        $(buttonToCircle).prepend(`<div class='moving_bg'></div>`);
-        const movingBg = $('.moving_bg');
-        $(buttonTextHolder).html(`<p class='buttonToCircleTxt'>${$(buttonTextHolder).text()}</p>`);
+        const movingBg = $(buttonToCircle).prepend(`<div class='moving_bg'></div>`).children('.moving_bg');
+        const buttonToCircleTxt = $(buttonTextHolder).html(`<p class='buttonToCircleTxt'>${$(buttonTextHolder).text()}</p>`).children('.buttonToCircleTxt');
 
         $(buttonTextHolder).css({
             'position': 'relative',
@@ -700,7 +699,7 @@ function buttonToCircle_init(params) {
             'transition': '0.7s cubic-bezier(0.9, 0, 0.1, 1)',
             'right': '0'
         });
-        $('.buttonToCircleTxt').css({
+        $(buttonToCircleTxt).css({
             'position': 'relative',
             'transition': 'left 0.7s cubic-bezier(0.9, 0, 0.1, 1)',
             'left': '0'
@@ -709,12 +708,12 @@ function buttonToCircle_init(params) {
         $(buttonToCircle).hover(function() {
             $(movingBg).css('width', widthShift);
             $(buttonTextHolder).css('color', buttonStyle.bgColor);
-            $('.buttonToCircleTxt').css('left', `-${widthShift/3}px`);
+            $(buttonToCircleTxt).css('left', `-${widthShift/3}px`);
         },
         function() {
             $(movingBg).css('width', buttonStyle.width);
             $(buttonTextHolder).css('color', 'white');
-            $('.buttonToCircleTxt').css('left', `0`);
+            $(buttonToCircleTxt).css('left', `0`);
         });
     }
 }
@@ -3960,3 +3959,99 @@ function clipBySvg_init(params) {
         });
     }
 };
+
+
+// движение текста по пути
+function textAlongThePath_init(params) {
+    const reference = document.querySelector(params.reference);
+    if (!reference) {
+        return console.error('Неправильно задан селектор элемента с текстом');
+    }
+    const renderTo = document.querySelector(params.renderTo);
+    if (!renderTo) {
+        return console.error('Неправильно задан селектор элемента для svg');
+    }
+    if (!params.svg) {
+        return console.error('Не задан svg');
+    }
+    const separate = params.separate || false;
+    const speedCoeff = params.speedCoeff || 1;
+    const minWidth = isNaN(params.minWidth) ? 0 : params.minWidth;
+    const maxWidth = isNaN(params.maxWidth) ? 999999 : params.maxWidth;
+
+    const textStyleProperties = ['fontSize', 'fontFamily', 'fontWeight', 'textDecoration', 'fontStyle'];
+    const screenWidth = $(window).width();
+    let resizeTimeout = null;
+
+    if (screenWidth > minWidth && screenWidth < maxWidth) {
+        const text = separate ? reference.textContent + ' ' : reference.textContent;
+        const styles = getComputedStyle(reference.firstElementChild);
+        const targetWidth = renderTo.getBoundingClientRect().width;
+        $(renderTo).html(params.svg);
+        const svgElem = renderTo.querySelector('svg');
+        svgElem.setAttribute('width', targetWidth);
+        svgElem.removeAttribute('height');
+        svgElem.style.overflow = 'visible';
+        const pathElement = document.querySelector('path');
+        let pathId = 'fishkey-curve';
+        try {
+            pathId += `-${globalCounter}`;
+            globalCounter++;
+        } catch (e) {
+            pathId += `-${Math.floor((new Date()) / 1000)}`;
+        }
+        pathElement.setAttribute('id', pathId);
+        pathElement.style.stroke = 'transparent';
+        pathElement.style.fill = 'transparent';
+    
+        const textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        svgElem.appendChild(textElem);
+    
+        textElem.style.fill = styles.color;
+        textStyleProperties.forEach(property => {
+            if (styles[property]) {
+                textElem.style[property] = styles[property];
+            }
+        });
+        reference.remove();
+    
+        const textpath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+        textpath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + pathId);
+        textpath.textContent = text;
+    
+        textElem.appendChild(textpath);
+        const pathLength = pathElement.getTotalLength();
+        let oneWordLength = textpath.getComputedTextLength();
+        if (separate) {
+            textpath.textContent += text;
+            const spaceLength = textpath.getComputedTextLength() - 2 * oneWordLength;
+            oneWordLength += spaceLength;
+        }
+    
+        for(let i = 0; i < pathLength / oneWordLength + 2; i++) {
+            textpath.textContent += text;
+        }
+    
+        const startPos = -Math.floor(oneWordLength);
+        let currentOffset = startPos;
+
+        window.addEventListener('resize', handleResize);
+    
+        (function moveText() {
+            currentOffset += speedCoeff;
+            if (currentOffset > 0) {
+                currentOffset = startPos;
+            }
+            textpath.setAttribute('startOffset', currentOffset);
+            requestAnimationFrame(moveText);
+        })();
+
+        function handleResize() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const targetWidth = renderTo.style.width;
+                svgElem.setAttribute('width', targetWidth);
+            }, 800);
+        }
+    }
+}
