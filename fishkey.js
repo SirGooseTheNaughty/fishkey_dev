@@ -3974,6 +3974,7 @@ function textAlongThePath_init(params) {
     if (!params.svg) {
         return console.error('Не задан svg');
     }
+    const moveLeft = params.direction === 'left';
     const separate = params.separate || false;
     const speedCoeff = params.speedCoeff || 1;
     const minWidth = isNaN(params.minWidth) ? 0 : params.minWidth;
@@ -4037,19 +4038,30 @@ function textAlongThePath_init(params) {
         renderTo.style.display = 'none';
     }
 
-    const startPos = -Math.floor(oneWordLength);
-    let currentOffset = startPos;
+    const startPos = Math.floor(oneWordLength);
+    let currentOffset = moveLeft ? 0 : -startPos;
 
     window.addEventListener('resize', handleResize);
 
-    (function moveText() {
-        currentOffset += speedCoeff;
-        if (currentOffset > 0) {
-            currentOffset = startPos;
+    const moveText = moveLeft
+        ? () => {
+            currentOffset -= speedCoeff;
+            if (currentOffset < -startPos) {
+                currentOffset = 0;
+            }
+            textpath.setAttribute('startOffset', currentOffset);
+            requestAnimationFrame(moveText);
         }
-        textpath.setAttribute('startOffset', currentOffset);
-        requestAnimationFrame(moveText);
-    })();
+        : () => {
+            currentOffset += speedCoeff;
+            if (currentOffset > 0) {
+                currentOffset = -startPos;
+            }
+            textpath.setAttribute('startOffset', currentOffset);
+            requestAnimationFrame(moveText);
+        };
+
+    moveText();
 
     function handleResize() {
         clearTimeout(resizeTimeout);
