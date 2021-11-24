@@ -3992,7 +3992,7 @@ function textAlongThePath_init(params) {
     svgElem.setAttribute('width', targetWidth);
     svgElem.removeAttribute('height');
     svgElem.style.overflow = 'visible';
-    const pathElement = document.querySelector('path');
+    const pathElement = svgElem.querySelector('path');
     let pathId = 'fishkey-curve';
     try {
         pathId += `-${globalCounter}`;
