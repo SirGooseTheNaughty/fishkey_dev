@@ -712,6 +712,16 @@ dev
 </script>
 
 
+параллакс фото по скроллу
+<script>
+    photoScroll_init({
+        selectors: '.fish-photoScroll',     // селекторы элементов
+        maxShift: 40,                       // максимальный сдвиг в процентах от высоты элемента [30]
+        direction: 'to bottom'              // направление сдвига ('to bottom' - вниз, 'to top' - вверх) [вниз]
+    });
+</script>
+
+
 
 
 */

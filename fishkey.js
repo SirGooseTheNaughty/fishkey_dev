@@ -4078,3 +4078,70 @@ function textAlongThePath_init(params) {
         }, 800);
     }
 }
+
+
+// параллакс фото по скроллу
+function photoScroll_init(params) {
+    const photoElems = document.querySelectorAll(params.selectors);
+    if (!photoElems.length) {
+        return console.error('Неправильно заданы селекторы элементов');
+    }
+    const photos = [...photoElems].map(elem => elem.firstElementChild);
+    const maxShift = params.maxShift || 30;
+    const direction = params.direction || 'to bottom';
+
+    const screenParams = {
+        top: $(window).scrollTop(),
+        height: $(window).height(),
+        bottom: null
+    };
+    screenParams.bottom = screenParams.top + screenParams.height;
+
+    photos.forEach(photo => {
+        photo.style.backgroundSize = `${100 + maxShift * 2}%`;
+    });
+
+    const shiftBgs = direction === 'to top'
+        ? () => photos.forEach(shiftToTop)
+        : () => photos.forEach(shiftToBottom);
+
+    window.addEventListener('resize', recalcScreenParams);
+    document.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    function recalcScreenParams() {
+        screenParams.top = $(window).scrollTop();
+        screenParams.height = $(window).height()
+        screenParams.bottom = screenParams.top + screenParams.height;
+    }
+
+    function handleScroll() {
+        screenParams.top = $(window).scrollTop();
+        screenParams.bottom = screenParams.top + screenParams.height;
+        shiftBgs();
+    }
+
+    function shiftToBottom(photo) {
+        const { top, height } = photo.getBoundingClientRect();
+        if (top > screenParams.height) {
+            photo.style.backgroundPositionY = 2 * maxShift + '%';
+        } else if (top < -height) {
+            photo.style.backgroundPositionY = 0;
+        } else {
+            const progress = 2 * (top + height) / (screenParams.height + height);
+            photo.style.backgroundPositionY = `${progress * maxShift}%`;
+        }
+    }
+
+    function shiftToTop(photo) {
+        const { top, height } = photo.getBoundingClientRect();
+        if (top > screenParams.height) {
+            photo.style.backgroundPositionY = 0;
+        } else if (top < -height) {
+            photo.style.backgroundPositionY = 2 * maxShift + '%';
+        } else {
+            const progress = 2 * (top - height) / (screenParams.height + height);
+            photo.style.backgroundPositionY = `${(1 - progress) * maxShift}%`;
+        }
+    }
+}
