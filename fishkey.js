@@ -847,11 +847,48 @@ function horScrollBlock_init(parameters) {
         hasDelay = parameters.hasDelay || false,
         delaySpeed = parameters.delaySpeed || 1;
 
+    let inited = false;
+    let currentShift;
     let headerTop = 0,
         headerHeight = 0,
         horScrollContainer = {};
+    let resizeTimeout = null;
     
     if ($(window).width() > minWidth) {
+        init();
+    }
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if ($(window).width() > minWidth) {
+                if (!inited) {
+                    init();
+                } else {
+                    setCurrentShift();
+                }
+            } else {
+                location.reload();
+            }
+        }, 250);
+    });
+
+    function setCurrentShift() {
+        if (typeof totalShift !== 'number') {
+            const currentBreakpoint = getCurrentBreakpoint();
+            for (let i = currentBreakpoint; i >= 0; i--) {
+                const ind = tildaBreakpoints[i];
+                if (totalShift[ind]) {
+                    currentShift = totalShift[ind];
+                    break;
+                }
+            }
+        } else {
+            currentShift = totalShift;
+        }
+    }
+
+    function init() {
+        setCurrentShift();
         const children = $(horScrollBlock.querySelector('.t396__artboard')).children();
 
         $(children).wrapAll('<div class="horScrollContainer"></div>');
@@ -871,7 +908,7 @@ function horScrollBlock_init(parameters) {
         $(horScrollContainer).css({top: '0', left: '0',});
         header ? $(header).css({top: '0', left: '0', width: '100vw', 'z-index': '100'}) : false;
         $(horScrollBlock).css({
-            height: totalShift + blockHeight + 'px',
+            height: currentShift + blockHeight + 'px',
             backgroundColor: window.getComputedStyle(horScrollBlock.querySelector('.t396__artboard')).backgroundColor,
             overflow: 'hidden'
         });
@@ -886,6 +923,7 @@ function horScrollBlock_init(parameters) {
                 horScrollBlock_handler();
             });
         }
+        inited = true;
     }
 
     function horScrollBlock_handler() {
@@ -897,7 +935,7 @@ function horScrollBlock_init(parameters) {
                 transform: 'translate(0)'
             });
             header ? $(header).css({'position': 'relative'}) : false;
-        } else if (horScrollShift < totalShift) {
+        } else if (horScrollShift < currentShift) {
             $(horScrollContainer).css({
                 'position': 'fixed',
                 transform: `translate(-${horScrollShift}px, ${headerHeight}px)`
@@ -908,9 +946,9 @@ function horScrollBlock_init(parameters) {
             $(horScrollContainer).css({
                 'position': 'relative',
                 'padding-bottom': '0',
-                transform: `translate(-${totalShift}px, ${totalShift}px)`
+                transform: `translate(-${currentShift}px, ${currentShift}px)`
             });
-            header ? $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`}) : false;
+            header ? $(header).css({position: 'relative', transform: `translate(0, ${currentShift}px)`}) : false;
             horScrollBlock.style.paddingBottom = '0';
         }
     }
@@ -926,7 +964,7 @@ function horScrollBlock_init(parameters) {
             horScrollContainer.setAttribute('data-target-y', 0);
             horScrollContainer.setAttribute('data-current-y', 0);
             header ? $(header).css({'position': 'relative'}) : false;
-        } else if (horScrollShift < totalShift) {
+        } else if (horScrollShift < currentShift) {
             $(horScrollContainer).css({
                 'position': 'fixed'
             });
@@ -941,11 +979,11 @@ function horScrollBlock_init(parameters) {
                 'position': 'relative',
                 'padding-bottom': '0'
             });
-            horScrollContainer.setAttribute('data-target-x', -totalShift);
-            horScrollContainer.setAttribute('data-target-y', totalShift);
-            horScrollContainer.setAttribute('data-current-y', totalShift);
+            horScrollContainer.setAttribute('data-target-x', -currentShift);
+            horScrollContainer.setAttribute('data-target-y', currentShift);
+            horScrollContainer.setAttribute('data-current-y', currentShift);
 
-            header ? $(header).css({position: 'relative', transform: `translate(0, ${totalShift}px)`}) : false;
+            header ? $(header).css({position: 'relative', transform: `translate(0, ${currentShift}px)`}) : false;
             horScrollBlock.style.paddingBottom = '0';
         }
     }
@@ -1331,9 +1369,11 @@ function lettersAppear_init(parameters) {
     const texts = [];
     textElem.childNodes.forEach(node => {
         const tag = node.nodeName === '#text' ? 'span' : node.nodeName;
+        const fontWeight = node.nodeName !== '#text' ? getComputedStyle(node).fontWeight || '400' : '400';
         node.textContent.split('').forEach(letter => {
             texts.push({
                 letter,
+                fontWeight,
                 tag: tag
             });
         });
@@ -1347,13 +1387,13 @@ function lettersAppear_init(parameters) {
 
         if (isRandom) {
             texts.forEach(text => {
-                const { letter, tag } = text;
-                $(textElem).append(`<${tag} style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s">${letter}</${tag}>`);
+                const { letter, fontWeight, tag } = text;
+                $(textElem).append(`<${tag} style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*Math.random()}s; font-weight: ${fontWeight}">${letter}</${tag}>`);
             });
         } else {
             texts.forEach((text, i) => {
-                const { letter, tag } = text;
-                $(textElem).append(`<${tag} style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*(i/numLetters)}s">${letter}</${tag}>`);
+                const { letter, fontWeight, tag } = text;
+                $(textElem).append(`<${tag} style="opacity: 0; transition: opacity ${letterSpeed}s ease ${maxDelay*(i/numLetters)}s;  font-weight: ${fontWeight}">${letter}</${tag}>`);
             });
         }
 
