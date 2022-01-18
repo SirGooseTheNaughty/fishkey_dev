@@ -1365,11 +1365,12 @@ function lettersAppear_init(parameters) {
     let offset = parameters.offset || 0;
     const textElem = document.querySelector(`${parameters.selector} .tn-atom`);
     isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
+    const defaultFontWeight = getComputedStyle(textElem).fontWeight || '400';
 
     const texts = [];
     textElem.childNodes.forEach(node => {
         const tag = node.nodeName === '#text' ? 'span' : node.nodeName;
-        const fontWeight = node.nodeName !== '#text' ? getComputedStyle(node).fontWeight || '400' : '400';
+        const fontWeight = node.nodeName !== '#text' ? getComputedStyle(node).fontWeight || defaultFontWeight : defaultFontWeight;
         node.textContent.split('').forEach(letter => {
             texts.push({
                 letter,
@@ -4191,5 +4192,69 @@ function photoScroll_init(params) {
             const progress = 2 * (top - height) / (screenParams.height + height);
             photo.style.backgroundPositionY = `${(1 - progress) * maxShift}%`;
         }
+    }
+}
+
+
+// прячущийся хедер
+function hidingHeader_init(params) {
+    const header = document.querySelector(params.selector);
+    if (!header) {
+        return console.error('Неправильно задан селектор хедера');
+    }
+    const top = params.top || 0;
+    const animTime = params.animTime || 0.25;
+    const delay = params.delay ? params.delay * 1000 : 2000;
+    let timeout = null;
+
+    header.classList.add('hiding-header');
+    header.style = `--animTime: ${animTime}s; --top: ${top}px`;
+    if (params.makeTransparent) {
+        header.classList.add('make-transparent');
+    }
+    if (params.showOnMouseUp) {
+        document.body.addEventListener('mouseleave', showOnMouseUp);
+    }
+    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', toggleSticking);
+    header.addEventListener('mouseenter', () => clearTimeout(timeout));
+    header.addEventListener('mouseleave', () => timeout = setTimeout(hideHeader, delay));
+    toggleSticking();
+    setTimeout(() => {
+        if (params.makeTransparent) {
+            const changingEls = header.querySelectorAll('.t396__artboard, .lose-element, .fixed-element');
+            [...changingEls].forEach(el => el.classList.add('hiding-header-anim'));
+        }
+    });
+
+    function showOnMouseUp(e) {
+        if (e.clientY < 0) {
+            handleScroll();
+        }
+    }
+
+    function toggleSticking() {
+        if ($(window).scrollTop() > top) {
+            header.classList.remove('hiding-header-lose');
+        } else {
+            header.classList.add('hiding-header-lose');
+        }
+    }
+
+    function handleScroll() {
+        if (header.classList.contains('hiding-header-lose')) {
+            return;
+        }
+        header.classList.remove('hidden');
+        clearTimeout(timeout);
+        timeout = setTimeout(hideHeader, delay);
+    }
+
+    function hideHeader() {
+        if (header.classList.contains('hiding-header-lose')) {
+            return;
+        }
+        header.classList.add('hidden');
     }
 }
