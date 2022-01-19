@@ -10,7 +10,7 @@
     z-index: 99999;
 }
 .curtain-change__curtain.animate {
-    transition: var(--animTime) ease;
+    transition: width var(--animTime) ease, height var(--animTime) ease;
 }
 .curtain-change__curtain.to-left,
 .curtain-change__curtain.to-bottom {
