@@ -19,9 +19,10 @@ function curtainPageChange_init(params) {
         $('#curtain-helper').remove();
     }, animTime * 1000);
     if (useAsPreloader) {
-        document.addEventListener('DOMContentLoaded', () => {
+        window.onload = () => {
             setTimeout(() => curtain.classList.add('hidden'));
-        });
+            window.onload = null;
+        };
     } else {
         setTimeout(() => curtain.classList.add('hidden'));
     }
