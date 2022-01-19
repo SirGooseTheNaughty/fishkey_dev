@@ -7,7 +7,7 @@ function curtainPageChange_init(params) {
     if (!curtain) {
         return console.error('Не добавлена "шторка"');
     }
-    const { animTime = 1, appearTo = 'right', useAsPreloader = false } = params;
+    const { animTime = 1, appearFrom = 'right', useAsPreloader = false } = params;
     try {
         if (!useInitial && useAsPreloader) {
             console.error('Невозможно использовать шторку как прелоудер, потому что установлен флаг "useInitial = false"');
@@ -47,7 +47,7 @@ function curtainPageChange_init(params) {
                 curtain.classList.remove(className);
             }
         });
-        curtain.classList.add(`to-${appearTo}`);
+        curtain.classList.add(`to-${appearFrom}`);
     }
 
     function goToLink(e) {
