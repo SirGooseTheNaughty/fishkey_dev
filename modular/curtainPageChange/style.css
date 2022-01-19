@@ -1,0 +1,35 @@
+.curtain-change__curtain {
+    --color: orange;
+    --animTime: 1s;
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--color);
+    z-index: 99999;
+}
+.curtain-change__curtain.animate {
+    transition: var(--animTime) ease;
+}
+.curtain-change__curtain.to-left,
+.curtain-change__curtain.to-bottom {
+    left: 0;
+    top: 0;
+}
+.curtain-change__curtain.to-right {
+    right: 0;
+    top: 0;
+}
+.curtain-change__curtain.to-top {
+    left: 0;
+    bottom: 0;
+}
+.curtain-change__curtain.to-left.hidden,
+.curtain-change__curtain.to-right.hidden {
+    width: 0;
+}
+.curtain-change__curtain.to-top.hidden,
+.curtain-change__curtain.to-bottom.hidden {
+    height: 0;
+}
