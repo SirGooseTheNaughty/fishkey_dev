@@ -484,8 +484,8 @@ function meshGradientBg_init(params) {
     }),
     (Canvas.prototype.update_position = function () {
       const gain = [
-        (this.target[0] - this.warp.src[this.movingIndex][0]) / 80,
-        (this.target[1] - this.warp.src[this.movingIndex][1]) / 80,
+        (this.target[0] - this.warp.src[this.movingIndex][0]) / 80 * this.coeff,
+        (this.target[1] - this.warp.src[this.movingIndex][1]) / 80 * this.coeff,
       ];
       const err = Math.abs(gain[0]) + Math.abs(gain[1]);
       if (err > 0.001) {
@@ -555,7 +555,8 @@ function meshGradientBg_init(params) {
     ];
     gradient.target = params.initialTarget
         ? params.initialTarget
-        : [gradient.drag[1], gradient.drag[2]]
+        : [gradient.drag[1], gradient.drag[2]];
+    gradient.coeff = !isNaN(params.coeff) ? params.coeff : 1;
 
     redraw();
     loop();
