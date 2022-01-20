@@ -7,6 +7,8 @@ function meshGradientBg_init(params) {
   const canvasId = "mesh-canvas";
   const baseUrl = 'https://sirgoosethenaughty.github.io/fishkey_dev/modular/meshGradientBg';
 
+  $('body').prepend(`<canvas id="mesh-canvas" width="1200" height="600" style="position: fixed; background-color: ${params.bgColor || 'white'};"></canvas>`);
+
   const assets = ['warp_fragment', 'point_fragment', 'point_vertex', 'smoke_fragment', 'smoke_vertex', 'warp_vertex'];
 
   assets.forEach(asset => {
@@ -14,7 +16,30 @@ function meshGradientBg_init(params) {
     $('body').prepend(`<script id="${asset}" src="${baseUrl}/resources/${asset}.glsl" type="x-shader/x-${type}"></script>`);
   });
 
-  $('body').prepend(`<canvas id="mesh-canvas" width="1200" height="600" style="position: fixed; background-color: ${params.bgColor || 'white'};"></canvas>`);
+  try {
+    const defaultStyle = params.defaultImgUrl
+      ? `background-image: url(${params.defaultImgUrl});background-size:cover;background-repeat:no-repeat;background-color: ${params.defaultBgColor || 'white'}`
+      : `background-color: ${params.defaultBgColor || 'white'}`;
+    $('body').prepend(`<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; ${defaultStyle}"></div>`);
+  } catch(e) {
+    console.error(e);
+  }
+
+  if (params.removeBgs) {
+    const exceptionsStr = params.exceptions ? `:not(${params.exceptions})` : '';
+    $('body').prepend(`
+      <style>
+        [id^=rec]${exceptionsStr},
+        [id^=rec]${exceptionsStr} .t396__artboard {
+          background-color: transparent !important;
+        }
+        [id^=rec]${exceptionsStr} .t396__carrier,
+        [id^=rec]${exceptionsStr} .t396__filter {
+          display: none;
+        }
+      </style>
+    `);
+  }
 
   let warps,
     gradient,
