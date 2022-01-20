@@ -553,7 +553,7 @@ function meshGradientBg_init(params) {
       ...gradient.warp.src[gradient.movingIndex],
       ...gradient.warp.src[gradient.movingIndex],
     ];
-    gradient.target = params.initialTarget
+    gradient.target = params.initialTarget && Array.isArray(params.initialTarget)
         ? params.initialTarget
         : [gradient.drag[1], gradient.drag[2]];
     gradient.coeff = !isNaN(params.coeff) ? params.coeff : 1;

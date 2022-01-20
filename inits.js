@@ -736,6 +736,23 @@ dev
 
 
 
+динамический меш-градиент
+<script type="text/javascript" src="https://sirgoosethenaughty.github.io/fishkey_dev/modular/meshGradientBg/script.js"></script>
+<script>
+    meshGradientBg_init({
+        meshgradURL: 'https://meshgradient.com/?w=eyJzIjpbWy0wLjg1LC0wLjldLFstMC45MjYsMC45MzNdLFswLjg1LC0wLjldLFswLjk1LDAuOV0sWzAuNTExLDAuNDI5XV0sImQiOltbLTAuOTgsLTAuOTg0XSxbLTAuOTg2LDAuOTg2XSxbMC45ODgsLTAuOTk3XSxbMC45ODksMC45ODhdLFswLjY2OSwwLjUyMl1dLCJwIjo1fQ%3D%3D&c=eyJ0bCI6IiM5NGZmZWIiLCJ0ciI6IiNmZmQ1ODAiLCJibCI6IiNmZmY0YjgiLCJiciI6IiNiZGZmYzMifQ%3D%3D',
+        initialTarget: [-1, 0],                     // координата начального движения градиента в формате [x, y]
+        coeff: 2,                                   // коэффициент скорости движения градиента
+        removeBgs: true,                            // убирать ли фоны у всех блоков
+        exceptions: '#rec403121619, #rec32564314',  // если убирать, то здесь можно добавить Id блоков, у которых убирать не надо
+        defaultImgUrl: '',                          // ссылка на картинку, которая будет использоваться как фон на мобильных устройствах
+        defaultBgColor: '#FFD580'                   // цвет фона для мобильных устройств
+    });
+</script>
+
+
+
+
 */
 
 
