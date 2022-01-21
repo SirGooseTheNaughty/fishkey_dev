@@ -4278,6 +4278,7 @@ function darkMode_init(params) {
             useNegativeMode();
         }
     } else if (type === 'auto') {
+        document.body.style = `--transitionTime: ${transitionTime}s`;
         if (!Array.isArray(scheme)) {
             return console.error('Неправильно заданы цвета в параметре scheme');
         }
@@ -4307,8 +4308,6 @@ function darkMode_init(params) {
     } else {
         return console.error('Не найдены триггеры');
     }
-
-    document.body.style = `--transitionTime: ${transitionTime}s`;
 
     function useNegativeMode() {
         document.body.style.mixBlendMode = isLightMode ? 'initial' : 'difference';
