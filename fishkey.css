@@ -300,3 +300,19 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 .hiding-header:not(.hiding-header-lose) .fixed-element {
     opacity: 0;
 }
+
+
+/* темная тема */
+.dark-mode,
+.light-mode,
+.dark-trigger,
+.light-trigger {
+    transition: opacity var(--transitionTime, 0);
+}
+body.light-mode .dark-mode,
+body.dark-mode .light-mode,
+body.light-mode .dark-trigger,
+body.dark-mode .light-trigger {
+    opacity: 0;
+    pointer-events: none;
+}

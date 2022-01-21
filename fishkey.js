@@ -4258,3 +4258,114 @@ function hidingHeader_init(params) {
         header.classList.add('hidden');
     }
 }
+
+
+// темная тема
+function darkMode_init(params) {
+    const { type = 'negative', scheme = null, transitionTime = 0 } = params;
+    let isLightMode = params.initialMode !== 'dark';
+
+    useClasses();
+
+    let toggleFunction;
+
+    if (type === 'negative') {
+        document.body.style.backgroundColor = 'white';
+        document.body.style.mixBlendMode = 'initial';
+        toggleFunction = () => {
+            isLightMode = !isLightMode;
+            useClasses();
+            useNegativeMode();
+        }
+    } else if (type === 'auto') {
+        if (!Array.isArray(scheme)) {
+            return console.error('Неправильно заданы цвета в параметре scheme');
+        }
+        toggleFunction = () => {
+            isLightMode = !isLightMode;
+            useClasses();
+            useColors();
+        }
+    } else {
+        toggleFunction = () => {
+            isLightMode = !isLightMode;
+            useClasses();
+        }
+    }
+
+    const triggers = {
+        light: document.querySelector('.light-trigger'),
+        dark: document.querySelector('.dark-trigger'),
+        common: document.querySelector('.common-trigger'),
+    };
+
+    if (triggers.light && triggers.dark) {
+        triggers.light.addEventListener('click', toggleFunction);
+        triggers.dark.addEventListener('click', toggleFunction);
+    } else if (triggers.common) {
+        triggers.common.addEventListener('click', toggleFunction);
+    } else {
+        return console.error('Не найдены триггеры');
+    }
+
+    document.body.style = `--transitionTime: ${transitionTime}s`;
+
+    function useNegativeMode() {
+        document.body.style.mixBlendMode = isLightMode ? 'initial' : 'difference';
+    }
+
+    function useClasses() {
+        if (isLightMode) {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+        } else {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+        }
+    }
+
+    function useColors() {
+        let newMode = 'light', currentMode = 'dark';
+        if (!isLightMode) {
+            newMode = 'dark';
+            currentMode = 'light';
+        }
+        const allEls = document.body.querySelectorAll('*:not(style, script)');
+        allEls.forEach(el => {
+            const { color, backgroundColor, borderColor } = getComputedStyle(el);
+            if (color) {
+                changeColor(el, color, 'color', newMode, currentMode);
+            }
+            if (backgroundColor && backgroundColor !== 'rgba(0, 0, 0, 0)') {
+                changeColor(el, backgroundColor, 'backgroundColor', newMode, currentMode);
+            }
+            if (borderColor && borderColor !== 'rgba(0, 0, 0, 0)') {
+                changeColor(el, borderColor, 'borderColor', newMode, currentMode);
+            }
+        });
+    }
+
+    function changeColor(el, color, attr, newMode, currentMode) {
+        const hexColor = RGBToHex(color);
+        const colorData = scheme.find(sc => sc.type === attr && sc[currentMode].toLowerCase() === hexColor);
+        if (colorData) {
+            el.style.transition = `${transitionTime}s`;
+            setTimeout(() => el.style[attr] = colorData[newMode]);
+        }
+    }
+
+    function RGBToHex(rgb) {
+        let sep = rgb.indexOf(",") > -1 ? "," : " ";
+        rgb = rgb.substr(4).split(")")[0].split(sep);
+        let r = (+rgb[0]).toString(16),
+            g = (+rgb[1]).toString(16),
+            b = (+rgb[2]).toString(16);
+        if (r.length == 1)
+          r = "0" + r;
+        if (g.length == 1)
+          g = "0" + g;
+        if (b.length == 1)
+          b = "0" + b;
+        return "#" + r + g + b;
+    }
+}
