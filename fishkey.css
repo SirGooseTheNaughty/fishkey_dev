@@ -309,6 +309,11 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 .light-trigger {
     transition: opacity var(--transitionTime, 0);
 }
+.dark-trigger,
+.light-trigger,
+.common-trigger {
+    cursor: pointer;
+}
 body.light-mode .dark-mode,
 body.dark-mode .light-mode,
 body.light-mode .dark-trigger,
