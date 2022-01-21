@@ -752,6 +752,36 @@ dev
 
 
 
+темная тема
+<script>
+    darkMode_init({
+        type: 'auto',               // режим работы (negative, auto, manual)
+        transitionTime: 0.5,        // время переключения
+        scheme: [                   // цветовые схемы (для режима auto)
+            {
+                type: 'color',      // тип изменяемого цвета (color / backgroundColor / borderColor)
+                light: '#0D0D0D',   // цвет при светлой теме
+                dark: '#F0EEEC',    // цвет при темной теме
+            },
+            {
+                type: 'color',
+                light: '#4F4F4F',
+                dark: '#F0EEEB',
+            },
+            {
+                type: 'backgroundColor',
+                light: '#F0EEEC',
+                dark: '#181818',
+            },
+            {
+                type: 'borderColor',
+                light: '#4F4F4F',
+                dark: '#F0EEEB',
+            },
+        ],
+    });
+</script>
+
 
 */
 
