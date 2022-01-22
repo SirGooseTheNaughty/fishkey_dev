@@ -4215,11 +4215,15 @@ function hidingHeader_init(params) {
     if (params.showOnMouseUp) {
         document.body.addEventListener('mouseleave', showOnMouseUp);
     }
-    window.addEventListener('scroll', handleScroll);
+    if (!isMobile()) {
+        header.addEventListener('mouseenter', () => clearTimeout(timeout));
+        header.addEventListener('mouseleave', () => timeout = setTimeout(hideHeader, delay));
+    }
+    if (!(params.disableHidingOnMobile && isMobile())) {
+        window.addEventListener('scroll', handleScroll);
+    }
 
     window.addEventListener('scroll', toggleSticking);
-    header.addEventListener('mouseenter', () => clearTimeout(timeout));
-    header.addEventListener('mouseleave', () => timeout = setTimeout(hideHeader, delay));
     toggleSticking();
     setTimeout(() => {
         if (params.makeTransparent) {
