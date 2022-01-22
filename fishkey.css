@@ -294,10 +294,10 @@ body:not(.t-body_popupshowed) .ddd-cards-body {
 .hiding-header.hidden {
     transform: translateY(-100%);
 }
-.hiding-header.hiding-header-lose .lose-element {
+.hiding-header.hiding-header-lose .fixed-element {
     opacity: 0;
 }
-.hiding-header:not(.hiding-header-lose) .fixed-element {
+.hiding-header:not(.hiding-header-lose) .lose-element {
     opacity: 0;
 }
 
