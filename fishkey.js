@@ -1798,13 +1798,12 @@ function uniBurger_init(params) {
         'height': '0',
         'z-index': '9998'
     });
-    setTimeout(() => {
-        burgerWrapper.style.transition = `${burgerTransTime}s ease`;
-    });
-
     $(burgerWrapper).css(hiddenStyle);
 
-    $(burgerBlock).css('transition', `opacity ${burgerElemsTransTime}s ease`);
+    setTimeout(() => {
+        burgerWrapper.style.transition = `${burgerTransTime}s ease`;
+        burgerBlock.style.transition = `opacity ${burgerElemsTransTime}s ease`;
+    });
 
     function toggleBurger() {
         if (burgerTimeout) {
