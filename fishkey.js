@@ -1786,21 +1786,21 @@ function uniBurger_init(params) {
         }
     }
 
-    (function burgerInit() {
-        const burgerBGColor = $(burgerBlock).children('div').children('div').css('background-color');
-        $(burgerBlock).children('div').children('div').css('background-color', 'none');
-        burgerBlock.classList.add('burgerBlock', 'burgerHidden');
-        
-        burgerReshape();
+    const burgerBGColor = $(burgerBlock).children('div').children('div').css('background-color');
+    $(burgerBlock).children('div').children('div').css('background-color', 'none');
+    burgerBlock.classList.add('burgerBlock', 'burgerHidden');
+    
+    burgerReshape();
 
-        $(burgerWrapper).css({
-            'background-color': burgerBGColor,
-            'width': '0',
-            'height': '0',
-            'transition': `${burgerTransTime}s ease`,
-            'z-index': '9998'
-        });
-    })();
+    $(burgerWrapper).css({
+        'background-color': burgerBGColor,
+        'width': '0',
+        'height': '0',
+        'z-index': '9998'
+    });
+    setTimeout(() => {
+        burgerWrapper.style.transition = `${burgerTransTime}s ease`;
+    });
 
     $(burgerWrapper).css(hiddenStyle);
 
