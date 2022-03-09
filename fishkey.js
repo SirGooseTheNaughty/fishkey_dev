@@ -2547,6 +2547,7 @@ function horDrag_init(params) {
             ) {
                 el.style.pointerEvents = 'none';
             }
+            el.style.userSelect = 'none';
         });
 
         const offsetLeft = Math.min.apply(Math, lefts),
