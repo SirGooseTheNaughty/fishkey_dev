@@ -2539,7 +2539,12 @@ function horDrag_init(params) {
             lefts[i] = +el.getBoundingClientRect().x;
             widths[i] = +getElemDim(el, 'width');
             rights[i] = lefts[i] + widths[i];
-            if (el.getAttribute('data-elem-type') !== 'button' && !el.querySelector('a') && !el.classList.contains('t-zoomable')) {
+            if (
+                el.getAttribute('data-elem-type') !== 'button'
+                && !el.querySelector('a')
+                && !el.classList.contains('t-zoomable')
+                && !el.classList.contains('with-pointer-events')
+            ) {
                 el.style.pointerEvents = 'none';
             }
         });
