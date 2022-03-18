@@ -1957,8 +1957,10 @@ function pushingBurger_init(params) {
         resizeTimeout = setTimeout(handleResize, 100);
     });
 
+    let clearTranslateTimeout;
     function toggleBurger() {
         if ($(burgerBlock).attr('data-burgeropened') == 'false') {
+            clearTimeout(clearTranslateTimeout);
             $(blocksWrapper).css('transform', `translate(${burgerDims.shiftX}px, ${burgerDims.shiftY}px)`);
             $(burgerBlock).css('transform', `translate(${burgerDims.shiftX}px, ${burgerDims.shiftY}px)`);
             $(burgerBlock).attr('data-burgeropened', 'true');
@@ -1966,6 +1968,9 @@ function pushingBurger_init(params) {
             $(blocksWrapper).css('transform', 'translate(0)');
             $(burgerBlock).css('transform', 'translate(0)');
             $(burgerBlock).attr('data-burgeropened', 'false');
+            clearTranslateTimeout = setTimeout(() => {
+                $(blocksWrapper).css('transform', 'none');
+            }, easeTime * 1000);
         }
     }
 
