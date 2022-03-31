@@ -1,5 +1,5 @@
-const tildaBreakpoints = [1200, 980, 640, 480, 320];
-let globalCounter = 0;
+window.tildaBreakpoints = [1200, 980, 640, 480, 320];
+window.globalCounter = 0;
 
 /* утилита для определения браузера */
 /* Названия браузеров: chrome, firefox, safari, explorer, edge, opera, samsung */
@@ -1152,7 +1152,6 @@ function textApp_init(parameters) {
     const triggerBlocks = parameters.triggerBlocks ? document.querySelectorAll(parameters.triggerBlocks) : null;
     const txtAppWordConts = [];
 
-    const timeCache = new Date().getTime();
     let txtApp_intervals = [];
 
     if ($(window).width() > minWidth) {
@@ -1171,7 +1170,7 @@ function textApp_init(parameters) {
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%;  padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
-                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word} </span>
+                                                <span class='txtAppWordCont${contNum}-${globalCounter}'>${word} </span>
                                             </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else if (divider == 'p') {
@@ -1179,7 +1178,7 @@ function textApp_init(parameters) {
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%; padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
-                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word}.</span>
+                                                <span class='txtAppWordCont${contNum}-${globalCounter}'>${word}.</span>
                                             </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else if (divider == 'l') {
@@ -1187,7 +1186,7 @@ function textApp_init(parameters) {
                 txtAppCont.innerHTML = '';
                 txtAppWords.forEach((word, i) => {
                     txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%; padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
-                                                <span class='txtAppWordCont${contNum}-${timeCache}'>${word}</span>
+                                                <span class='txtAppWordCont${contNum}-${globalCounter}'>${word}</span>
                                             </p>${i !== txtAppWords.length - 1 ? '<span> </span>' : ''}`;
                 });
             } else {
@@ -1213,13 +1212,13 @@ function textApp_init(parameters) {
                         txtAppCont.innerHTML += `<span> </span>`;
                     } else {
                         txtAppCont.innerHTML += `<p style='overflow: hidden; display: inline-block; line-height: 100%; padding-bottom: ${spacing}; margin-bottom: -${spacing}'>
-                                                    <span class='txtAppWordCont${contNum}-${timeCache}'>${word}</span>
+                                                    <span class='txtAppWordCont${contNum}-${globalCounter}'>${word}</span>
                                                 </p>`;
                     }
                 });
             }
 
-            txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}-${timeCache}`);
+            txtAppWordConts[contNum] = document.querySelectorAll(`.txtAppWordCont${contNum}-${globalCounter}`);
 
             txtAppCont.style.paddingBottom = '0.15em';
             txtAppCont.style.overflow = 'hidden';
@@ -1233,6 +1232,8 @@ function textApp_init(parameters) {
                 }); 
             }
         });
+
+        globalCounter++;
         
         if (trigger == 'scroll') {
             document.addEventListener('DOMContentLoaded', () => {
@@ -2528,7 +2529,6 @@ function horDrag_init(params) {
         if (hasDelay) {
             initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {delaySpeed, framerate: 15});
         }
-        horDragObj.style.overflow = 'visible';
         document.body.style.overflowX = 'hidden';
         const allRecords = document.querySelector('#allrecords');
         if (allRecords) {
@@ -2560,7 +2560,7 @@ function horDrag_init(params) {
             rightCorner = offsetLeft + maxRight;
 
         $(horDragObj).css({
-            overflow: 'visible',
+            overflowX: 'visible',
             position: 'relative',
             top: '0',
             left: '0',
