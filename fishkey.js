@@ -2529,7 +2529,6 @@ function horDrag_init(params) {
         if (hasDelay) {
             initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {delaySpeed, framerate: 15});
         }
-        horDragGallery.style.overflowY = 'hidden';
         document.body.style.overflowX = 'hidden';
         const allRecords = document.querySelector('#allrecords');
         if (allRecords) {
