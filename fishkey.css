@@ -24,6 +24,11 @@
     font-style: italic;
 }
 
+/* горизонтальная перетаскивалка */
+#allrecords.no-overflow-x {
+    overflow-x: hidden !important;
+}
+
 /* универсальный бургер */
 .burgerWrapper {
     position: fixed;

@@ -2533,7 +2533,7 @@ function horDrag_init(params) {
         document.body.style.overflowX = 'hidden';
         const allRecords = document.querySelector('#allrecords');
         if (allRecords) {
-            allRecords.style.overflowX = 'hidden !important';
+            allRecords.classList.add('no-overflow-x');
         }
 
         const elements = horDragObj.querySelectorAll('.tn-elem'),
