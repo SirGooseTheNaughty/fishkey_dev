@@ -3249,6 +3249,7 @@ function textWrap_init(params) {
         }
         if (shouldResizeBlock) {
             artboard.style.height = `${artboardHeight - triggerShift}px`;
+            artboard.style.minHeight = 'unset !important';
             setTimeout(() => artboard.style.transition = `height ${animTime}s ${animFunction}`);
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
