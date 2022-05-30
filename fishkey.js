@@ -1,14 +1,6 @@
 window.tildaBreakpoints = [1200, 980, 640, 480, 320];
 window.globalCounter = 0;
 
-function getOffset(element) {
-    const rect = element.getBoundingClientRect();
-    return {
-        top: rect.top + document.documentElement.scrollTop,
-        left: rect.left + document.documentElement.scrollLeft,
-    }
-}
-
 /* утилита для определения браузера */
 /* Названия браузеров: chrome, firefox, safari, explorer, edge, opera, samsung */
 function getBrowserName() {
@@ -38,7 +30,7 @@ function isMobile() {
 
 /* утилита для получения текущего брейкпоинта */
 function getCurrentBreakpoint () {
-    const ww = document.documentElement.offsetWidth;
+    const ww = $(window).width();
     for(let i = 0; i < tildaBreakpoints.length; i++) {
         if (ww >= tildaBreakpoints[i]) {
             return i;
@@ -64,9 +56,9 @@ function getElemDim (elem, dim) {
         if (result) {
             if (units === '%') {
                 if(dim === 'width' || dim === 'left' || dim === 'right') {
-                    return document.documentElement.offsetWidth * result / 100;
+                    return $(window).width() * result / 100;
                 }
-                return document.documentElement.clientHeight * result / 100;
+                return $(window).height() * result / 100;
             }
             return result;
         }
@@ -262,17 +254,19 @@ function setBurgerTrigger(isTriggerCustom, triggerBlock, triggerElems, toggleFun
         burgerButton.style.width = getElemDim(triggerElem, "width") + 'px';
         burgerButton.style.height = getElemDim(triggerElem, "height") + 'px';
         burgerButton.style.pointerEvents = 'auto';
-        const burgerButtonSpans = burgerButton.querySelectorAll('span');
-        burgerButtonSpans.forEach(span => {
-            span.style.height = `${triggerElems.triggerLineHeight}px`;
-            span.style.backgroundColor = triggerElems.closedTriggerColor;
+        $(burgerButton).children().css({
+            height: triggerElems.triggerLineHeight,
+            'background-color': triggerElems.closedTriggerColor
         });
 
         function stdToggle() {
             toggleFunction();
             burgerButton.classList.toggle('open');
-            const color = burgerButton.classList.contains('open') ? triggerElems.openTriggerColor : triggerElems.closedTriggerColor;
-            burgerButtonSpans.forEach(span => span.style.backgroundColor = color);
+            if (burgerButton.classList.contains('open')) {
+                $(burgerButton).children('span').css('background-color', triggerElems.openTriggerColor);
+            } else {
+                $(burgerButton).children('span').css('background-color', triggerElems.closedTriggerColor);
+            }
         }
         burgerButton.addEventListener('click', stdToggle);
         burgerLinks.forEach(link => link.addEventListener("click", stdToggle));
@@ -525,10 +519,9 @@ function differOnBrowser_init(params) {
         }
     });
 
-    function hideBlocks(ids) {
-        if (ids) {
-            const blocks = document.querySelectorAll(ids);
-            blocks.forEach(block => block.remove());
+    function hideBlocks(blocks) {
+        if (blocks) {
+            $(blocks).remove();
         }
     }
 }
@@ -542,37 +535,39 @@ function vectorDraw_init(params) {
     const minWidth = params.minWidth || 0;
     const logoLengths = [], logoPaths = [];
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         (trigger != 'hover' && trigger !='scroll') ? trigger = 'scroll' : null;
         const vd_forSVG = document.querySelectorAll(selectors);
         vd_forSVG.forEach((space, i) => {
-            space.innerHTML = svgs[i];
+            $(space).html(svgs[i]);
 
             if (isNaN(offsets[i])) {
                 offsets[i] = offsets[0] || 0;
             } else {
-                offsets[i] = document.documentElement.clientHeight*offsets[i]/100;
+                offsets[i] = $(window).height()*offsets[i]/100;
             }
         });
         vd_forSVG.forEach((space, i) => {
-            const logoPath = space.querySelector('path');
-            logoPaths[i] = logoPath;
-            logoLengths[i] = logoPath.getTotalLength();
-            logoPath.style.strokeDasharray = logoLengths[i];
-            logoPath.style.strokeDashoffset = logoLengths[i];
-            logoPath.style.animationDuration = `${animTime}s`;
-            logoPath.style.animationTimingFunction = animFunction;
-            logoPath.style.fill = 'none !important';
-            logoPath.style.stroke = logoPaths[i].getAttribute("fill");
-            logoPath.style.strokeWidth = `${strokeWidth}px`;
-            logoPath.removeAttribute("fill");
+            logoPaths[i] = space.querySelector('path');
+            logoLengths[i] = logoPaths[i].getTotalLength();
+            $(logoPaths[i]).css({
+                'stroke-dasharray': logoLengths[i],
+                'stroke-dashoffset': logoLengths[i],
+                'animation-duration': animTime + 's',
+                'animation-timing-function': animFunction,
+                fill: 'none !important',
+                stroke: logoPaths[i].getAttribute("fill"),
+                'stroke-width': strokeWidth + 'px'
+            });
+            logoPaths[i].removeAttribute("fill");
             const desiredWidth = getElemDim(space, "width");
             const coeff = desiredWidth/(+space.querySelector('svg').getAttribute('width'));
-            const svg = space.querySelector('svg');
-            svg.style.transform = `scale(${coeff})`;
-            svg.style.transformOrigin = 'top left';
-            svg.style.position = 'absolute';
-            svg.style.top = 0;
+            $(space).children('svg').css({
+                transform: `scale(${coeff})`,
+                transformOrigin: 'top left',
+                position: 'absolute',
+                top: '0'
+            });
         });
         
         if (trigger == 'hover') {
@@ -595,7 +590,7 @@ function vectorDraw_init(params) {
     }
 
     function scrollDraw() {
-        const visible = logoPaths.map((vector, i) => getOffset(vector).top < document.documentElement.scrollTop + document.documentElement.clientHeight - offsets[i]);
+        const visible = logoPaths.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
         visible.forEach((isVisible, i) => {
             if (isVisible) {
                 logoPaths[i].classList.add('draw-svg');
@@ -611,29 +606,32 @@ function vectorWrite_init(params) {
     let desiredWidth = 0;
     let coeff = 0;
     const strokeWidth = !isNaN(params.strokeWidth) ? params.strokeWidth : 0.5;
-    const offset = !isNaN(params.offset) ? params.offset*document.documentElement.clientHeight/100 : 0;
+    const offset = !isNaN(params.offset) ? params.offset*$(window).height()/100 : 0;
     let animTime = !isNaN(params.animTime) ? params.animTime : 0.5;
     const minWidth = !isNaN(params.minWidth) ? params.minWidth : 0;
     const delay = !isNaN(params.delay) ? params.delay : 0;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         const vd_forSVG = document.querySelector(selector);
-        vd_forSVG.innerHTML = svg;
+        $(vd_forSVG).html(svg);
 
         logoPaths = vd_forSVG.querySelectorAll('path');
         animTime = animTime/logoPaths.length;
 
+        $(logoPaths).css({
+            'animation-timing-function': 'linear',
+            'stroke-width': strokeWidth + "px",
+            'fill-opacity': '0',
+        });
         logoPaths.forEach((path, i) => {
-            const totalLength = path.getTotalLength();
-            path.style.animationTimingFunction = 'linear';
-            path.style.strokeWidth = `${strokeWidth}px`;
-            path.style.fillOpacity = 0;
-            path.style.strokeDasharray = totalLength;
-            path.style.strokeDasharray = totalLength;
-            path.style.stroke = path.getAttribute('fill');
-            path.style.animationDuration = `${animTime}s`;
-            path.style.animationDelay = `${animTime * i}s`;
-            path.style.transition = `fill-opacity ${animTime}s ease-in-out ${animTime * (i + 0.5)}s`;
+            $(path).css({
+                'stroke-dasharray': path.getTotalLength(),
+                'stroke-dashoffset': path.getTotalLength(),
+                stroke: path.getAttribute('fill'),
+                'animation-duration': animTime + 's',
+                'animation-delay': animTime*i + 's',
+                transition: `fill-opacity ${animTime}s ease-in-out ${animTime*(i+0.5)}s`
+            });
         });
         
         desiredWidth = getElemDim(vd_forSVG, "width");
@@ -647,7 +645,7 @@ function vectorWrite_init(params) {
     }
 
     function scrollInit() {
-        const isVisible = document.documentElement.scrollTop + document.documentElement.clientHeight > getOffset(logoPaths[0]).top + offset;
+        const isVisible = $(window).scrollTop() + $(window).height() > $(logoPaths[0]).offset().top + offset;
         if (isVisible) {
             document.removeEventListener('scroll', scrollInit);
             window.setTimeout(scrollDraw, delay * 1000);
@@ -656,7 +654,9 @@ function vectorWrite_init(params) {
     function scrollDraw() {
         logoPaths.forEach(path => {
             path.classList.add('draw-svg');
-            path.style.fillOpacity = 1;
+            $(path).css({
+                'fill-opacity': '1'
+            });
         })
     }
 }
@@ -666,15 +666,14 @@ function buttonToCircle_init(params) {
     const minWidth = params.minWidth || 1200;
     const buttonToCircle = document.querySelector(params.selector),
         buttonTextHolder = buttonToCircle.firstElementChild,
-        computedStyle = window.getComputedStyle(buttonTextHolder),
         buttonStyle = {
-            'bgColor': computedStyle.backgroundColor,
-            'borderRadius': computedStyle.borderStartEndRadius || computedStyle.borderRadius,
+            'bgColor': $(buttonTextHolder).css('background-color'),
+            'borderRadius': window.getComputedStyle(buttonTextHolder).borderStartEndRadius || window.getComputedStyle(buttonTextHolder).borderRadius,
             'width': buttonTextHolder.offsetWidth,
             'height': buttonTextHolder.offsetHeight
         };
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         const widthShift = buttonStyle.height;
         const movingBg = $(buttonToCircle).prepend(`<div class='moving_bg'></div>`).children('.moving_bg');
         const buttonToCircleTxt = $(buttonTextHolder).html(`<p class='buttonToCircleTxt'>${$(buttonTextHolder).text()}</p>`).children('.buttonToCircleTxt');
@@ -763,11 +762,11 @@ function fullPageHorScroll_init(parameters) {
     const horScrollBlocks = document.querySelectorAll(parameters.blocks),
         horScrollMenu = parameters.menu ? document.querySelector(parameters.menu) : null,
         horScroll_minWidth = parameters.minWidth || 1200,
-        horScroll_blockWidth = parameters.blockWidth || document.documentElement.offsetWidth,
+        horScroll_blockWidth = parameters.blockWidth || $(window).width(),
         hasDelay = parameters.hasDelay || false,
         delaySpeed = parameters.delaySpeed || 1;
         
-    const horScrollwh = document.documentElement.clientHeight,
+    const horScrollwh = $(window).height(),
         horScrollBlocksNum = horScrollBlocks.length,
         horScrollTotalHeight = (horScrollBlocksNum-1)*horScroll_blockWidth + horScrollwh,
         horScrollMenuHeight = horScrollMenu ? $(horScrollMenu).height() : 0,
@@ -775,7 +774,7 @@ function fullPageHorScroll_init(parameters) {
 
     let horScrollContainer = {};
 
-    if (document.documentElement.offsetWidth > horScroll_minWidth) {
+    if ($(window).width() > horScroll_minWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
         horScrollContainer = document.querySelector('.horScrollContainer');
         if (hasDelay) {
@@ -822,14 +821,14 @@ function fullPageHorScroll_init(parameters) {
         });
     }
     function horizontalScroll() {
-        const wt = document.documentElement.scrollTop;
+        const wt = $(window).scrollTop();
         let horScrollShift = +wt;
         if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
             horScrollContainer.style.transform = `translate(${-horScrollShift}px, 0)`;
         }
     }
     function horizontalScrollDelay() {
-        const wt = document.documentElement.scrollTop;
+        const wt = $(window).scrollTop();
         let horScrollShift = +wt;
         if (horScrollShift < (horScrollBlocksNum-1)*horScroll_blockWidth) {
             horScrollContainer.setAttribute('data-target-x', -horScrollShift);
@@ -855,13 +854,13 @@ function horScrollBlock_init(parameters) {
         horScrollContainer = {};
     let resizeTimeout = null;
     
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         init();
     }
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-            if (document.documentElement.offsetWidth > minWidth) {
+            if ($(window).width() > minWidth) {
                 if (!inited) {
                     init();
                 } else {
@@ -896,10 +895,10 @@ function horScrollBlock_init(parameters) {
         horScrollContainer = document.querySelector('.horScrollContainer');
 
         if (header) {
-            headerTop = getOffset(header).top;
+            headerTop = $(header).offset().top;
             headerHeight = $(header).height();
         } else {
-            headerTop = getOffset(horScrollContainer).top;
+            headerTop = $(horScrollContainer).offset().top;
         }
 
         if (hasDelay) {
@@ -928,7 +927,7 @@ function horScrollBlock_init(parameters) {
     }
 
     function horScrollBlock_handler() {
-        const wt = document.documentElement.scrollTop,
+        const wt = $(window).scrollTop(),
             horScrollShift = +wt - headerTop;
         if (wt < headerTop) {
             $(horScrollContainer).css({
@@ -955,7 +954,7 @@ function horScrollBlock_init(parameters) {
     }
 
     function horScrollBlockDelay_handler() {
-        const wt = document.documentElement.scrollTop,
+        const wt = $(window).scrollTop(),
             horScrollShift = +wt - headerTop;
         if (wt < headerTop) {
             $(horScrollContainer).css({
@@ -999,15 +998,15 @@ function horScroll_init(params) {
         hasDelay = params.hasDelay || false,
         delaySpeed = params.delaySpeed || 1,
 
-        horScrollwh = document.documentElement.clientHeight,
-        horScrollww = document.documentElement.offsetWidth,
+        horScrollwh = $(window).height(),
+        horScrollww = $(window).width(),
         horScrollBlocksNum = $(horScrollBlocks).length,
         horScrollTotalHeight = (horScrollBlocksNum-1)*horScrollww/speedCoeff + horScrollwh,
         horScrollStop = (horScrollBlocksNum-1)*horScrollww/speedCoeff;
     let horScrollContainer;
     let horScrollStaticContainer;
 
-    if (document.documentElement.offsetWidth > horScrollMinWidth) {
+    if ($(window).width() > horScrollMinWidth) {
         $(horScrollBlocks).wrapAll('<div class="horScrollContainer"></div>');
         horScrollContainer = document.querySelector('.horScrollContainer');
         if (hasDelay) {
@@ -1040,7 +1039,7 @@ function horScroll_init(params) {
     }
 
     function horizontalScroll() {
-        const horScrollShift = document.documentElement.scrollTop - getOffset(horScrollStaticContainer).top;
+        const horScrollShift = $(window).scrollTop() - $(horScrollStaticContainer).offset().top;
         if (horScrollShift < 0) {
             $(horScrollContainer).css({
                 position: 'relative',
@@ -1060,7 +1059,7 @@ function horScroll_init(params) {
     }
 
     function horizontalScrollDelay() {
-        const horScrollShift = document.documentElement.scrollTop - getOffset(horScrollStaticContainer).top;
+        const horScrollShift = $(window).scrollTop() - $(horScrollStaticContainer).offset().top;
         if (horScrollShift < 0) {
             $(horScrollContainer).css({
                 position: 'relative'
@@ -1093,7 +1092,7 @@ function screenChangeOnScroll_init(params) {
     const animTime = params.animTime || 0.8;
     let activePage = 0;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         $(pages).css({
             'position': 'fixed',
             'width': '100vw',
@@ -1155,12 +1154,12 @@ function textApp_init(parameters) {
 
     let txtApp_intervals = [];
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         txtAppConts.forEach((txtAppCont, contNum) => {
             if (isNaN(offsets[contNum])) {
                 offsets[contNum] = offsets[0] || 0;
             } else {
-                offsets[contNum] = document.documentElement.clientHeight*offsets[contNum]/100;
+                offsets[contNum] = $(window).height()*offsets[contNum]/100;
             }
 
             txtAppCont = txtAppCont.firstElementChild;
@@ -1304,7 +1303,7 @@ function textApp_init(parameters) {
     }
     
     function scrollTrigger() {
-        const appeared = txtAppWordConts.map((vector, i) => getOffset(vector).top < document.documentElement.scrollTop + document.documentElement.clientHeight - offsets[i]);
+        const appeared = txtAppWordConts.map((vector, i) => $(vector).offset().top < $(window).scrollTop() + $(window).height() - offsets[i]);
         appeared.forEach((isVisible, i) => {
             if (isVisible) {
                 if (i === 0 && delayFirst) {
@@ -1324,11 +1323,11 @@ function textApp_init(parameters) {
 function typeWriter_init(parameters) {
     const totalSpeed = parameters.totalSpeed || 2000;
     const minWidth = parameters.minWidth || 0;
-    const offset = parameters.offset ? document.documentElement.clientHeight*parameters.offset/100 : 0;
+    const offset = parameters.offset ? $(window).height()*parameters.offset/100 : 0;
     const tw_TextElem = document.querySelector(parameters.selector).firstElementChild;
     const tw_Text = tw_TextElem.innerText.split("");
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         tw_TextElem.innerText = '';
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1349,7 +1348,7 @@ function typeWriter_init(parameters) {
     }
 
     function tw_startWriting() {
-        if (getOffset(tw_TextElem).top < document.documentElement.scrollTop + document.documentElement.clientHeight - offset) {
+        if ($(tw_TextElem).offset().top < $(window).scrollTop() + $(window).height() - offset) {
             tw_write();
             document.removeEventListener('scroll', tw_startWriting);
         }
@@ -1366,7 +1365,7 @@ function lettersAppear_init(parameters) {
     const isRandom = parameters.isRandom || false;
     let offset = parameters.offset || 0;
     const textElem = document.querySelector(`${parameters.selector} .tn-atom`);
-    isNaN(offset) ? offset = 0 : offset = document.documentElement.clientHeight*offset/100;
+    isNaN(offset) ? offset = 0 : offset = $(window).height()*offset/100;
     const defaultFontWeight = getComputedStyle(textElem).fontWeight || '400';
 
     const texts = [];
@@ -1385,7 +1384,7 @@ function lettersAppear_init(parameters) {
 
     const maxDelay = totalSpeed - letterSpeed;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         textElem.innerHTML = '';
 
         if (isRandom) {
@@ -1410,7 +1409,7 @@ function lettersAppear_init(parameters) {
         $(textElem).children().css('opacity', '1');
     }
     function appearOnScroll() {
-        if (getOffset(textElem).top < document.documentElement.scrollTop + document.documentElement.clientHeight - offset ) {
+        if ($(textElem).offset().top < $(window).scrollTop() + $(window).height() - offset ) {
             setTimeout(() => {
                 lettersAppear();
             }, 1000*delay);
@@ -1423,7 +1422,7 @@ function lettersAppear_init(parameters) {
 /* ссылки италиком */
 function italicLinks_init(params) {
     const selector = params.selector || '';
-    if (document.documentElement.offsetWidth > 1200) {
+    if ($(window).width() > 1200) {
         const it_links = document.querySelectorAll(`${selector} a`);
         $(it_links).addClass('it-links');
     }
@@ -1439,7 +1438,7 @@ function parallax_init(params) {
         parallaxRect = {},
         parallaxRectCenter = {x: 0, y: 0};
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         parallaxTargets.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, {}));
         $(parallaxTargets).addClass('parallax');
         $(parallaxTargets).on('mouseenter', function () {
@@ -1498,7 +1497,7 @@ function oneSideButton_init(params) {
         }, oneSideButtonStyle.animTime);
     }
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         const targetButtons = [];
         targetOneSideButtonsPars.forEach((button, i) => {
             targetButtons[i] = button.firstElementChild;
@@ -1566,7 +1565,7 @@ function twoSideButton_init(params) {
         },
         minWidth = params.minWidth || 1200;    // минимальная ширина экрана для анимации
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         const targetTwoSideButtons= [];
         targetTwoSideButtonsPar.forEach((button, i) => {
             targetTwoSideButtons[i] = button.firstElementChild;
@@ -1618,7 +1617,7 @@ function hoverText_init(params) {
         isCursorHidden = params.isCursorHidden || false,
         minWidth = params.minWidth || 1200;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         hoverTextObjects.forEach((obj, i) => {
             obj.setAttribute('data-text', hoverTexts[i]);
             obj.classList.add('textHover');
@@ -1713,8 +1712,8 @@ function uniBurger_init(params) {
     const burgerWrapper = document.querySelector('.burgerWrapper');
 
     function burgerReshape() {
-        const ww = isMobile() ? window.screen.width : document.documentElement.offsetWidth + 17,
-            wh = isMobile() ? window.screen.height : document.documentElement.clientHeight,
+        const ww = isMobile() ? window.screen.width : $(window).width() + 17,
+            wh = isMobile() ? window.screen.height : $(window).height(),
             maxDim = Math.max(ww, wh);
 
         switch (burgerShape) {
@@ -1870,8 +1869,8 @@ function pushingBurger_init(params) {
         burgerArtboard = burgerBlock.querySelector('div').firstElementChild,
         burgerVh = burgerArtboard.getAttribute('data-artboard-height_vh'),
         burgerDims = {
-            burgerHeight: burgerVh ? +burgerVh*document.documentElement.clientHeight/100 : getElemParam(burgerArtboard, 'artboard-height'),
-            burgerWidth: params.burgerWidth || document.documentElement.offsetWidth,
+            burgerHeight: burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height'),
+            burgerWidth: params.burgerWidth || $(window).width(),
             shiftX: 0,
             shiftY: 0
         };
@@ -1982,8 +1981,8 @@ function pushingBurger_init(params) {
     }
 
     function handleResize() {
-        burgerDims.burgerHeight = burgerVh ? +burgerVh*document.documentElement.clientHeight/100 : getElemParam(burgerArtboard, 'artboard-height');
-        burgerDims.burgerWidth = params.burgerWidth || document.documentElement.offsetWidth;
+        burgerDims.burgerHeight = burgerVh ? +burgerVh*$(window).height()/100 : getElemParam(burgerArtboard, 'artboard-height');
+        burgerDims.burgerWidth = params.burgerWidth || $(window).width();
         switch (burgerPosition) {
             case 'top':
                 burgerDims.shiftY = burgerDims.burgerHeight;
@@ -2060,7 +2059,7 @@ function cursorChange_init(params) {
         stateInners = [];
     let normalStyle = params.normalStyle;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         cursorChange_add();
     }
 
@@ -2140,7 +2139,7 @@ function cursorChange_init(params) {
             document.addEventListener('mousemove', (event) => {
                 $(cursor).css({
                     left: event.pageX,
-                    top: event.pageY - document.documentElement.scrollTop
+                    top: event.pageY - $(window).scrollTop()
                 });
             });
         }
@@ -2185,7 +2184,7 @@ function cursorChange_init(params) {
 /* переход на страницы по картинкам */
 function photoLink_init(params) {
     const { photos } = params;
-    if (document.documentElement.offsetWidth > params.minWidth) {
+    if ($(window).width() > params.minWidth) {
         photos.forEach((photoSelector, i) => {
             const photo = document.querySelector(photoSelector);
             photo.setAttribute('data-imgLink', photo.querySelector('a').getAttribute('href'));
@@ -2248,7 +2247,7 @@ function bgPhotos_init(params) {
         photos[activeLink].setAttribute('data-target-y', (e.clientY - currentCenter.y));
     }
 
-    if (document.documentElement.offsetWidth > params.minWidth) {
+    if ($(window).width() > params.minWidth) {
         photos.forEach(target => initCoordTracking(target, 'mousemove', 'rel', true, true, {framerate: 10, delaySpeed, tolerance: 0.1}));
         elems.forEach((elem, i) => {
             $(elem).attr('assocWith', i);
@@ -2308,7 +2307,7 @@ function cursorTrace_init(params) {
         isRefreshing = false,
         mt_circles = '';
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         $('body').prepend(
             `<svg id="mouseTail" xmlns="http://www.w3.org/2000/svg" 
             width="100vw" height="100vh" viewBox="0 0 100% 100%" 
@@ -2375,7 +2374,7 @@ function cursorTail_init(params) {
         mouseX = 0,
         mouseY= 0;
 
-    if (document.documentElement.offsetWidth > params.minWidth) {
+    if ($(window).width() > params.minWidth) {
         $('body').prepend(
             `<svg id="mouseTail" xmlns="http://www.w3.org/2000/svg" 
             width="100vw" height="100vh" viewBox="0 0 100% 100%" 
@@ -2434,10 +2433,10 @@ function cornerPhotos_init(params) {
         delayFirst = params.delayFirst || 0,
         offsets = [];
     let showingRule;
-    const ww = document.documentElement.offsetWidth,
-        wh = document.documentElement.clientHeight;
+    const ww = $(window).width(),
+        wh = $(window).height();
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         let clipPath = '';
         switch (startPos) {
             case 'left-top':
@@ -2471,16 +2470,16 @@ function cornerPhotos_init(params) {
 
         cornerPhotos.forEach((photo, i) => {
             const offsetPercentage = params.offsets[i] || params.offsets[0] || 0;
-            offsets[i] = offsetPercentage*document.documentElement.offsetWidth/100;
+            offsets[i] = offsetPercentage*$(window).width()/100;
             if (isHorScroll) {
                 showingRule = function (photo, i) {
-                    const et = getOffset(photo).left;
+                    const et = $(photo).offset().left;
                     return (ww - offsets[i] > et)
                 };
             } else {
                 showingRule = function (photo, i) {
-                    const et = getOffset(photo).top;
-                    return (document.documentElement.scrollTop + wh - offsets[i] > et)
+                    const et = $(photo).offset().top;
+                    return ($(window).scrollTop() + wh - offsets[i] > et)
                 };
             }
 
@@ -2526,7 +2525,7 @@ function horDrag_init(params) {
         horDragMinLeft = 0,
         horDragMaxLeft = 0;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         if (hasDelay) {
             initCoordTracking(horDragObj, 'mousemove', 'rel', true, false, {delaySpeed, framerate: 15});
         }
@@ -2569,7 +2568,7 @@ function horDrag_init(params) {
             cursor: 'grab'
         });
 
-        horDragMaxLeft = document.documentElement.offsetWidth - $(horDragObj).width();
+        horDragMaxLeft = $(window).width() - $(horDragObj).width();
 
         if (hasDelay) {
             horDragObj.addEventListener('mousedown', function(event) {
@@ -2637,7 +2636,7 @@ function curtainChange_init(params) {
         minWidth = params.minWidth || 0;
     const curtainBGs = [];
     
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         document.addEventListener('DOMContentLoaded', initPages);
     
         document.addEventListener('touchstart', (e) => {
@@ -2732,7 +2731,7 @@ function photoZoom_init(params) {
         minWidth = params.minWidth || 1200,
         easeFunction = params.easeFunction || 'ease-in-out';
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         const selectorsArray = selectors.split(",");
         const photos = [];
         selectorsArray.forEach((sel, i) => {
@@ -2761,20 +2760,20 @@ function cursorMask_init(params) {
         maskingPages = document.querySelectorAll(params.maskingPages),
         originalPages = document.querySelectorAll(params.originalPages);
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         maskingPages.forEach((page, i) => {
             const originalPage = originalPages[i];
             page.style.width = window.getComputedStyle(originalPage).width;
             page.style.height = window.getComputedStyle(originalPage).height;
             page.style.position = 'absolute';
-            page.style.top = getOffset(originalPage).top + 'px';
+            page.style.top = $(originalPage).offset().top + 'px';
             page.style.clipPath = `circle(${clipRadius}px at -100px -100px)`;
             page.style.zIndex = '50';
         });
 
         document.addEventListener('mousemove', (event) => {
             maskingPages.forEach(page => {
-                page.style.clipPath = `circle(${clipRadius}px at ${event.pageX}px ${event.pageY - getOffset(page).top}px`;
+                page.style.clipPath = `circle(${clipRadius}px at ${event.pageX}px ${event.pageY - $(page).offset().top}px`;
             });
         });
     }
@@ -2788,7 +2787,7 @@ function bgChange_init(params) {
         animTime = params.animTime || 0.5;
     const body = document.querySelector('body');
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         bgChange();
         setTimeout(() => {
             body.style.transition = `background-color ${animTime}s linear`;
@@ -2797,16 +2796,16 @@ function bgChange_init(params) {
     }
 
     function bgChange() {
-        const scr = document.documentElement.scrollTop;
+        const scr = $(window).scrollTop();
         let currentColor = 0;
         breakpointBlocks.forEach((block, i) => {
             let offset = 0;
             if ( !isNaN(params.offsets[i]) ) {
-                offset = document.documentElement.clientHeight*params.offsets[i]/100;
+                offset = $(window).height()*params.offsets[i]/100;
             } else if ( !isNaN(params.offsets[0]) ) {
-                offset = document.documentElement.clientHeight*params.offsets[0]/100;
+                offset = $(window).height()*params.offsets[0]/100;
             }
-            if (scr > getOffset(block).top + offset) {
+            if (scr > $(block).offset().top + offset) {
                 currentColor = i + 1;
             }
         });
@@ -2831,11 +2830,11 @@ function moveAlongThePath_init (params) {
     const minWidth = params.minWidth || 0;
 
     let isAnimHappened = false;
-    const elemTop = getOffset(elem).top + $(elem).height()/2;
-    const wh = document.documentElement.clientHeight;
+    const elemTop = $(elem).offset().top + $(elem).height()/2;
+    const wh = $(window).height();
     offset = wh*offset/100;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         const currentBreakpoint = getCurrentBreakpoint();
         let path;
         for (let i = currentBreakpoint; i >= 0; i--) {
@@ -2892,7 +2891,7 @@ function moveAlongThePath_init (params) {
     }
 
     function getProgress() {
-        const st = document.documentElement.scrollTop;
+        const st = $(window).scrollTop();
         return st + wh - elemTop - offset;
     }
 
@@ -2961,7 +2960,7 @@ function circleBg_init(params) {
     ];
     let animContent;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         $(content).css({
             position: 'absolute',
             height: '100%',
@@ -3051,11 +3050,11 @@ function mouseTrack_init(params) {
         minWidth = params.minWidth || 1200;
 
     const maxMouseShift = {
-        x: document.documentElement.offsetWidth,
-        y: document.documentElement.clientHeight
+        x: $(window).width(),
+        y: $(window).height()
     };
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         if (mode == "rotate") {
             document.addEventListener('mousemove', mouseRotater);
         } else {
@@ -3182,13 +3181,9 @@ function preloader_init(params) {
 // обрезка текста
 function textWrap_init(params) {
     const textBlock = document.querySelector(params.text + ' div');
-    if (!textBlock) {
-        return console.error('Неправильно задан селектор элемента');
-    }
+    if (!textBlock) return console.error('Неправильно задан селектор элемента');
     const trigger = params.trigger ? document.querySelector(params.trigger) : textBlock;
-    if (!trigger) {
-        return console.error('Неправильно задан селектор триггера');
-    }
+    if (!trigger) return console.error('Неправильно задан селектор триггера');
     const isTriggerMoving = params.isTriggerMoving || false;
     const isTriggerFlipping = params.isTriggerFlipping || false;
     const numLinesArr = params.numLines;
@@ -3223,7 +3218,7 @@ function textWrap_init(params) {
     let artboardHeight = getElemParam(artboard, 'artboard-height');
     let resizeTimeout;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         if (totalLines <= numLines) {
             if (trigger !== textBlock) {
                 trigger.style.display = 'none';
@@ -3484,7 +3479,7 @@ function textColoring_init(params) {
     const iterTime = 15;
     const iterGradPosChange = (100 + 2 * colorsDiff) / ((animTime * 1000) / iterTime);
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         if (getBrowserName() === 'safari') {
             textElement.style.transition = `color ${animTime}s`;
             textElement.addEventListener('mouseenter', () => textElement.style.color = fillingColor);
@@ -3563,7 +3558,7 @@ function poppingCards__init(params) {
     const minWidth = isNaN(params.minWidth) ? 1200 : params.minWidth;
     const isCustom = params.isCustom || false;
 
-    if (document.documentElement.offsetWidth > minWidth) {
+    if ($(window).width() > minWidth) {
         if (isCustom) {
             return setTimeout(go, 50);
         }
@@ -3595,9 +3590,8 @@ function poppingCards__init(params) {
 
         cardsData.forEach((cardData, i) => {
             cardData.card.addEventListener('mousemove', function (e) {
-                const offset = getOffset(this);
-                const xAxis = (offset.left + this.offsetWidth / 2 - e.pageX) / coeff;
-                const yAxis = (offset.top + this.offsetHeight / 2 - e.pageY) / coeff;
+                const xAxis = ($(this).offset().left + $(this).width() / 2 - e.pageX) / coeff;
+                const yAxis = ($(this).offset().top + $(this).height() / 2 - e.pageY) / coeff;
                 cardData.card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
             });
             cardData.card.addEventListener('mouseenter', () => {
@@ -3624,7 +3618,7 @@ function cursorHalo_init(params) {
     const delaySpeed = !isNaN(params.delaySpeed) ? params.delaySpeed : 0.5;
 
     $('body').append(`
-        <svg class="cursor-halo" viewBox="0 0 ${document.documentElement.offsetWidth} ${document.documentElement.clientHeight}" xmlns="http://www.w3.org/2000/svg" style="filter: blur(${blur}px)">
+        <svg class="cursor-halo" viewBox="0 0 ${$(window).width()} ${$(window).height()}" xmlns="http://www.w3.org/2000/svg" style="filter: blur(${blur}px)">
             <radialGradient id="cursor-halo__gradient">
                 <stop offset="${flatRadius}%" stop-color="${color}" stop-opacity="${startOpacity}"/>
                 <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
@@ -3659,7 +3653,7 @@ function cursorHalo_init(params) {
     }
 
     function removeFirstOpacity() {
-        document.querySelector('.cursor-halo').style.opacity = '1';
+        $('.cursor-halo').css('opacity', '1');
         document.removeEventListener('mousemove', removeFirstOpacity);
     }
     document.addEventListener('mousemove', removeFirstOpacity);
@@ -3715,9 +3709,11 @@ function flippingText_init(params) {
             <span style="display: block;">${text}</span>
         `;
 
-        inner.style.height = `${totalHeight}px`;
-        inner.style.display = 'block';
-        inner.style.overflow = 'hidden';
+        $(inner).css({
+            height: totalHeight + 'px',
+            display: 'block',
+            overflow: 'hidden'
+        });
 
         el.addEventListener('mouseenter', () => animate(inner));
     });
@@ -3964,8 +3960,8 @@ function bgBlock_init(params) {
     }
 
     function recalcOffset() {
-        const st = document.documentElement.scrollTop;
-        const wh = document.documentElement.clientHeight;
+        const st = $(window).scrollTop();
+        const wh = $(window).height();
         if (isTypeTop()) {
             offset = Math.abs(blockParams.blockTop - st) / wh;
         } else {
@@ -3997,14 +3993,16 @@ function clipBySvg_init(params) {
     if (!maskSvg) {
         return console.error('Неправильно задан код SVG');
     }
-    maskSvg.innerHTML = `<defs><clipPath id="fish-video-clip">${maskSvg.innerHTML}</clipPath></defs>`
+    $(maskSvg).html(`<defs><clipPath id="fish-video-clip">${$(maskSvg).html()}</clipPath></defs>`);
     const svgElements = maskSvg.querySelectorAll(possibleSvgElements);
     const scales = preformScales();
     let resizeTimeout = null;
 
     replaceElements();
 
-    videoElement.style.clipPath = 'url(#fish-video-clip)';
+    $(videoElement).css({
+        'clip-path': 'url(#fish-video-clip)'
+    });
 
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
@@ -4062,16 +4060,15 @@ function textAlongThePath_init(params) {
     const speedCoeff = params.speedCoeff || 1;
     const minWidth = isNaN(params.minWidth) ? 0 : params.minWidth;
     const maxWidth = isNaN(params.maxWidth) ? 999999 : params.maxWidth;
-    const showLine = params.showLine || false;
 
     const textStyleProperties = ['fontSize', 'fontFamily', 'fontWeight', 'textDecoration', 'fontStyle'];
-    let screenWidth = document.documentElement.offsetWidth;
+    let screenWidth = $(window).width();
     let resizeTimeout = null;
 
     const text = separate ? reference.textContent + ' ' : reference.textContent;
     const styles = getComputedStyle(reference.firstElementChild);
     const targetWidth = renderTo.getBoundingClientRect().width;
-    renderTo.innerHTML = params.svg;
+    $(renderTo).html(params.svg);
     const svgElem = renderTo.querySelector('svg');
     svgElem.setAttribute('width', targetWidth);
     svgElem.removeAttribute('height');
@@ -4085,10 +4082,8 @@ function textAlongThePath_init(params) {
         pathId += `-${Math.floor((new Date()) / 1000)}`;
     }
     pathElement.setAttribute('id', pathId);
-    if (!showLine) {
-        pathElement.style.stroke = 'transparent';
-        pathElement.style.fill = 'transparent';
-    }
+    pathElement.style.stroke = 'transparent';
+    pathElement.style.fill = 'transparent';
 
     const textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
     svgElem.appendChild(textElem);
@@ -4099,9 +4094,6 @@ function textAlongThePath_init(params) {
             textElem.style[property] = styles[property];
         }
     });
-    if (showLine) {
-        textElem.style.transform = `translateY(${parseInt(styles.fontSize) / 2})px`;
-    }
     reference.remove();
 
     const textpath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
@@ -4157,7 +4149,7 @@ function textAlongThePath_init(params) {
         resizeTimeout = setTimeout(() => {
             const targetWidth = renderTo.style.width;
             svgElem.setAttribute('width', targetWidth);
-            screenWidth = document.documentElement.offsetWidth;
+            screenWidth = $(window).width();
             if (screenWidth > minWidth && screenWidth < maxWidth) {
                 renderTo.style.display = 'initial';
             } else {
@@ -4179,8 +4171,8 @@ function photoScroll_init(params) {
     const direction = params.direction || 'to bottom';
 
     const screenParams = {
-        top: document.documentElement.scrollTop,
-        height: document.documentElement.clientHeight,
+        top: $(window).scrollTop(),
+        height: $(window).height(),
         bottom: null
     };
     screenParams.bottom = screenParams.top + screenParams.height;
@@ -4198,13 +4190,13 @@ function photoScroll_init(params) {
     handleScroll();
 
     function recalcScreenParams() {
-        screenParams.top = document.documentElement.scrollTop;
-        screenParams.height = document.documentElement.clientHeight
+        screenParams.top = $(window).scrollTop();
+        screenParams.height = $(window).height()
         screenParams.bottom = screenParams.top + screenParams.height;
     }
 
     function handleScroll() {
-        screenParams.top = document.documentElement.scrollTop;
+        screenParams.top = $(window).scrollTop();
         screenParams.bottom = screenParams.top + screenParams.height;
         shiftBgs();
     }
@@ -4278,7 +4270,7 @@ function hidingHeader_init(params) {
     }
 
     function toggleSticking() {
-        if (document.documentElement.scrollTop > top) {
+        if ($(window).scrollTop() > top) {
             header.classList.remove('hiding-header-lose');
         } else {
             header.classList.add('hiding-header-lose');
