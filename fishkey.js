@@ -1,5 +1,5 @@
 const tildaBreakpoints = [1200, 980, 640, 480, 320];
-const globalCounter = 0;
+let globalCounter = 0;
 
 /* утилита для определения браузера */
 /* Названия браузеров: chrome, firefox, safari, explorer, edge, opera, samsung */
