@@ -554,7 +554,8 @@ dev
         delay: 0.5,                 // задержка прелоудера (если isWaiting: true - минимальное время видимости прелоудера, если false - все время видимости)
         animTime: 1,                // время анимации
         howToClose: 'go-up',        // принцип анимации (fade - исчезновение в прозрачность, go-up - слайд вверх, go-left - влево, go-down - вниз, go-right - вправо)
-        animFunction: 'ease'        // кривая безье анимации
+        animFunction: 'ease',        // кривая безье анимации
+        closeButton: '[data-elem-id="123123123"]'
     })
 </script>
 
